@@ -1,0 +1,39 @@
+{
+  "name": "my-game-site",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "bcrypt": "^4.0.1",
+    "jquery": "^3.4.1",
+    "meteor-node-stubs": "^1.0.0",
+    "react": "^16.13.1",
+    "react-addons-pure-render-mixin": "^15.6.2",
+    "react-dom": "^16.13.1",
+    "react-draggable": "^4.2.0"
+  },
+  "meteor": {
+    "mainModule": {
+      "server": "server/main.js"
+    }
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.3.1",
+    "postcss": "^6.0.22",
+    "postcss-load-config": "^1.2.0"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {
+        "browsers": [
+          "last 2 versions"
+        ]
+      }
+    }
+  }
+}
