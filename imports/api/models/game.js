@@ -259,7 +259,6 @@ export class Game {
     } else {
       this.status = CurrTestState.status;
       this.statusito = CurrTestState.statusito;
-      this.players = CurrTestState.players;
       this.currentPlayerIndex = CurrTestState.currentPlayerIndex;
       this.deck = CurrTestState.deck;
       this.di = CurrTestState.di;
@@ -337,7 +336,7 @@ export class Game {
       
       if (CurrTestState == TestStates.REAL){
         for (var i = 0; i < this.players.length; i++){
-          this.hands[players[i].username] = [];
+          this.hands[this.players[i].username] = [];
         }
       }
 
