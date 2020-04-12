@@ -20,12 +20,6 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userMarkGame(gameId, user, row, col) {
-    let game = Games.findOne(gameId);
-    game.userMark(user, row, col);
-    Games.saveGame(game);
-  },
-
   userDrawCardGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userDrawCard(user);
@@ -113,6 +107,12 @@ export let GamesController = {
   userSetCardLocGame(gameId, card, x, y) {
     let game = Games.findOne(gameId);
     game.userSetCardLoc(card, x, y);
+    Games.saveGame(game);
+  },
+
+  userSetHighestZIndexGame(gameId, user, z) {
+    let game = Games.findOne(gameId);
+    game.userSetHighestZIndex(z);
     Games.saveGame(game);
   }
 }

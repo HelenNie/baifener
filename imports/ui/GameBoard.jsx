@@ -26,7 +26,7 @@ export const Langs = {
     openDiForThree: '揭底找三',
     openDi: '揭底',
     startPlaying: '开始',
-    finishTurn: '结束摸牌',
+    finishTurn: '结束出牌',
     clearTable: '清空',
     collectPoints: '拿分',
     handArea: '手',
@@ -244,7 +244,7 @@ export default class GameBoard extends Component {
             <div className="handArea">
                 {userCards.map((card, index) => (
                   <MyDrag
-                    key={index}
+                    key={card}
                     card={card}
                     user={user}
                     game={game}

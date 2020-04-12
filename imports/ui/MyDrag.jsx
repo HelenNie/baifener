@@ -6,7 +6,7 @@ import GameBoard from './GameBoard.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetHighestZIndexGame} from '../api/methods/games.js';
 
 export default class MyDrag extends React.Component {
 
@@ -30,8 +30,9 @@ export default class MyDrag extends React.Component {
     });
   };
 
-  onStart = () => {
+  onStart = (e) => {
     this.setState({activeDrags: ++this.state.activeDrags});
+    this.handleBringToFront(e)
   };
 
   onStop = (e, ui) => {
@@ -41,7 +42,6 @@ export default class MyDrag extends React.Component {
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
-
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: x, y: y});
   };
 
@@ -54,6 +54,15 @@ export default class MyDrag extends React.Component {
     userCardMigrationGame.call({gameId: this.props.game._id, card: this.props.card});
   };
 
+  handleBringToFront = (e) => {
+    var myZ = Number(e.currentTarget.style.zIndex || -1);
+    var highestZ = this.props.game.userGetHighestZIndex();
+    if (myZ < highestZ) {
+      e.currentTarget.style.zIndex = highestZ + 1;
+      userSetHighestZIndexGame.call({gameId: this.props.game._id, z:Number(e.currentTarget.style.zIndex)});  
+    }
+  }
+
   render() {
     const dragHandlers = {onStart: this.onStart, onStop: this.onControlledDragStop};
     const {deltaPosition, controlledPosition} = this.state;
@@ -65,8 +74,7 @@ export default class MyDrag extends React.Component {
         key={this.props.card}
         onDrag={this.onControlledDrag} {...dragHandlers}
         defaultPosition={this.state.controlledPosition}
-        offsetParent={this.parent}
-        grid={[25, 25]}
+        grid={[10, 10]}
         bounds='parent'>
         <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute'}}></img>
       </Draggable>

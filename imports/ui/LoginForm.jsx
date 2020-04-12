@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import GameHeader from './GameHeader.jsx';
 import {CurrLang} from './GameBoard.jsx';
 
-export const password = "password";
+export const Users = ['one', 'two', 'three', 'four'];
+export const Password = "password";
 
 export default class LoginForm extends Component {
   constructor(props) {
@@ -12,22 +13,12 @@ export default class LoginForm extends Component {
       username: '',
       errorMsg: '',
     };
-    Accounts.createUser({
-      username: "one",
-      password: password
-    });
-    Accounts.createUser({
-      username: "two",
-      password: password
-    });
-    Accounts.createUser({
-      username: "three",
-      password: password
-    });
-    Accounts.createUser({
-      username: "four",
-      password: password
-    });
+    for (var i = 0; i < Users.length; i++) {
+      Accounts.createUser({
+        username: Users[i],
+        password: Password
+      });
+    }
   }
 
   handleUsernameChange(e) {
@@ -43,7 +34,7 @@ export default class LoginForm extends Component {
       return;
     }
     //console.log(this.setState({errorMsg: ''}));
-    Meteor.loginWithPassword(username, password);
+    Meteor.loginWithPassword(username, Password);
   }
 
   render() {

@@ -1,3 +1,5 @@
+import { Users } from '../../ui/LoginForm.jsx';
+
 export const GameStatuses = {
   WAITING: 'WAITING',  // waiting player to join
   STARTED: 'STARTED',  // all spots are filled; can start playing
@@ -12,13 +14,18 @@ export const GameStatusitos = {
   WRAPUP: 'WRAPUP'
 }
 
-export const Partners = {'one':'three', 'three':'one', 'two':'four', 'four':'two'};
+export const Partners = {};
+for (var i = 0; i < Users.length; i++) {
+  var partnerIdx = (i+2) % Users.length;
+  Partners[Users[i]] = Users[partnerIdx];
+}
+
 export const NumPlayers = 4;
 
 export const SuitsMap = {'H':'hearts', 'S':'spade', 'D':'diamond', 'C':'clover'}
 export const RanksMap = {'three':'3', 'five':'5', 'ten':'T', 'king':'K', 'joker':'O'}
 
-export const DeckComplete = ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"]
+export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"]
 export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()})
 export const DiLength = 6;
 export const Di = DeckNoDi.splice(0, DiLength)
@@ -50,7 +57,7 @@ export const TestStates = {
     status: GameStatuses.WAITING,
     statusito: GameStatusitos.DRAWING,
     currentPlayerIndex: 0,
-    deck: ["AC", "AD", "AH", "AS", "3C", "6C", "6D", "6H", "6S", "7C", "2C", "2D", "2H", "2S", "3D", "7D", "7H", "7S", "8C", "8D", "4C", "4D", "4H", "4S", "3H", "8H", "8S", "9C", "9D", "9H", "5C", "5D", "5H", "5S", "3S", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS"],
+    deck: ["ZC", "ZD", "ZH", "ZS", "3C", "6C", "6D", "6H", "6S", "7C", "2C", "2D", "2H", "2S", "3D", "7D", "7H", "7S", "8C", "8D", "4C", "4D", "4H", "4S", "3H", "8H", "8S", "9C", "9D", "9H", "5C", "5D", "5H", "5S", "3S", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS"],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
     prevTableCards: {},
@@ -61,7 +68,7 @@ export const TestStates = {
     nextCard: 40,
     shownThree: false,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "6C", "6D", "6H", "6S", "7C", "3C"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "6C", "6D", "6H", "6S", "7C", "3C"],
       'two': ["2C", "2D", "2H", "2S", "7D", "7H", "7S", "8C", "8D", "3D"],
       'three': ["4C", "4D", "4H", "4S", "8H", "8S", "9C", "9D", "9H", "3H"],
       'four': ["5C", "5D", "5H", "5S", "9S", "TC", "TD", "TH", "TS", "3S"]
@@ -88,7 +95,7 @@ export const TestStates = {
     nextCard: 48,
     shownThree: false,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
       'three': ["7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "3D"],
       'four': ["TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "OB"]
@@ -115,7 +122,7 @@ export const TestStates = {
     nextCard: 48,
     shownThree: false,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "OB", "9S", "QS", "3S"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "OB", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
       'three': ["7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "3D"],
       'four': ["TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "3H"]
@@ -142,7 +149,7 @@ export const TestStates = {
     nextCard: 48,
     shownThree: false,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "OA", "9S", "QS", "3S"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "OA", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
       'three': ["7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "3D"],
       'four': ["TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "3H"]
@@ -169,7 +176,7 @@ export const TestStates = {
     nextCard: 48,
     shownThree: false,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
       'three': ["7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "3D"],
       'four': ["TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "3H"]
@@ -196,7 +203,7 @@ export const TestStates = {
     nextCard: 48,
     shownThree: true,
     hands: {
-      'one': ["AC", "AD", "AH", "AS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S"],
+      'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S"],
       'three': ["7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S"],
       'four': ["TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS"]
@@ -237,7 +244,7 @@ export const TestStates = {
   }
 }
 
-export const CurrTestState = TestStates.REAL;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -285,6 +292,9 @@ export class Game {
       for (var i = 0; i < DeckComplete.length; i++) {
         this.cardLocations[DeckComplete[i]] = {x: 0, y: 0};
       }
+      this.currCycleNumCards = 0;
+      this.currTurnNumCards = 0;
+      this.highestZIndex = 0;
     }
   }
 
@@ -294,7 +304,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex'];
   }
 
 /**
@@ -501,6 +511,7 @@ export class Game {
       if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
         delete this.currTableCards[card];
         this.hands[user.username].push(card);
+        this.currTurnNumCards--;
         console.log(user.username, " took card back");
       } else {
         console.log("Not your turn");
@@ -509,11 +520,13 @@ export class Game {
       if (this.currentPlayerIndex == -1) {
         this.currentPlayerIndex = this.userIdToIndex(user._id);
         console.log("turns reset");
-      } else if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
+      }
+      if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
         var index = this.hands[user.username].indexOf(card);
         this.hands[user.username].splice(index, 1);
         this.currTableCards[card] = user.username;
         this.userSetCardLoc(card, 0, 0);
+        this.currTurnNumCards++;
         console.log(user.username, " played card");
       } else {
         console.log("Not your turn");
@@ -522,19 +535,37 @@ export class Game {
   }
 
   userEndTurn(user) {
-    console.log("end turn");
+    console.log(this.currTurnNumCards);
+    if (this.currTurnNumCards == 0) {
+      console.log("You did not play any cards!");
+      return;
+    }
+    if (this.turnCycleCount % NumPlayers == 0) {
+      this.currCycleNumCards = this.currTurnNumCards;
+    } else {
+      if (this.currTurnNumCards != this.currCycleNumCards) {
+        console.log("You did not play the right number of cards!");
+        return;
+      }
+    }
+
     this.currentPlayerIndex = (this.currentPlayerIndex+1) % NumPlayers;
     this.turnCycleCount = this.turnCycleCount + 1;
+    this.currTurnNumCards = 0;
+
     if (this.turnCycleCount % NumPlayers == 0) {
       this.currentPlayerIndex = -1;
       this.collectPointsActive = true;
+      this.clearTableActive = true;
     }
+    console.log("end turn");
   }
 
   userClearTable(user) {
     this.prevTableCards = this.currTableCards;
     this.currTableCards = {};
     this.clearTableActive = false;
+    this.collectPointsActive = false;
     if (this.hands[user.username].length == 0 && this.currentPlayerIndex == -1) {
       this.statusito = GameStatusitos.WRAPUP;
       this.collectPointsActive = true;
@@ -562,14 +593,22 @@ export class Game {
       }
     }
     this.collectPointsActive = false;
-    if(this.statusito != GameStatusitos.WRAPUP) {
-      this.clearTableActive = true;
+    if(this.statusito == GameStatusitos.WRAPUP) {
+      this.clearTableActive = false;
     }
   }
 
   userSetCardLoc(card, x, y) {
     this.cardLocations[card].x = x;
     this.cardLocations[card].y = y;
+  }
+
+  userGetHighestZIndex() {
+    return this.highestZIndex;
+  }
+
+  userSetHighestZIndex(z) {
+    this.highestZIndex = z;
   }
 
  /**

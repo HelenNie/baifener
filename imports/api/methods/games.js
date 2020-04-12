@@ -28,18 +28,6 @@ export const userLeaveGame = new ValidatedMethod({
   }
 });
 
-export const userMarkGame = new ValidatedMethod({
-  name: 'games.userMarkGame',
-  validate: new SimpleSchema({
-    gameId: {type: String},
-    row: {type: Number},
-    col: {type: Number}
-  }).validator(),
-  run({gameId, row, col}) {
-    GamesController.userMarkGame(gameId, Meteor.user(), row, col);
-  }
-});
-
 export const userDrawCardGame = new ValidatedMethod({
   name: 'games.userDrawCardGame',
   validate: new SimpleSchema({
@@ -195,5 +183,16 @@ export const userSetCardLocGame = new ValidatedMethod({
   }).validator(),
   run({gameId, card, x, y}) {
     GamesController.userSetCardLocGame(gameId, card, x, y);
+  }
+});
+
+export const userSetHighestZIndexGame = new ValidatedMethod({
+  name: 'games.userSetHighestZIndexGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+    z: {type: Number}
+  }).validator(),
+  run({gameId, z}) {
+    GamesController.userSetHighestZIndexGame(gameId, Meteor.user(), z);
   }
 });
