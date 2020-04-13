@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, componentDidMount } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import MyDrag from './MyDrag.jsx';
@@ -6,7 +6,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -29,6 +29,7 @@ export const Langs = {
     finishTurn: '结束出牌',
     clearTable: '清空',
     collectPoints: '拿分',
+    seePrevTable: '看上一局',
     handArea: '手',
     diArea: '底',
     pointsArea: '台下分',
@@ -69,6 +70,7 @@ export const Langs = {
     finishTurn: 'End Turn',
     clearTable: 'Clear Table',
     collectPoints: 'Collect Points',
+    seePrevTable: 'See previous round',
     handArea: 'HAND',
     diArea: 'Bottom-6',
     pointsArea: 'Underdog Points',
@@ -96,6 +98,15 @@ export const CurrLang = Langs.CHINESE;
 
 
 export default class GameBoard extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      containerRef: React.createRef(),
+      handAreaWidth: '',
+      handAreaHeight: ''
+    }
+  }
 
   handleBackToGameList() {
     this.props.backToGameListHandler();
@@ -141,6 +152,11 @@ export default class GameBoard extends Component {
     userCollectPointsGame.call({gameId: game._id});
   }
 
+  handleSeePrevTable() {
+    let game = this.props.game;
+    userSeePrevTableGame.call({gameId: game._id});
+  }
+
   renderStatus() {
     let game = this.props.game;
 
@@ -179,6 +195,27 @@ export default class GameBoard extends Component {
         </div>
         )
     }
+  }
+
+  componentDidMount() {
+    this.handleResize(this, '');
+
+    var elem = this;
+    window.addEventListener('resize', this.handleResize.bind(this, elem));
+  }
+
+  handleResize(elem, e) {
+    var parentPadding = 25;
+    var widthShare = 1;
+    var heightShare = 0.7;
+
+    var parent = elem.state.containerRef.current;
+    if (parent) {
+      var parentWidth = parent.offsetWidth;
+      var parentHeight = parent.offsetHeight;
+      elem.state.handAreaWidth = Math.floor( ( ( parentWidth - parentPadding ) * widthShare ) / 10 ) * 10;
+      elem.state.handAreaHeight = Math.floor(( ( parentHeight - parentPadding ) * heightShare ) / 10 ) * 10;
+    }    
   }
 
   render() {
@@ -225,12 +262,16 @@ export default class GameBoard extends Component {
             <button className="ui button blue" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
           ):null}
 
+          {(game.collectPointsActive == true && game.underdogs.includes(user.username))? (
+              <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+          ):null}
+
           {(game.clearTableActive == true)? (
               <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
           ):null}
 
-          {(game.collectPointsActive == true)? (
-              <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+          {(game.seePrevTableActive == true)? (
+              <button className="ui button blue" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
           ):null}
         </div>
 
@@ -239,9 +280,9 @@ export default class GameBoard extends Component {
 
         {/* Hand */}
         <div className="row">
-          <div className="column">
+          <div className="column" ref={this.state.containerRef}>
             <p className="banner"><b>{CurrLang.handArea}</b></p>
-            <div className="handArea">
+            <div className="handArea" style={{width: this.state.handAreaWidth+'px', height: this.state.handAreaHeight+'px'}}>
                 {userCards.map((card, index) => (
                   <MyDrag
                     key={card}

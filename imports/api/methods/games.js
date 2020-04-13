@@ -196,3 +196,13 @@ export const userSetHighestZIndexGame = new ValidatedMethod({
     GamesController.userSetHighestZIndexGame(gameId, Meteor.user(), z);
   }
 });
+
+export const userSeePrevTableGame = new ValidatedMethod({
+  name: 'games.userSeePrevTableGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userSeePrevTableGame(gameId, Meteor.user());
+  }
+});
