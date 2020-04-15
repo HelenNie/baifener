@@ -6,7 +6,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -30,19 +30,21 @@ export const Langs = {
     clearTable: '清空',
     collectPoints: '拿分',
     seePrevTable: '看上一局',
-    handArea: '手',
+    handArea: '我的牌',
     diArea: '底',
     pointsArea: '台下分',
     tableArea: '牌桌',
     stage: '阶段',
     zhu: '主',
     currPlayer: '现任玩家',
+    endGame: '结束游戏',
     gameFinished: '游戏结束',
     statusito: {
       'DRAWING': '摸牌', 
       'DI': '摸底',
       'PLAYING': '作战',
-      'WRAPUP': '结束'
+      'WRAPUP': '拿底',
+      'FINISHED': '结束'
     },
     suits: {
       'H':'红桃', 
@@ -78,12 +80,14 @@ export const Langs = {
     stage: 'Stage',
     zhu: 'Power Suit',
     currPlayer: 'Current Player',
+    endGame: 'End Game',
     gameFinished: 'Game Finished',
     statusito: {
       'DRAWING': 'Drawing', 
       'DI': 'Di',
       'PLAYING': 'Playing',
-      'WRAPUP': 'Wrap-up'
+      'WRAPUP': 'Open Di',
+      'FINISHED': 'Finished'
     },
     suits: {
       'H':'Hearts', 
@@ -157,14 +161,44 @@ export default class GameBoard extends Component {
     userSeePrevTableGame.call({gameId: game._id});
   }
 
+  handleEndGame() {
+    let game = this.props.game;
+    userEndGameGame.call({gameId: game._id});
+  }
+
+  handleResize(elem, e) {
+    var parentPadding = 25;
+    var widthShare = 1;
+    var heightShare = 0.7;
+    var gridSize = 10; //not used currently
+
+    var parent = elem.state.containerRef.current;
+    if (parent) {
+      var parentWidth = parent.offsetWidth;
+      var parentHeight = parent.offsetHeight;
+      elem.setState({
+        handAreaWidth: Math.floor( ( ( parentWidth - parentPadding ) * widthShare ) / gridSize ) * gridSize,
+        handAreaHeight: Math.floor(( ( parentHeight - parentPadding ) * heightShare ) / gridSize ) * gridSize
+      });
+    }    
+  }
+
+  componentDidMount() {
+    this.handleResize(this, '');
+
+    var elem = this;
+    window.addEventListener('resize', this.handleResize.bind(this, elem));
+  }
+
   renderStatus() {
     let game = this.props.game;
 
     let currentPlayerIndex = game.getCurrentPlayerIndex();
     let currPlayerStatus = "";
-    if (currentPlayerIndex == -1) {
+    if (currentPlayerIndex == -1 || currentPlayerIndex == null) {
       currPlayerStatus = "-";
     } else {
+      console.log(currentPlayerIndex);
       currPlayerStatus = game.players[currentPlayerIndex].username;
     }
 
@@ -197,27 +231,6 @@ export default class GameBoard extends Component {
     }
   }
 
-  componentDidMount() {
-    this.handleResize(this, '');
-
-    var elem = this;
-    window.addEventListener('resize', this.handleResize.bind(this, elem));
-  }
-
-  handleResize(elem, e) {
-    var parentPadding = 25;
-    var widthShare = 1;
-    var heightShare = 0.7;
-
-    var parent = elem.state.containerRef.current;
-    if (parent) {
-      var parentWidth = parent.offsetWidth;
-      var parentHeight = parent.offsetHeight;
-      elem.state.handAreaWidth = Math.floor( ( ( parentWidth - parentPadding ) * widthShare ) / 10 ) * 10;
-      elem.state.handAreaHeight = Math.floor(( ( parentHeight - parentPadding ) * heightShare ) / 10 ) * 10;
-    }    
-  }
-
   render() {
     let game = this.props.game;
     let user = this.props.user;
@@ -230,7 +243,6 @@ export default class GameBoard extends Component {
     let diCards = game.di; 
     let pointCards = game.taiXiaPoints;
     let tableCards = game.currTableCards;
-    let cardLocations = game.cardLocations;
 
 
     return (
@@ -239,11 +251,14 @@ export default class GameBoard extends Component {
 
         {/* Buttons */}
         <div className="buttons">
+          {/* ALWAYS SHOWN buttons */}
           <button className="ui button blue" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
 
           {/* DRAWING buttons */}
-          {(game.statusito == GameStatusitos.DRAWING && (userIsCurrPlayer || game.getCurrentPlayerIndex() == -1))? (
-            <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
+          {(game.statusito == GameStatusitos.DRAWING) ? (
+            (userIsCurrPlayer || game.getCurrentPlayerIndex() == -1) ? (
+              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
+            ):null
           ):null}
 
           {/* DI buttons */}
@@ -257,22 +272,43 @@ export default class GameBoard extends Component {
             ):null
           ):null}
 
-          {/* PLAYING or WRAPUP buttons */}
-          {(game.statusito == GameStatusitos.PLAYING && userIsCurrPlayer)? (
-            <button className="ui button blue" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
+          {/* PLAYING buttons */}
+          {(game.statusito == GameStatusitos.PLAYING) ? (
+            (userIsCurrPlayer)? (
+              <button className="ui button blue" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
+            ):null
           ):null}
 
-          {(game.collectPointsActive == true && game.underdogs.includes(user.username))? (
-              <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+          {(game.statusito == GameStatusitos.PLAYING) ? (
+            (game.clearTableActive == true)? (
+                <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
+            ):null
           ):null}
 
-          {(game.clearTableActive == true)? (
-              <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
+          {(game.statusito == GameStatusitos.PLAYING) ? (
+            (game.seePrevTableActive == true)? (
+                <button className="ui button blue" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
+            ):null
           ):null}
 
-          {(game.seePrevTableActive == true)? (
-              <button className="ui button blue" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
+          {(game.statusito == GameStatusitos.PLAYING) ? (
+            (game.collectPointsActive == true && game.underdogs.includes(user.username))? (
+                <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+            ):null
           ):null}
+
+          {/* WRAPUP buttons */}
+          {(game.statusito == GameStatusitos.WRAPUP) ? (
+            (game.collectPointsActive == true && game.underdogs.includes(user.username))? (
+                <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+            ):null
+          ):null}
+
+          {/* ALWAYS except FINISHED buttons */}
+          {(game.statusito != GameStatusitos.FINISHED)? (
+              <button className="ui button black" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
+          ):null}
+
         </div>
 
         {/* Status banner */}
@@ -289,13 +325,14 @@ export default class GameBoard extends Component {
                     card={card}
                     user={user}
                     game={game}
-                    location={cardLocations[card]}
+                    location={game.cardLocations[card]}
+                    zIndex={game.cardZIndexes[card]}
                   />
                 ))}
             </div>
 
             {/* Di and points */}
-            {(game.diOpen && game.diOpener == user.username )? (
+            {(game.statusito == GameStatusitos.DI && game.diOpen && game.diOpener == user.username )? (
               <div className="diArea">
                 <p className="banner"><b>{CurrLang.diArea}</b></p>
                   {diCards.map((diCard, index) => (
@@ -313,7 +350,7 @@ export default class GameBoard extends Component {
               </div>
             ):null}
           
-            {(game.statusito == GameStatusitos.WRAPUP)? (
+            {(game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED)? (
             <div className="diArea">
               <p className="banner"><b>{CurrLang.diArea}</b></p>
                 {diCards.map((diCard, index) => (

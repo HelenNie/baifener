@@ -11,7 +11,8 @@ export const GameStatusitos = {
   DRAWING: 'DRAWING', 
   DI: 'DI',
   PLAYING: 'PLAYING',
-  WRAPUP: 'WRAPUP'
+  WRAPUP: 'WRAPUP',
+  FINISHED: 'FINISHED'
 }
 
 export const Partners = {};
@@ -52,6 +53,7 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
   TEST_DRAWING: {
     status: GameStatuses.WAITING,
@@ -79,6 +81,7 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
   TEST_THREE: {
     status: GameStatuses.WAITING,
@@ -106,6 +109,7 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
   TEST_SUIT_FROM_DI: {
     status: GameStatuses.WAITING,
@@ -133,6 +137,7 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
   TEST_SUIT_FROM_DI_JOKER_1: {
     status: GameStatuses.WAITING,
@@ -160,6 +165,7 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
   TEST_SUIT_FROM_DI_JOKER_2: {
     status: GameStatuses.WAITING,
@@ -187,8 +193,9 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: []
   },
-  TEST_PLAYING: {
+  TEST_PLAYING: { //Login in one,two,three,four order for this.underdogs to work properly
     status: GameStatuses.WAITING,
     statusito: GameStatusitos.PLAYING,
     currentPlayerIndex: 0,
@@ -214,11 +221,12 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: ['two', 'four']
   },
   TEST_WRAPUP: {
     status: GameStatuses.WAITING,
     statusito: GameStatusitos.PLAYING,
-    currentPlayerIndex: -1,
+    currentPlayerIndex: 0,
     deck: DeckNoDi,
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
@@ -241,10 +249,11 @@ export const TestStates = {
     turnCycleCount: 0,
     clearTableActive: false,
     collectPointsActive: false,
+    underdogs: ['two', 'four']
   }
 }
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_WRAPUP;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -284,6 +293,7 @@ export class Game {
       this.turnCycleCount = CurrTestState.turnCycleCount;
       this.clearTableActive = CurrTestState.clearTableActive;
       this.collectPointsActive = CurrTestState.collectPointsActive;
+      this.underdogs = CurrTestState.underdogs;
 
       //Not in test states
       this.partners = Partners;
@@ -295,7 +305,10 @@ export class Game {
       this.currCycleNumCards = 0;
       this.currTurnNumCards = 0;
       this.highestZIndex = 0;
-      this.underdogs = [];
+      this.cardZIndexes = {};
+      for (var i = 0; i < DeckComplete.length; i++) {
+        this.cardZIndexes[DeckComplete[i]] = 0;
+      }
       this.seePrevTableActive = false;
     }
   }
@@ -306,7 +319,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes'];
   }
 
 /**
@@ -401,28 +414,29 @@ export class Game {
     if (card in this.currTableCards) {
         delete this.currTableCards[card];
         this.hands[user.username].push(card);
+        this.cardZIndexes[card] = ++this.highestZIndex;
         console.log(user.username, " took three back");
         console.log(this.hands);
-      } else {
-        if (card.slice(0,1) != RanksMap['three']) {
-          console.log("That's not a 3...");
-          return;
-        }
-        if (this.shownThree) {
-          console.log("Already showed 3...");
-          return;
-        }
-        var index = this.hands[user.username].indexOf(card);
-        this.hands[user.username].splice(index, 1);
-        this.currTableCards[card] = user.username;
-        this.userSetCardLoc(card, 0, 0);
-
-        this.shownThree = true;
-        this.zhu = card.slice(-1);
-
-        console.log(user.username + " liang " + card);
-        console.log(this.hands);
+    } else {
+      if (card.slice(0,1) != RanksMap['three']) {
+        console.log("That's not a 3...");
+        return;
       }
+      if (this.shownThree) {
+        console.log("Already showed 3...");
+        return;
+      }
+      var index = this.hands[user.username].indexOf(card);
+      this.hands[user.username].splice(index, 1);
+      this.currTableCards[card] = user.username;
+      this.userSetCardLoc(card, 0, 0);
+
+      this.shownThree = true;
+      this.zhu = card.slice(-1);
+
+      console.log(user.username + " liang " + card);
+      console.log(this.hands);
+    }
   }
 
   userThreeFromDi(user) {
@@ -487,6 +501,7 @@ export class Game {
         var index = this.di.indexOf(card);
         this.di.splice(index, 1);
         this.hands[user.username].push(card);
+        this.cardZIndexes[card] = ++this.highestZIndex;
       } else {
         if (this.di.length == DiLength) {
           console.log("Di already has 6 cards");
@@ -531,6 +546,7 @@ export class Game {
         delete this.currTableCards[card];
         this.hands[user.username].push(card);
         this.currTurnNumCards--;
+        this.cardZIndexes[card] = ++this.highestZIndex;
         console.log(user.username, " took card back");
       } else {
         console.log("Not your turn");
@@ -608,6 +624,7 @@ export class Game {
           this.di.splice(i, 1);
         }
       }
+      this.userEndGame();
     } else {
       var card = '';
       for (var card in this.currTableCards) {
@@ -619,9 +636,6 @@ export class Game {
       }
     }
     this.collectPointsActive = false;
-    if(this.statusito == GameStatusitos.WRAPUP) {
-      this.clearTableActive = false;
-    }
   }
 
   userSeePrevTable() {
@@ -641,8 +655,19 @@ export class Game {
     return this.highestZIndex;
   }
 
-  userSetHighestZIndex(z) {
+  userSetZIndex(card, z) {
+    this.cardZIndexes[card] = z;
     this.highestZIndex = z;
+  }
+
+  userEndGame() {
+    this.status = GameStatuses.FINISHED;
+    this.statusito = GameStatusitos.FINISHED;
+
+    this.currTableCards = {};
+    for (var player in this.hands) {
+      this.hands[player] = [];
+    }
   }
 
  /**

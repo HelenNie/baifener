@@ -110,15 +110,21 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userSetHighestZIndexGame(gameId, user, z) {
+  userSetZIndexGame(gameId, user, card, z) {
     let game = Games.findOne(gameId);
-    game.userSetHighestZIndex(z);
+    game.userSetZIndex(card, z);
     Games.saveGame(game);
   },
 
   userSeePrevTableGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userSeePrevTable();
+    Games.saveGame(game);
+  },
+
+  userEndGameGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userEndGame();
     Games.saveGame(game);
   }
 }

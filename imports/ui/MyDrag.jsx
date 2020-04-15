@@ -6,7 +6,7 @@ import GameBoard from './GameBoard.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetHighestZIndexGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
 
 export default class MyDrag extends React.Component {
 
@@ -55,11 +55,11 @@ export default class MyDrag extends React.Component {
   };
 
   handleBringToFront = (e) => {
-    var myZ = Number(e.currentTarget.style.zIndex || -1);
+    var myZ = Number(e.currentTarget.style.zIndex);
     var highestZ = this.props.game.userGetHighestZIndex();
-    if (myZ < highestZ) {
+    if (myZ < highestZ || highestZ == 0) {
       e.currentTarget.style.zIndex = highestZ + 1;
-      userSetHighestZIndexGame.call({gameId: this.props.game._id, z:Number(e.currentTarget.style.zIndex)});  
+      userSetZIndexGame.call({gameId: this.props.game._id, card: this.props.card, z:Number(e.currentTarget.style.zIndex)});  
     }
   }
 
@@ -74,9 +74,9 @@ export default class MyDrag extends React.Component {
         key={this.props.card}
         onDrag={this.onControlledDrag} {...dragHandlers}
         defaultPosition={this.state.controlledPosition}
-        grid={[10, 10]}
+        // grid={[10, 10]}
         bounds='parent'>
-        <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute'}}></img>
+        <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute', zIndex: this.props.zIndex}}></img>
       </Draggable>
     );
   }
