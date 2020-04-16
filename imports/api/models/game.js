@@ -46,6 +46,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 0,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {},
     taiXiaPoints: [],
     threeFromDiDone: false,
@@ -69,6 +71,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 40,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "6C", "6D", "6H", "6S", "7C", "3C"],
       'two': ["2C", "2D", "2H", "2S", "7D", "7H", "7S", "8C", "8D", "3D"],
@@ -97,6 +101,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 48,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
@@ -125,6 +131,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 48,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "OB", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
@@ -153,6 +161,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 48,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "OA", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
@@ -181,6 +191,8 @@ export const TestStates = {
     zhu: "",
     nextCard: 48,
     shownThree: false,
+    threeShower: '',
+    retrievedThree: false,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "6S", "9S", "QS", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "3C"],
@@ -209,6 +221,8 @@ export const TestStates = {
     zhu: "H",
     nextCard: 48,
     shownThree: true,
+    threeShower: 'one',
+    retrievedThree: true,
     hands: {
       'one': ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S"],
       'two': ["4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S"],
@@ -237,6 +251,8 @@ export const TestStates = {
     zhu: "H",
     nextCard: 48,
     shownThree: true,
+    threeShower: 'one',
+    retrievedThree: true,
     hands: {
       'one': ["3S"],
       'two': ["6S"],
@@ -253,7 +269,7 @@ export const TestStates = {
   }
 }
 
-export const CurrTestState = TestStates.TEST_WRAPUP;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -286,6 +302,8 @@ export class Game {
       this.zhu = CurrTestState.zhu;
       this.nextCard = CurrTestState.nextCard;
       this.shownThree = CurrTestState.shownThree;
+      this.threeShower = CurrTestState.threeShower;
+      this.retrievedThree = CurrTestState.retrievedThree;
       this.hands = CurrTestState.hands;
       this.taiXiaPoints = CurrTestState.taiXiaPoints;
       this.threeFromDiDone = CurrTestState.threeFromDiDone;
@@ -319,7 +337,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree'];
   }
 
 /**
@@ -356,7 +374,7 @@ export class Game {
         }
         this.players[2] = this.players[partnerIdx];
         this.players[partnerIdx] = player3;
-        console.log(this.players)
+        console.log("Players: ", this.players);
       }
       
       if (CurrTestState == TestStates.REAL){
@@ -399,8 +417,7 @@ export class Game {
 
     let card = this.deck[this.nextCard];
     this.hands[user.username].push(card);
-    console.log("drew: "+card);
-    console.log(this.hands);
+    console.log(user.username, " drew: ", card);
 
     this.nextCard = this.nextCard + 1;
     if (this.nextCard == this.deck.length) {
@@ -411,39 +428,41 @@ export class Game {
   }
 
   userShowOrRetrieveThree(user, card) {
-    if (card in this.currTableCards) {
-        delete this.currTableCards[card];
-        this.hands[user.username].push(card);
-        this.cardZIndexes[card] = ++this.highestZIndex;
-        console.log(user.username, " took three back");
-        console.log(this.hands);
-    } else {
+    if (!this.shownThree) {
       if (card.slice(0,1) != RanksMap['three']) {
         console.log("That's not a 3...");
         return;
       }
-      if (this.shownThree) {
-        console.log("Already showed 3...");
-        return;
-      }
       var index = this.hands[user.username].indexOf(card);
       this.hands[user.username].splice(index, 1);
-      this.currTableCards[card] = user.username;
+      this.zhu = card.slice(-1);
+      this.threeShower = user.username;
+      this.shownThree = true;
+
       this.userSetCardLoc(card, 0, 0);
 
-      this.shownThree = true;
-      this.zhu = card.slice(-1);
-
       console.log(user.username + " liang " + card);
-      console.log(this.hands);
+
+    } else if (!this.retrievedThree) {
+      if (user.username != this.threeShower) {
+        console.log("That's not your 3...");
+        return;
+      }
+      this.hands[user.username].push(card);
+      this.retrievedThree = true;
+
+      this.cardZIndexes[card] = ++this.highestZIndex;
+
+      console.log(user.username, " took three back");
+
+    } else {
+      console.log("Already showed 3...");
     }
   }
 
   userThreeFromDi(user) {
     var card = this.di[this.threeFromDiCount];
     this.threeFromDiCount = this.threeFromDiCount + 1;
-
-    this.currTableCards[card] = user.username;
 
     let suit = card.slice(-1);
     if (card.slice(0,1) == RanksMap['three'] || this.threeFromDiCount == this.di.length) {
@@ -457,8 +476,7 @@ export class Game {
       }
       this.zhu = suit;
       this.threeFromDiDone = true;
-      console.log("zhu: ", SuitsMap[this.zhu]);
-      console.log(this.hands);
+      console.log("Zhu: ", SuitsMap[this.zhu]);
     }
   }
 
@@ -479,20 +497,18 @@ export class Game {
         }
       }
 
-      this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
-
-      //take three back if left on table
-      if (this.shownThree && Object.keys(this.currTableCards).length !== 0) {
-        var card = '3'+this.zhu;
-        var username = this.currTableCards[card];
-        this.hands[username].push(card);
+      //retrieve 3 if still on table
+      if (this.showedThree && !this.retrievedThree) {
+        var three = RanksMap['three']+this.zhu;
+        this.hands[this.threeShower].push(three);
+        this.retrievedThree = true;
+        this.cardZIndexes[three] = ++this.highestZIndex;
+        console.log("Three retrieved");
       }
-      //clear table of 3 or di cards
-      this.currTableCards = {};
+
+      this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
     } 
-    if (user.username == this.diOpener) {
-      this.diOpen = !this.diOpen;
-    }
+    this.diOpen = !this.diOpen;
   }
 
   userSwapHandAndDi(user,card) {
@@ -525,18 +541,15 @@ export class Game {
     } else if (this.statusito == GameStatusitos.PLAYING) {
       this.userPlayOrTakeBackCard(user,card);
     }
-    console.log("here");
-    console.log(this.hands);
   }
 
   userStartGame(user) {
     if(this.di.length == DiLength) {
       this.statusito = GameStatusitos.PLAYING;
       this.diOpen = false;
-      console.log("game started");
-      console.log(this.hands);
+      console.log("Game started");
     } else {
-      console.log("di need 6 cards to start game");
+      console.log("Di need 6 cards to start game");
     }
   }
 
@@ -559,7 +572,7 @@ export class Game {
         }
         this.currentPlayerIndex = this.userIdToIndex(user._id);
         this.seePrevTableActive = false;
-        console.log("turns reset");
+        console.log("Turns reset");
       }
       if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
         var index = this.hands[user.username].indexOf(card);
@@ -575,7 +588,6 @@ export class Game {
   }
 
   userEndTurn(user) {
-    console.log(this.currTurnNumCards);
     if (this.currTurnNumCards == 0) {
       console.log("You did not play any cards!");
       return;
@@ -599,7 +611,7 @@ export class Game {
       this.clearTableActive = true;
       this.prevTableCards = this.currTableCards;
     }
-    console.log("end turn");
+    console.log("End turn");
   }
 
   userClearTable(user) {
@@ -612,7 +624,7 @@ export class Game {
       this.collectPointsActive = true;
       this.seePrevTableActive = false;
     }
-    console.log("table cleared");
+    console.log("Table cleared");
   }
 
   userCollectPoints() {
@@ -631,7 +643,7 @@ export class Game {
         if (pointCards.indexOf(card.charAt(0)) >= 0) {
           this.taiXiaPoints.push(card);
           delete this.currTableCards[card];
-          console.log("collected: ", card);
+          console.log("Collected: ", card);
         }
       }
     }
@@ -643,7 +655,7 @@ export class Game {
     this.seePrevTableActive = false;
     this.clearTableActive = true;
 
-    console.log("see previous table");
+    console.log("See previous table");
   }
 
   userSetCardLoc(card, x, y) {
@@ -665,9 +677,6 @@ export class Game {
     this.statusito = GameStatusitos.FINISHED;
 
     this.currTableCards = {};
-    for (var player in this.hands) {
-      this.hands[player] = [];
-    }
   }
 
  /**

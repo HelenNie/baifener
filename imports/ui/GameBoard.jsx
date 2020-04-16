@@ -5,7 +5,7 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap} from '../api/models/game.js';
+import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners} from '../api/models/game.js';
 import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame} from '../api/methods/games.js';
 
 
@@ -51,7 +51,9 @@ export const Langs = {
       'S':'黑桃', 
       'D':'方片', 
       'C':'梅花'
-    }
+    },
+    me: '我',
+    partner: '同伙',
   },
   ENGLISH: {
     baifener: 'Baifener',
@@ -94,7 +96,9 @@ export const Langs = {
       'S':'Spade', 
       'D':'Diamond', 
       'C':'Clover'
-    }
+    },
+    me: 'Me',
+    partner: 'Partner',
   }
 }
 
@@ -106,9 +110,10 @@ export default class GameBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      containerRef: React.createRef(),
-      handAreaWidth: '',
-      handAreaHeight: ''
+      // Originally used to dynamically resize handArea and round dimensions to multiple of draggable 'grid' to fit an even number of cards into width and height of handArea, but not using draggable 'grid' right now
+      // columnRef: React.createRef(), // add ref={this.state.columnRef} to handArea column
+      // handAreaWidth: '', // add style={{width: this.state.handAreaWidth+'px', height: this.state.handAreaHeight+'px'}} to handArea
+      // handAreaHeight: ''
     }
   }
 
@@ -166,29 +171,30 @@ export default class GameBoard extends Component {
     userEndGameGame.call({gameId: game._id});
   }
 
-  handleResize(elem, e) {
-    var parentPadding = 25;
-    var widthShare = 1;
-    var heightShare = 0.7;
-    var gridSize = 10; //not used currently
+  // Originally used to dynamically resize handArea and round dimensions to multiple of draggable 'grid' to fit an even number of cards into width and height of handArea, but not using draggable 'grid' right now
+  // handleResize(elem, e) {
+  //   var parentPadding = 10; //px //parent = .column
+  //   var widthShare = 1; //100%
+  //   var heightShare = 0.7; //70%
+  //   var gridSize = 10; //px //not used currently
 
-    var parent = elem.state.containerRef.current;
-    if (parent) {
-      var parentWidth = parent.offsetWidth;
-      var parentHeight = parent.offsetHeight;
-      elem.setState({
-        handAreaWidth: Math.floor( ( ( parentWidth - parentPadding ) * widthShare ) / gridSize ) * gridSize,
-        handAreaHeight: Math.floor(( ( parentHeight - parentPadding ) * heightShare ) / gridSize ) * gridSize
-      });
-    }    
-  }
+  //   var parent = elem.state.columnRef.current;
+  //   if (parent) {
+  //     var parentWidth = parent.offsetWidth;
+  //     var parentHeight = parent.offsetHeight;
+  //     elem.setState({
+  //       handAreaWidth: Math.floor( ( ( parentWidth - 2 * parentPadding ) * widthShare ) / gridSize ) * gridSize,
+  //       handAreaHeight: Math.floor(( ( parentHeight - 2 * parentPadding ) * heightShare ) / gridSize ) * gridSize
+  //     });
+  //   }    
+  // }
 
-  componentDidMount() {
-    this.handleResize(this, '');
+  // componentDidMount() {
+  //   this.handleResize(this, '');
 
-    var elem = this;
-    window.addEventListener('resize', this.handleResize.bind(this, elem));
-  }
+  //   var elem = this;
+  //   window.addEventListener('resize', this.handleResize.bind(this, elem));
+  // }
 
   renderStatus() {
     let game = this.props.game;
@@ -243,7 +249,38 @@ export default class GameBoard extends Component {
     let diCards = game.di; 
     let pointCards = game.taiXiaPoints;
     let tableCards = game.currTableCards;
+    let threeCard = '';
+    if (game.shownThree) {
+      threeCard = RanksMap['three']+game.zhu;
+    }
 
+    //set up players in order starting with diopener, and marking wrelevant roles
+    let tablePlayers = [];
+    if (game.statusito == GameStatusitos.PLAYING) {
+      let diOpenerIdx = game.usernameToIndex(game.diOpener);
+      let playerName = '';
+      let role = '';
+      let currPlayer = '';
+      for (var i = 0; i < NumPlayers; i++) {
+        playerName = game.players[(diOpenerIdx + i) % NumPlayers].username;
+        if (playerName == user.username) {
+          role = CurrLang.me;
+        } else if (playerName == Partners[user.username]) {
+          role = CurrLang.partner;
+        } else {
+          role = '';
+        }
+        if (game.usernameToIndex(playerName) == game.getCurrentPlayerIndex()) {
+          currPlayer = CurrLang.currPlayer;
+        } else {
+          currPlayer = '';
+        }
+        tablePlayers.push([playerName, role, currPlayer]);
+      }
+      const tempPlayer = tablePlayers[2];
+      tablePlayers[2] = tablePlayers[3];
+      tablePlayers[3] = tempPlayer;
+    }
 
     return (
       <div className="ui container">
@@ -316,9 +353,9 @@ export default class GameBoard extends Component {
 
         {/* Hand */}
         <div className="row">
-          <div className="column" ref={this.state.containerRef}>
+          <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
-            <div className="handArea" style={{width: this.state.handAreaWidth+'px', height: this.state.handAreaHeight+'px'}}>
+            <div className="handArea">
                 {userCards.map((card, index) => (
                   <MyDrag
                     key={card}
@@ -330,53 +367,80 @@ export default class GameBoard extends Component {
                   />
                 ))}
             </div>
+          </div>
 
-            {/* Di and points */}
-            {(game.statusito == GameStatusitos.DI && game.diOpen && game.diOpener == user.username )? (
+          <div className="column">
+            {/* Table */}
+            <p className="banner"><b>{CurrLang.tableArea}</b></p>
+
+            {(game.statusito == GameStatusitos.PLAYING)? (
+
+              //Played cards
+              <div className="rowTable">
+                {Object.keys(tablePlayers).map((player, index) => (
+                  <div className="tableArea" key={index}>
+                    <p className="tableBanner"><b>{tablePlayers[player].join(" ")}</b></p>
+                    {Object.keys(tableCards).map((card, index) => (
+                      (tableCards[card] == tablePlayers[player][0])? (
+                        (tableCards[card] == user.username)? (
+                          <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                        ): (
+                          <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
+                        )
+                      ):null
+                    ))}
+                  </div>
+                ))}  
+              </div> 
+
+            //Di to find three
+            ): (game.shownThree && !game.retrievedThree) ? (
+              <div className="threeArea">
+                <img src={"/images/" + threeCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, threeCard)}  draggable="false" key={threeCard}></img>
+              </div>
+
+            //Di to find three
+            ): (game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && !game.diOpen) ? (
               <div className="diArea">
-                <p className="banner"><b>{CurrLang.diArea}</b></p>
+                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
+                  {diCards.map((diCard, index) => (
+                    (index < game.threeFromDiCount) ? (
+                      <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+                    ): (
+                      <p key={diCard}></p>
+                    )
+                  ))}
+              </div>
+
+            //Opened di
+            ): (game.statusito == GameStatusitos.DI && game.diOpen && game.diOpener == user.username) ? (
+              <div className="diArea">
+                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
                   {diCards.map((diCard, index) => (
                     <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
                   ))}
               </div>
-            ):null}
-              
-            {(pointCards.length > 0)? (
-              <div className="diArea">
-                <p className="banner"><b>{CurrLang.pointsArea}</b></p>
-                  {pointCards.map((pointCard, index) => (
-                    <img src={"/images/" + pointCard + ".png"} className="handle" draggable="false" key={pointCard}></img>
+
+            //Di during WRAPUP
+            ): (game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED) ? (
+              <div className="diAreaWrapup">
+                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
+                  {diCards.map((diCard, index) => (
+                    <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
                   ))}
               </div>
-            ):null}
-          
-            {(game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED)? (
-            <div className="diArea">
-              <p className="banner"><b>{CurrLang.diArea}</b></p>
-                {diCards.map((diCard, index) => (
-                  <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+            ): null}
+
+            {/* Point cards */}
+            {(game.statusito == GameStatusitos.PLAYING || game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED)? (
+            <div className="pointsArea">
+              <p className="tableBanner"><b>{CurrLang.pointsArea}</b></p>
+                {pointCards.map((pointCard, index) => (
+                  <img src={"/images/" + pointCard + ".png"} className="handle" draggable="false" key={pointCard}></img>
                 ))}
             </div>
-            ):null}
-          </div>
+            ): null}
 
-          {/* Table */}
-          <div className="column">
-            <p className="banner"><b>{CurrLang.tableArea}</b></p>
-            {(game.players).map((player, outerIndex) => (
-              <div className="tableArea" id={player.username} key={outerIndex}>
-                <p className="tableBanner"><b>{player.username}</b></p>
-                {Object.keys(tableCards).map((card, index) => (
-                  (tableCards[card] == player.username)? (
-                    (tableCards[card] == user.username)? (
-                      <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                    ): (
-                      <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
-                    )
-                  ):null
-                ))}
-              </div>
-            ))}
           </div>
         </div>
       </div>
