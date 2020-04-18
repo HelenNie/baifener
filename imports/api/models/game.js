@@ -328,6 +328,7 @@ export class Game {
         this.cardZIndexes[DeckComplete[i]] = 0;
       }
       this.seePrevTableActive = false;
+      this.specialMsg = '';
     }
   }
 
@@ -337,7 +338,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'specialMsg'];
   }
 
 /**
@@ -412,6 +413,7 @@ export class Game {
   userDrawCard(user) {
     if (this.currentPlayerIndex == -1) {
       this.currentPlayerIndex = this.userIdToIndex(user._id);
+      //this.userSpecialMsg(user.username + " drew a card!");
     }
     this.currentPlayerIndex = (this.currentPlayerIndex+1) % NumPlayers;
 

@@ -29,7 +29,7 @@ export default class GameList extends Component {
 
   myCurrentGameId() {
     let game = _.find(this.activeGames(), (game) => {
-      return game.userIdToIndex(this.props.user) !== null;
+      return game.userIdToIndex(this.props.user._id) !== null;
     });
     return game === undefined? null: game._id;
   }
@@ -113,7 +113,11 @@ export default class GameList extends Component {
           <div>
             <button className="ui green button" onClick={this.handleNewGame.bind(this)}>{CurrLang.newGame}</button>
           </div>
-        ): null}
+        ): (
+          <div>
+            <button className="ui green button" onClick={this.handleNewGame.bind(this)} disabled>{CurrLang.newGame}</button>
+          </div>
+        )}
       </div>
     </div>
     )
