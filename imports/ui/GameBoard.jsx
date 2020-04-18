@@ -301,7 +301,13 @@ export default class GameBoard extends Component {
             (userIsCurrPlayer || game.getCurrentPlayerIndex() == -1) ? (
               <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
             ): (
-              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
+            <div>
+              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
+              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>disabled button</button>
+              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)}>disabled class</button>
+              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)} disabled>disabled button and class</button>
+              <button className="ui button blue" id="test" onClick={this.handleDrawCard.bind(this)} disabled>disabled button with opacity</button>
+            </div>
             )
           ): null}
 
