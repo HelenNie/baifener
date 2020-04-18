@@ -102,7 +102,7 @@ export const Langs = {
   }
 }
 
-export const CurrLang = Langs.CHINESE;
+export const CurrLang = Langs.ENGLISH;
 
 
 export default class GameBoard extends Component {
@@ -301,9 +301,7 @@ export default class GameBoard extends Component {
             (userIsCurrPlayer || game.getCurrentPlayerIndex() == -1) ? (
               <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
             ): (
-            <div>
               <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
-            </div>
             )
           ): null}
 
