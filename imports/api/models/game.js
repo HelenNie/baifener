@@ -92,7 +92,7 @@ export const TestStates = {
     statusito: GameStatusitos.DI,
     currentPlayerIndex: -1,
     deck: DeckNoDi,
-    di: ["KC", "KD", "KH", "KS", "OA", "3H"],
+    di: ["KC", "KD", "KH", "KS", "3H", "OA"],
     currTableCards: {},
     prevTableCards: {},
     diOpen: false,
@@ -437,6 +437,7 @@ export class Game {
       this.hands[user.username].splice(index, 1);
       this.zhu = card.slice(-1);
       this.threeShower = user.username;
+      this.currTableCards[card] = this.threeShower;
       this.shownThree = true;
 
       this.userSetCardLoc(card, 0, 0);
@@ -449,6 +450,7 @@ export class Game {
         return;
       }
       this.hands[user.username].push(card);
+      delete this.currTableCards[card];
       this.retrievedThree = true;
 
       this.cardZIndexes[card] = ++this.highestZIndex;
@@ -498,8 +500,10 @@ export class Game {
       }
 
       //retrieve 3 if still on table
-      if (this.showedThree && !this.retrievedThree) {
+      if (this.shownThree && !this.retrievedThree) {
         var three = RanksMap['three']+this.zhu;
+        console.log(three);
+        delete this.currTableCards[three];
         this.hands[this.threeShower].push(three);
         this.retrievedThree = true;
         this.cardZIndexes[three] = ++this.highestZIndex;
@@ -607,7 +611,9 @@ export class Game {
 
     if (this.turnCycleCount % NumPlayers == 0) {
       this.currentPlayerIndex = -1;
-      this.collectPointsActive = true;
+      if (this.userPointsOnTable()) {
+        this.collectPointsActive = true;
+      }
       this.clearTableActive = true;
       this.prevTableCards = this.currTableCards;
     }
@@ -621,8 +627,12 @@ export class Game {
     this.seePrevTableActive = true;
     if (this.hands[user.username].length == 0 && this.currentPlayerIndex == -1) {
       this.statusito = GameStatusitos.WRAPUP;
-      this.collectPointsActive = true;
       this.seePrevTableActive = false;
+      if (this.userPointsInDi()) {
+        this.collectPointsActive = true;
+      } else {
+        this.userEndGame();
+      }
     }
     console.log("Table cleared");
   }
@@ -656,6 +666,27 @@ export class Game {
     this.clearTableActive = true;
 
     console.log("See previous table");
+  }
+
+  userPointsOnTable() {
+    var pointCards = [RanksMap['five'], RanksMap['ten'], RanksMap['king']];
+    var tableCards = Object.keys(this.currTableCards);
+    for (var i = 0; i < tableCards.length; i++) {
+      if (pointCards.indexOf(tableCards[i].charAt(0)) >= 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  userPointsInDi() {
+    var pointCards = [RanksMap['five'], RanksMap['ten'], RanksMap['king']];
+    for (var i = 0; i < this.di.length; i++) {
+      if (pointCards.indexOf(this.di[i].charAt(0)) >= 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   userSetCardLoc(card, x, y) {

@@ -126,5 +126,11 @@ export let GamesController = {
     let game = Games.findOne(gameId);
     game.userEndGame();
     Games.saveGame(game);
+  },
+
+  userPointsOnTableGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userPointsOnTable();
+    Games.saveGame(game);
   }
 }

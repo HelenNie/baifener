@@ -217,3 +217,13 @@ export const userEndGameGame = new ValidatedMethod({
     GamesController.userEndGameGame(gameId, Meteor.user());
   }
 });
+
+export const userPointsOnTableGame = new ValidatedMethod({
+  name: 'games.userPointsOnTableGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userPointsOnTableGame(gameId, Meteor.user());
+  }
+});

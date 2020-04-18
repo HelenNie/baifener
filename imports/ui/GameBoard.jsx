@@ -6,7 +6,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -28,7 +28,7 @@ export const Langs = {
     startPlaying: '开始',
     finishTurn: '结束出牌',
     clearTable: '清空',
-    collectPoints: '拿分',
+    collectPoints: '台下拿分',
     seePrevTable: '看上一局',
     handArea: '我的牌',
     diArea: '底',
@@ -73,7 +73,7 @@ export const Langs = {
     startPlaying: 'Start',
     finishTurn: 'End Turn',
     clearTable: 'Clear Table',
-    collectPoints: 'Collect Points',
+    collectPoints: 'Underdogs Collect Points',
     seePrevTable: 'See previous round',
     handArea: 'HAND',
     diArea: 'Bottom-6',
@@ -204,7 +204,6 @@ export default class GameBoard extends Component {
     if (currentPlayerIndex == -1 || currentPlayerIndex == null) {
       currPlayerStatus = "-";
     } else {
-      console.log(currentPlayerIndex);
       currPlayerStatus = game.players[currentPlayerIndex].username;
     }
 
@@ -256,11 +255,28 @@ export default class GameBoard extends Component {
 
     //set up players in order starting with diopener, and marking wrelevant roles
     let tablePlayers = [];
-    if (game.statusito == GameStatusitos.PLAYING) {
+    let playerName = '';
+    let role = '';
+    let currPlayer = '';
+    if (game.diopener == '') {
+      for (var i = 0; i < NumPlayers; i++) {
+        playerName = game.players[i].username;
+        if (playerName == user.username) {
+          role = CurrLang.me;
+        } else if (playerName == Partners[user.username]) {
+          role = CurrLang.partner;
+        } else {
+          role = '';
+        }
+        if (game.usernameToIndex(playerName) == game.getCurrentPlayerIndex()) {
+          currPlayer = CurrLang.currPlayer;
+        } else {
+          currPlayer = '';
+        }
+        tablePlayers.push([playerName, role, currPlayer]);
+      }
+    } else {
       let diOpenerIdx = game.usernameToIndex(game.diOpener);
-      let playerName = '';
-      let role = '';
-      let currPlayer = '';
       for (var i = 0; i < NumPlayers; i++) {
         playerName = game.players[(diOpenerIdx + i) % NumPlayers].username;
         if (playerName == user.username) {
@@ -277,10 +293,11 @@ export default class GameBoard extends Component {
         }
         tablePlayers.push([playerName, role, currPlayer]);
       }
-      const tempPlayer = tablePlayers[2];
-      tablePlayers[2] = tablePlayers[3];
-      tablePlayers[3] = tempPlayer;
     }
+
+    const tempPlayer = tablePlayers[2];
+    tablePlayers[2] = tablePlayers[3];
+    tablePlayers[3] = tempPlayer;
 
     return (
       <div className="ui container">
@@ -373,34 +390,8 @@ export default class GameBoard extends Component {
             {/* Table */}
             <p className="banner"><b>{CurrLang.tableArea}</b></p>
 
-            {(game.statusito == GameStatusitos.PLAYING)? (
-
-              //Played cards
-              <div className="rowTable">
-                {Object.keys(tablePlayers).map((player, index) => (
-                  <div className="tableArea" key={index}>
-                    <p className="tableBanner"><b>{tablePlayers[player].join(" ")}</b></p>
-                    {Object.keys(tableCards).map((card, index) => (
-                      (tableCards[card] == tablePlayers[player][0])? (
-                        (tableCards[card] == user.username)? (
-                          <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                        ): (
-                          <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
-                        )
-                      ):null
-                    ))}
-                  </div>
-                ))}  
-              </div> 
-
-            //Di to find three
-            ): (game.shownThree && !game.retrievedThree) ? (
-              <div className="threeArea">
-                <img src={"/images/" + threeCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, threeCard)}  draggable="false" key={threeCard}></img>
-              </div>
-
-            //Di to find three
-            ): (game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && !game.diOpen) ? (
+            {/* Di to find three */}
+            {(game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && !game.diOpen) ? (
               <div className="diArea">
                 <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
                   {diCards.map((diCard, index) => (
@@ -429,9 +420,28 @@ export default class GameBoard extends Component {
                     <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
                   ))}
               </div>
-            ): null}
 
-            {/* Point cards */}
+            ): (
+
+              //Played cards
+              <div className="rowTable">
+                {Object.keys(tablePlayers).map((player, index) => (
+                  <div className="tableArea" key={index}>
+                    <p className="tableBanner"><b>{tablePlayers[player].join(" ")}</b></p>
+                    {Object.keys(tableCards).map((card, index) => (
+                      (tableCards[card] == tablePlayers[player][0])? (
+                        (tableCards[card] == user.username)? (
+                          <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                        ): (
+                          <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
+                        )
+                      ):null
+                    ))}
+                  </div>
+                ))}  
+              </div>
+            )}
+
             {(game.statusito == GameStatusitos.PLAYING || game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED)? (
             <div className="pointsArea">
               <p className="tableBanner"><b>{CurrLang.pointsArea}</b></p>
