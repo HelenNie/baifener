@@ -302,11 +302,7 @@ export default class GameBoard extends Component {
               <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
             ): (
             <div>
-              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
-              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>disabled button</button>
-              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)}>disabled class</button>
-              <button className="ui disabled button blue" onClick={this.handleDrawCard.bind(this)} disabled>disabled button and class</button>
-              <button className="ui button blue" id="test" onClick={this.handleDrawCard.bind(this)} disabled>disabled button with opacity</button>
+              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
             </div>
             )
           ): null}
