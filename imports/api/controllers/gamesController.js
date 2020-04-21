@@ -32,9 +32,9 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userOpenCloseDiGame(gameId, user) {
+  userOpenDiGame(gameId, user) {
     let game = Games.findOne(gameId);
-    game.userOpenCloseDi(user);
+    game.userOpenDi(user);
     Games.saveGame(game);
   },
 

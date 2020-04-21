@@ -48,13 +48,13 @@ export const userDrawFirstGame = new ValidatedMethod({
   }
 });
 
-export const userOpenCloseDiGame = new ValidatedMethod({
-  name: 'games.userOpenCloseDiGame',
+export const userOpenDiGame = new ValidatedMethod({
+  name: 'games.userOpenDiGame',
   validate: new SimpleSchema({
     gameId: {type: String},
   }).validator(),
   run({gameId}) {
-    GamesController.userOpenCloseDiGame(gameId, Meteor.user());
+    GamesController.userOpenDiGame(gameId, Meteor.user());
   }
 });
 

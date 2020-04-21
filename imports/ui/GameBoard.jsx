@@ -6,7 +6,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userDrawFirstGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userDrawFirstGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -138,9 +138,9 @@ export default class GameBoard extends Component {
     userDrawFirstGame.call({gameId: game._id});
   }
 
-  handleOpenCloseDi() {
+  handleOpenDi() {
     let game = this.props.game;
-    userOpenCloseDiGame.call({gameId: game._id});
+    userOpenDiGame.call({gameId: game._id});
   }
 
   handleCardMigration(card) {
@@ -221,13 +221,7 @@ export default class GameBoard extends Component {
       zhuStatus = CurrLang.suits[game.zhu];
     }    
 
-    if (game.specialMsg != '') {
-      return (
-        <div className="ui attached center aligned segment">
-          <p><b>{game.specialMsg}</b></p>
-        </div>
-      )
-    } else if (game.status === GameStatuses.STARTED) {
+    if (game.status === GameStatuses.STARTED) {
       return (
         <div className="ui attached center aligned segment">
           <p><b>{CurrLang.stage}:</b> {CurrLang.statusito[game.statusito]}</p>
@@ -253,6 +247,7 @@ export default class GameBoard extends Component {
     let game = this.props.game;
     let user = this.props.user;
     let userIsCurrPlayer = false;
+    let handAreaStyle = {};
     if (game.userIdToIndex(user._id) == game.getCurrentPlayerIndex()) {
       userIsCurrPlayer = true;
     }
@@ -264,6 +259,11 @@ export default class GameBoard extends Component {
     let threeCard = '';
     if (game.shownThree) {
       threeCard = RanksMap['three']+game.zhu;
+    }
+
+    if (userIsCurrPlayer && game.statusito != GameStatusitos.DI) {
+      userIsCurrPlayer = true;
+      handAreaStyle['backgroundColor'] = "gold";
     }
 
     //set up players in order starting with diopener, and marking relevant roles
@@ -319,7 +319,7 @@ export default class GameBoard extends Component {
           ): null}
 
           {(game.statusito == GameStatusitos.DI) ? (
-            (!game.shownThree && !game.threeFromDiDone)? (
+            (!game.shownThree)? (
               <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}</button>
             ): (
               <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)} disabled>{CurrLang.openDiForThree}</button>
@@ -327,15 +327,15 @@ export default class GameBoard extends Component {
           ): null}
 
           {(game.statusito == GameStatusitos.DI) ? (
-            ((game.diOpener == user.username || !game.diOpened) && (game.shownThree || game.threeFromDiDone) && !game.diOpen) ? (
-              <button className="ui button blue" onClick={this.handleOpenCloseDi.bind(this)}>{CurrLang.openDi}</button>
+            (game.diOpener == '' && game.shownThree) ? (
+              <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
             ): (
-              <button className="ui button blue" onClick={this.handleOpenCloseDi.bind(this)} disabled>{CurrLang.openDi}</button>
+              <button className="ui button blue" onClick={this.handleOpenDi.bind(this)} disabled>{CurrLang.openDi}</button>
             )
           ): null}
 
           {(game.statusito == GameStatusitos.DI) ? (
-            (game.diOpener == user.username && game.diOpened)? (
+            (game.diOpener == user.username)? (
               <button className="ui button red" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>
             ): (
               <button className="ui button red" onClick={this.handleStartGame.bind(this)} disabled>{CurrLang.startPlaying}</button>
@@ -395,7 +395,7 @@ export default class GameBoard extends Component {
           ): null}
 
           {(game.statusito != GameStatusitos.FINISHED)? (
-              <button className="ui button black" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
+              <button className="ui button red" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
           ):null}
 
         </div>
@@ -407,7 +407,7 @@ export default class GameBoard extends Component {
         <div className="row">
           <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
-            <div className="handArea">
+            <div className="handArea" style={handAreaStyle}>
                 {userCards.map((card, index) => (
                   <MyDrag
                     key={card}
@@ -423,44 +423,49 @@ export default class GameBoard extends Component {
 
           <div className="column" id="dummyColumn1"></div>
 
-          <div className="column" id="tableColumn">
-            {/* Table */}
-            <p className="banner"><b>{CurrLang.tableArea}</b></p>
+          
 
-            {/* Di to find three */}
-            {(game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && !game.diOpen) ? (
+          {/* Di to find three */}
+          {(game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && game.diOpener == '') ? (
+            <div className="column" id="tableColumn">
+              <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diArea">
-                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
-                  {diCards.map((diCard, index) => (
-                    (index < game.threeFromDiCount) ? (
-                      <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
-                    ): (
-                      <p key={diCard}></p>
-                    )
-                  ))}
+                {diCards.map((diCard, index) => (
+                  (index < game.threeFromDiCount) ? (
+                    <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+                  ): (
+                    <p key={diCard}></p>
+                  )
+                ))}
               </div>
+            </div>
 
-            //Opened di
-            ): (game.statusito == GameStatusitos.DI && game.diOpen && game.diOpener == user.username) ? (
+          //Opened di
+          ): (game.statusito == GameStatusitos.DI && game.diOpener == user.username) ? (
+            <div className="column" id="tableColumn">
+              <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diArea">
-                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
-                  {diCards.map((diCard, index) => (
-                    <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
-                  ))}
+                {diCards.map((diCard, index) => (
+                  <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
+                ))}
               </div>
+            </div>
 
-            //Di during WRAPUP
-            ): (game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED) ? (
+          //Di during WRAPUP
+          ): (game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED) ? (
+            <div className="column" id="tableColumn">
+              <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diAreaWrapup">
-                <p className="tableBanner"><b>{CurrLang.diArea}</b></p>
                   {diCards.map((diCard, index) => (
                     <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
                   ))}
               </div>
+            </div>
+          ): (
 
-            ): (
-
-              //Played cards
+            //Played cards
+            <div className="column" id="tableColumn">
+              <p className="banner"><b>{CurrLang.tableArea}</b></p>
               <div className="rowTable">
 
                 {Object.keys(tablePlayers).map((player, index) => (
@@ -483,8 +488,8 @@ export default class GameBoard extends Component {
                 ): null}
 
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="column" id="dummyColumn2"></div>
         

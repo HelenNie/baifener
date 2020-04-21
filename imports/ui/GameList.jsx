@@ -95,7 +95,7 @@ export default class GameList extends Component {
 
                   {/* can enter only if the game is started */}
                   {game.status === GameStatuses.STARTED? (
-                    <button className="ui blue button" onClick={this.handleEnterGame.bind(this, game._id)}>{CurrLang.enterGame}</button>
+                    <button className="ui green button" onClick={this.handleEnterGame.bind(this, game._id)}>{CurrLang.enterGame}</button>
                   ): null}
 
                   {/* just a invisible dummy button to make up the space */}

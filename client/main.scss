@@ -1,5 +1,8 @@
+/* Master levels */
+
 body {
     height: 95vh;
+    background-image: url("/images/wood_light.jpg");
 }
 
 #render-target {
@@ -13,8 +16,30 @@ body {
     height: 100%;
 }
 
+
+/* LoginForm levels */
+
+.ui.segment {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+
+/* GameList levels */
+
+.ui.attached.segment {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.ui.top.attached.header {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+
+/* GameBoard levels */
+
 .ui.attached.center.aligned.segment {
     height: 110px;
+    background: rgba(255, 255, 255, 0.75);
 }
 
 .row {
@@ -84,7 +109,7 @@ body {
 
 .diArea {
     width: 100%;
-    height: 90%;
+    height: 85%;
     position: relative;
     padding: 2%;
     background-color: peachpuff;
@@ -94,7 +119,7 @@ body {
 
 .diAreaWrapup {
     width: 100%;
-    height: 90%;
+    height: 85%;
     position: relative;
     padding: 2%;
     background-color: peachpuff;

@@ -54,7 +54,7 @@ export default class LoginForm extends Component {
                 <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={CurrLang.enterYourName}/>
               </div>
               <div className="field">
-                <input className="ui button" type="submit" value={CurrLang.logIn}/>
+                <input className="ui green button" type="submit" value={CurrLang.logIn}/>
               </div>
             </div>
           </form>
