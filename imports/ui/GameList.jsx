@@ -85,7 +85,7 @@ export default class GameList extends Component {
                 <div className="extra content">
                   {/* can leave only if user is in the game, and the game is not started */}
                   {this.myCurrentGameId() === game._id && game.status === GameStatuses.WAITING? (
-                    <button className="ui red button" onClick={this.handleLeaveGame.bind(this, game._id)}>{CurrLang.logOut}</button>
+                    <button className="ui red button" onClick={this.handleLeaveGame.bind(this, game._id)}>{CurrLang.leaveGame}</button>
                   ): null}
 
                   {/* can join only if user is not in any game, and the game is not started */}

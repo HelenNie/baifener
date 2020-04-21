@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
-import GameBoard from './GameBoard.jsx';
 
-
-import GameHeader from './GameHeader.jsx';
-import {Game} from '../api/models/game.js';
 import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
 
 export default class MyDrag extends React.Component {

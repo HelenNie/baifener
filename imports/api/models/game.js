@@ -269,7 +269,7 @@ export const TestStates = {
   }
 }
 
-export const CurrTestState = TestStates.REAL;
+export const CurrTestState = TestStates.TEST_DRAWING;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -328,7 +328,9 @@ export class Game {
         this.cardZIndexes[DeckComplete[i]] = 0;
       }
       this.seePrevTableActive = false;
+      this.seeingPrevTable = false;
       this.specialMsg = '';
+      this.diOriginal = this.di;
     }
   }
 
@@ -338,7 +340,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'specialMsg'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'diOpen', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiDone', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'diOpened', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'specialMsg', 'seeingPrevTable', 'diOriginal'];
   }
 
 /**
@@ -410,11 +412,11 @@ export class Game {
     }
   }
 
+  userDrawFirst(user) {
+    this.currentPlayerIndex = this.userIdToIndex(user._id);
+  }
+
   userDrawCard(user) {
-    if (this.currentPlayerIndex == -1) {
-      this.currentPlayerIndex = this.userIdToIndex(user._id);
-      //this.userSpecialMsg(user.username + " drew a card!");
-    }
     this.currentPlayerIndex = (this.currentPlayerIndex+1) % NumPlayers;
 
     let card = this.deck[this.nextCard];
@@ -627,6 +629,7 @@ export class Game {
     this.clearTableActive = false;
     this.collectPointsActive = false;
     this.seePrevTableActive = true;
+    this.seeingPrevTable = false;
     if (this.hands[user.username].length == 0 && this.currentPlayerIndex == -1) {
       this.statusito = GameStatusitos.WRAPUP;
       this.seePrevTableActive = false;
@@ -664,6 +667,7 @@ export class Game {
 
   userSeePrevTable() {
     this.currTableCards = this.prevTableCards;
+    this.seeingPrevTable = true;
     this.seePrevTableActive = false;
     this.clearTableActive = true;
 
@@ -710,6 +714,20 @@ export class Game {
     this.statusito = GameStatusitos.FINISHED;
 
     this.currTableCards = {};
+
+    //Restore original di if diopener is in the middle of switching out
+    if (this.di.length != DiLength) {
+      this.di = this.diOriginal;
+      var card;
+      var index;
+      for (var i = this.hands[this.diOpener].length - 1; i >= 0; i--) {
+        card = this.hands[this.diOpener][i];
+        index = this.di.indexOf(card);
+        if (index > -1) {
+          this.hands[this.diOpener].splice(index, 1);
+        }
+      }
+    }
   }
 
  /**

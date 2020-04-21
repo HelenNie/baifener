@@ -5,7 +5,7 @@ body {
 #render-target {
     height: 100%;
     width: 100%;
-    min-height: 600px;
+    min-height: 660px;
     min-width: 1300px;
 }
 
@@ -13,16 +13,46 @@ body {
     height: 100%;
 }
 
+.ui.attached.center.aligned.segment {
+    height: 110px;
+}
+
 .row {
-    height: 90%;
+    height: 77%;
+    padding: 1%;
 }
 
 .column {
     float: left;
-    width: 50%;
+    width: 49%;
     height: 100%;
     position: relative;
-    padding: 10px;
+    padding: 1%;
+    border-radius: 15px;
+    border: 1px solid black;
+    background-color: honeydew;
+}
+
+#dummyColumn1 {
+    width: 2%;
+    padding: 0%;
+    border: 0px solid black;
+    background-color: transparent;
+}
+
+#tableColumn {
+    height: 67%;
+}
+
+#dummyColumn2 {
+    height: 2%;
+    padding: 0%;
+    border: 0px solid black;
+    background-color: transparent;
+}
+
+#pointsColumn {
+    height: 31%;
 }
 
 /* Clear floats after the columns */
@@ -33,71 +63,84 @@ body {
 }
 
 .banner {
-    height: 5%;
+    height: 20px;
     position: relative;
     font-size: 20px;
+    text-align: center;
 }
 
 .handArea {
     width: 100%;
-    height: 75%;
+    height: 91%;
     position: relative;
-    padding: 10px;
-    background-color: #CE84AD;
-    border-radius: 15px;
+    padding: 2%;
+    background-color: tomato;
+    border-radius: 5px;
 }
 
 .rowTable {
-    height: 50%;
+    height: 90%;
 }
 
 .diArea {
     width: 100%;
-    height: 75%;
+    height: 90%;
     position: relative;
-    padding: 10px;
-    background-color: #4A7856;
+    padding: 2%;
+    background-color: peachpuff;
     text-align: center;
     border-radius: 15px;
 }
 
 .diAreaWrapup {
     width: 100%;
-    height: 50%;
+    height: 90%;
     position: relative;
-    padding: 10px;
-    background-color: #4A7856;
+    padding: 2%;
+    background-color: peachpuff;
     text-align: center;
     border-radius: 15px;
 }
 
 .dummyArea {
-    height: 2%;
+    height: 5%;
 }
 
 .pointsArea {
     width: 100%;
-    height: 23%;
+    height: 67%;
     position: relative;
-    padding: 10px;
+    padding: 1%;
     text-align: center;
-    background-color: #CDC776;
-    border-radius: 15px;
+    background-color: floralwhite;
+    border: 1px dashed gray;
+    border-radius: 5px;
 }
 
 .tableArea {
     float: left;
     width: 50%;
-    height: 50%;
+    height: 48%;
     position: relative;
-    padding: 10px;
+    padding: 2%;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 5px;
+}
+
+.rowTableShadow{
+    width: 100%;
+    height: 96%;
+    position: relative;
+    bottom: 0px;
+    left: 0px;
+    background-color: black;
+    border-radius: 5px;
+    opacity: 50%;
 }
 
 .tableBanner {
     width: 100%;
-    height: 18%;
+    height: 15px;
     position: relative;
 }
 

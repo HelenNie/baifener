@@ -26,6 +26,12 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
+  userDrawFirstGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userDrawFirst(user);
+    Games.saveGame(game);
+  },
+
   userOpenCloseDiGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userOpenCloseDi(user);
