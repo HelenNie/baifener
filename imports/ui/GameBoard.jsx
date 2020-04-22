@@ -1,12 +1,13 @@
 import React, { Component, componentDidMount } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
+import ReactModal from 'react-modal';
 import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userDrawFirstGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -128,19 +129,29 @@ export default class GameBoard extends Component {
     userStartGameGame.call({gameId: game._id});
   }
 
+  handleSetFirstDrawer() {
+    let game = this.props.game;
+    userSetFirstDrawerGame.call({gameId: game._id});
+  }
+
   handleDrawCard() {
     let game = this.props.game;
     userDrawCardGame.call({gameId: game._id});
   }
 
-  handleDrawFirst() {
-    let game = this.props.game;
-    userDrawFirstGame.call({gameId: game._id});
-  }
-
   handleOpenDi() {
     let game = this.props.game;
     userOpenDiGame.call({gameId: game._id});
+  }
+
+  handleConfirmOpenDi() {
+    let game = this.props.game;
+    userConfirmOpenDiGame.call({gameId: game._id});
+  }
+
+  handleCancelOpenDi() {
+    let game = this.props.game;
+    userCancelOpenDiGame.call({gameId: game._id});
   }
 
   handleCardMigration(card) {
@@ -299,20 +310,33 @@ export default class GameBoard extends Component {
       <div className="ui container">
         <GameHeader user={user}/>
 
+        <ReactModal
+          isOpen = {game.modalOpen.drawFirst}
+          className = "modal"
+          overlayClassName = "overlay"
+          ariaHideApp={false}>
+          <br></br>
+          <p className="modalBanner">Let's get started!</p>
+          <br></br>
+          <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
+        </ReactModal>
+
+        <ReactModal
+          isOpen = {game.modalOpen.openDi && game.modalOpenDiUser == user.username}
+          className = "modal"
+          overlayClassName = "overlay"
+          ariaHideApp={false}>
+          <br></br>
+          <p className="modalBanner">Are you ready to open the kitty?</p>
+          <br></br>
+          <button className="ui green button" onClick={this.handleConfirmOpenDi.bind(this)}>Meow!</button>
+          <button className="ui green button" onClick={this.handleCancelOpenDi.bind(this)}>Nope</button>
+        </ReactModal>
+
         {/* Buttons */}
         <div className="buttons">
           {/* ALWAYS SHOWN buttons */}
           <button className="ui button black" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
-
-          {(game.statusito == GameStatusitos.DRAWING) ? (
-            (game.getCurrentPlayerIndex() == -1) ? (
-              <button className="ui button blue" onClick={this.handleDrawFirst.bind(this)}>Draw First</button>
-            ): (userIsCurrPlayer) ? (
-              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
-            ): (
-              <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
-            )
-          ): null}
 
           {(game.statusito == GameStatusitos.DI) ? (
             <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
@@ -407,6 +431,13 @@ export default class GameBoard extends Component {
         <div className="row">
           <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
+            {(game.statusito == GameStatusitos.DRAWING) ? (
+              (userIsCurrPlayer) ? (
+                <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
+              ): (
+                <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
+              )
+            ): null}
             <div className="handArea" style={handAreaStyle}>
                 {userCards.map((card, index) => (
                   <MyDrag
@@ -418,6 +449,9 @@ export default class GameBoard extends Component {
                     zIndex={game.cardZIndexes[card]}
                   />
                 ))}
+            </div>
+            <div className="landingArea">
+              <p className="landingText">Card</p>
             </div>
           </div>
 

@@ -38,16 +38,6 @@ export const userDrawCardGame = new ValidatedMethod({
   }
 });
 
-export const userDrawFirstGame = new ValidatedMethod({
-  name: 'games.userDrawFirstGame',
-  validate: new SimpleSchema({
-    gameId: {type: String},
-  }).validator(),
-  run({gameId}) {
-    GamesController.userDrawFirstGame(gameId, Meteor.user());
-  }
-});
-
 export const userOpenDiGame = new ValidatedMethod({
   name: 'games.userOpenDiGame',
   validate: new SimpleSchema({
@@ -235,5 +225,35 @@ export const userPointsOnTableGame = new ValidatedMethod({
   }).validator(),
   run({gameId}) {
     GamesController.userPointsOnTableGame(gameId, Meteor.user());
+  }
+});
+
+export const userSetFirstDrawerGame = new ValidatedMethod({
+  name: 'games.userSetFirstDrawerGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userSetFirstDrawerGame(gameId, Meteor.user());
+  }
+});
+
+export const userConfirmOpenDiGame = new ValidatedMethod({
+  name: 'games.userConfirmOpenDiGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userConfirmOpenDiGame(gameId, Meteor.user());
+  }
+});
+
+export const userCancelOpenDiGame = new ValidatedMethod({
+  name: 'games.userCancelOpenDiGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userCancelOpenDiGame(gameId, Meteor.user());
   }
 });

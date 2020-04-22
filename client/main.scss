@@ -103,6 +103,23 @@ body {
     border-radius: 5px;
 }
 
+.landingArea {
+    position: relative;
+    width: 56px;
+    height: 76px;
+    bottom: 89%;
+    left: 98%;
+    transform: translate(-55px);
+    border: 3px dashed black;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+}
+
+.landingText {
+    transform: translate(0px, 25px);
+}
+
 .rowTable {
     height: 90%;
 }
@@ -171,4 +188,45 @@ body {
 
 .handle {
 	cursor: pointer;
+}
+
+.modal {
+    position: absolute;
+    width: 500px;
+    height: 250px;
+    top: 57%;
+    left: 50%;
+    margin-left: -250px;
+    margin-top: -125px;
+    background-color: orange;
+    border: 5px solid orange;
+    text-align: center;
+    z-index: 10000;
+}
+
+.modal:focus {
+  outline: none;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 10000;
+}
+
+.modalBanner {
+    height: 20px;
+    position: relative;
+    font-size: 20px;
+    text-align: center;
+}
+
+.ui.button.blue.corner {
+    position: absolute;
+    top: 7px;
+    left: 500px;
 }

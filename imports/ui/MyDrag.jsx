@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 
+import {ZIndexBase} from '../api/models/game.js';
 import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
+
 
 export default class MyDrag extends React.Component {
 
@@ -52,7 +54,7 @@ export default class MyDrag extends React.Component {
   handleBringToFront = (e) => {
     var myZ = Number(e.currentTarget.style.zIndex);
     var highestZ = this.props.game.userGetHighestZIndex();
-    if (myZ < highestZ || highestZ == 0) {
+    if (myZ < highestZ || highestZ == ZIndexBase) {
       e.currentTarget.style.zIndex = highestZ + 1;
       userSetZIndexGame.call({gameId: this.props.game._id, card: this.props.card, z:Number(e.currentTarget.style.zIndex)});  
     }

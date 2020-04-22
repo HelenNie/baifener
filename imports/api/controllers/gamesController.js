@@ -26,12 +26,6 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userDrawFirstGame(gameId, user) {
-    let game = Games.findOne(gameId);
-    game.userDrawFirst(user);
-    Games.saveGame(game);
-  },
-
   userOpenDiGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userOpenDi(user);
@@ -138,5 +132,23 @@ export let GamesController = {
     let game = Games.findOne(gameId);
     game.userPointsOnTable();
     Games.saveGame(game);
-  }
+  },
+
+  userSetFirstDrawerGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userSetFirstDrawer(user);
+    Games.saveGame(game);
+  },
+
+  userConfirmOpenDiGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userConfirmOpenDi(user);
+    Games.saveGame(game);
+  },
+
+  userCancelOpenDiGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userCancelOpenDi();
+    Games.saveGame(game);
+  },
 }

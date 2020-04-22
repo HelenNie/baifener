@@ -29,7 +29,10 @@ export const RanksMap = {'three':'3', 'five':'5', 'ten':'T', 'king':'K', 'joker'
 export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"]
 export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()})
 export const DiLength = 6;
-export const Di = DeckNoDi.splice(0, DiLength)
+export const Di = DeckNoDi.splice(0, DiLength);
+
+export const CardLandingLoc = {x: 522, y: 0};
+export const ZIndexBase = 2;
 
 export const TestStates = {
   REAL: {
@@ -245,7 +248,7 @@ export const TestStates = {
   }
 }
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -294,14 +297,17 @@ export class Game {
       }
       this.currCycleNumCards = 0;
       this.currTurnNumCards = 0;
-      this.highestZIndex = 0;
+      this.highestZIndex = ZIndexBase;
       this.cardZIndexes = {};
       for (var i = 0; i < DeckComplete.length; i++) {
-        this.cardZIndexes[DeckComplete[i]] = 0;
+        this.cardZIndexes[DeckComplete[i]] = ZIndexBase;
       }
       this.seePrevTableActive = false;
       this.seeingPrevTable = false;
       this.diOriginal = this.di;
+
+      this.modalOpen = {drawFirst: true, openDi: false};
+      this.modalOpenDiUser = '';
     }
   }
 
@@ -311,7 +317,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal', 'modalOpen', 'modalOpenDiUser'];
   }
 
 /**
@@ -383,8 +389,9 @@ export class Game {
     }
   }
 
-  userDrawFirst(user) {
+  userSetFirstDrawer(user) {
     this.currentPlayerIndex = this.userIdToIndex(user._id);
+    this.modalOpen.drawFirst = false;
   }
 
   userDrawCard(user) {
@@ -392,6 +399,8 @@ export class Game {
 
     let card = this.deck[this.nextCard];
     this.hands[user.username].push(card);
+    this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
+
     console.log(user.username, " drew: ", card);
 
     this.nextCard = this.nextCard + 1;
@@ -415,7 +424,7 @@ export class Game {
       this.currTableCards[card] = this.threeShower;
       this.shownThree = true;
 
-      this.userSetCardLoc(card, 0, 0);
+      this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
 
       console.log(user.username + " liang " + card);
 
@@ -463,7 +472,19 @@ export class Game {
   }
 
   userOpenDi(user) {
+    this.modalOpen.openDi = true;
+    this.modalOpenDiUser = user.username;
+  }
+
+  userCancelOpenDi() {
+    this.modalOpen.openDi = false;
+    this.modalOpenDiUser = '';
+  }
+
+  userConfirmOpenDi(user) {
     this.diOpener = user.username;
+    this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
+    this.modalOpen.openDi = false;
 
     //Set who underdogs are based on diOpener
     var topDogs = [this.diOpener, Partners[this.diOpener]];
@@ -483,8 +504,6 @@ export class Game {
       this.cardZIndexes[three] = ++this.highestZIndex;
       console.log("Three retrieved");
     }
-
-    this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
   }
 
   userSwapHandAndDi(user,card) {
@@ -502,7 +521,7 @@ export class Game {
         var index = this.hands[user.username].indexOf(card);
         this.hands[user.username].splice(index, 1);
         this.di.push(card);
-        this.userSetCardLoc(card, 0, 0);
+        this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
       }
     } else {
       console.log("You're not di opener");
@@ -510,7 +529,7 @@ export class Game {
   }
 
   userCardMigration(user, card) {
-    if (this.statusito == GameStatusitos.DRAWING || (this.statusito == GameStatusitos.DI && !this.shownThree)) {
+    if (this.statusito == GameStatusitos.DRAWING || (this.statusito == GameStatusitos.DI && !this.retrievedThree)) {
       this.userShowOrRetrieveThree(user, card);
     } else if (this.statusito == GameStatusitos.DI && this.diOpener != '') {
       this.userSwapHandAndDi(user, card);
@@ -553,7 +572,7 @@ export class Game {
         var index = this.hands[user.username].indexOf(card);
         this.hands[user.username].splice(index, 1);
         this.currTableCards[card] = user.username;
-        this.userSetCardLoc(card, 0, 0);
+        this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
         this.currTurnNumCards++;
         console.log(user.username, " played card");
       } else {
