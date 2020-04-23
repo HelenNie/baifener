@@ -248,7 +248,7 @@ export const TestStates = {
   }
 }
 
-export const CurrTestState = TestStates.REAL;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -452,23 +452,26 @@ export class Game {
     for (var i = 0; i < this.di.length; i++) {
       card = this.di[i];
       suit = card.slice(-1);
-      if (card.slice(0,1) == RanksMap['three'] || i == this.di.length - 1) {
+      if (card.slice(0,1) == RanksMap['three']) {
+        this.threeFromDiCount = i+1;
+        break;
+      } else if (i == this.di.length - 1) {
         //If last 1 or 2 cards of di are joker(s) 
         if (card.slice(0,1) == RanksMap['joker']) {
-          if (this.di[i-3].slice(0,1) != RanksMap['joker']) {
-            suit = this.di[i-3].slice(-1);
+          if (this.di[i-1].slice(0,1) != RanksMap['joker']) {
+            suit = this.di[i-1].slice(-1);
           } else {
-            suit = this.di[i-4].slice(-1);
+            suit = this.di[i-2].slice(-1);
           }
-        } 
-        this.zhu = suit;
-        this.shownThree = true;
-        this.retrievedThree = true;
+        }
         this.threeFromDiCount = i+1;
-        console.log("Zhu: ", SuitsMap[this.zhu]);
-        break;
+        break; 
       }
     }
+    this.zhu = suit;
+    this.shownThree = true;
+    this.retrievedThree = true;
+    console.log("Zhu: ", SuitsMap[this.zhu]);
   }
 
   userOpenDi(user) {
@@ -601,31 +604,14 @@ export class Game {
 
     if (this.turnCycleCount % NumPlayers == 0) {
       this.currentPlayerIndex = -1;
+      this.prevTableCards = this.currTableCards;
       if (this.userPointsOnTable()) {
         this.collectPointsActive = true;
+      } else {
+        this.clearTableActive = true;
       }
-      this.clearTableActive = true;
-      this.prevTableCards = this.currTableCards;
     }
     console.log("End turn");
-  }
-
-  userClearTable(user) {
-    this.currTableCards = {};
-    this.clearTableActive = false;
-    this.collectPointsActive = false;
-    this.seePrevTableActive = true;
-    this.seeingPrevTable = false;
-    if (this.hands[user.username].length == 0 && this.currentPlayerIndex == -1) {
-      this.statusito = GameStatusitos.WRAPUP;
-      this.seePrevTableActive = false;
-      if (this.userPointsInDi()) {
-        this.collectPointsActive = true;
-      } else {
-        this.userEndGame();
-      }
-    }
-    console.log("Table cleared");
   }
 
   userCollectPoints() {
@@ -637,6 +623,7 @@ export class Game {
           this.di.splice(i, 1);
         }
       }
+      this.collectPointsActive = false;
       this.userEndGame();
     } else {
       var card = '';
@@ -647,8 +634,26 @@ export class Game {
           console.log("Collected: ", card);
         }
       }
+      this.userClearTable();
     }
+  }
+
+  userClearTable() {
+    this.currTableCards = {};
+    this.clearTableActive = false;
     this.collectPointsActive = false;
+    this.seePrevTableActive = true;
+    this.seeingPrevTable = false;
+    if (this.currentPlayerIndex == -1 && this.hands[Object.keys(this.hands)[0]].length == 0) {
+      this.statusito = GameStatusitos.WRAPUP;
+      this.seePrevTableActive = false;
+      if (this.userPointsInDi()) {
+        this.collectPointsActive = true;
+      } else {
+        this.userEndGame();
+      }
+    }
+    console.log("Table cleared");
   }
 
   userSeePrevTable() {

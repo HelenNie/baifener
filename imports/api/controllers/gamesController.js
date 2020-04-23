@@ -58,7 +58,7 @@ export let GamesController = {
 
   userClearTableGame(gameId, user) {
     let game = Games.findOne(gameId);
-    game.userClearTable(user);
+    game.userClearTable();
     Games.saveGame(game);
   },
 

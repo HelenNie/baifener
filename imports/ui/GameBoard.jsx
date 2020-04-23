@@ -335,88 +335,8 @@ export default class GameBoard extends Component {
 
         {/* Buttons */}
         <div className="buttons">
-          {/* ALWAYS SHOWN buttons */}
-          <button className="ui button black" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
-
-          {(game.statusito == GameStatusitos.DI) ? (
-            <button className="ui button blue" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
-          ): null}
-
-          {(game.statusito == GameStatusitos.DI) ? (
-            (!game.shownThree)? (
-              <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}</button>
-            ): (
-              <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)} disabled>{CurrLang.openDiForThree}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.DI) ? (
-            (game.diOpener == '' && game.shownThree) ? (
-              <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
-            ): (
-              <button className="ui button blue" onClick={this.handleOpenDi.bind(this)} disabled>{CurrLang.openDi}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.DI) ? (
-            (game.diOpener == user.username)? (
-              <button className="ui button red" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>
-            ): (
-              <button className="ui button red" onClick={this.handleStartGame.bind(this)} disabled>{CurrLang.startPlaying}</button>
-            )
-          ): null}
           
-          {(game.statusito == GameStatusitos.PLAYING) ? (
-            (userIsCurrPlayer)? (
-              <button className="ui button blue" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
-            ): (
-              <button className="ui button blue" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.PLAYING) ? (
-            (game.collectPointsActive == true && game.underdogs.includes(user.username))? (
-              <button className="ui button red" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
-            ): (
-              <button className="ui button red" onClick={this.handleCollectPoints.bind(this)} disabled>{CurrLang.collectPoints}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.PLAYING) ? (
-            (game.clearTableActive == true)? (
-              <button className="ui button red" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
-            ): (
-              <button className="ui button red" onClick={this.handleClearTable.bind(this)} disabled>{CurrLang.clearTable}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.PLAYING) ? (
-            (game.seePrevTableActive == true)? (
-              <button className="ui button red" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
-            ): (
-              <button className="ui button red" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
-            )
-          ): null}
-
-          {(game.statusito == GameStatusitos.WRAPUP) ? (
-            <button className="ui button blue" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>
-          ): null}
-
-          {(game.statusito == GameStatusitos.WRAPUP) ? (
-            (game.collectPointsActive == true && game.underdogs.includes(user.username))? (
-              <button className="ui button red" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
-            ): (
-              <button className="ui button red" onClick={this.handleCollectPoints.bind(this)} disabled>{CurrLang.collectPoints}</button>
-            )
-          ):null}
-
-          {(game.statusito == GameStatusitos.WRAPUP) ? (
-            <button className="ui button red" onClick={this.handleClearTable.bind(this)} disabled>{CurrLang.clearTable}</button>
-          ): null}
-
-          {(game.statusito == GameStatusitos.WRAPUP) ? (
-            <button className="ui button red" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
-          ): null}
+          <button className="ui button black" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
 
           {(game.statusito != GameStatusitos.FINISHED)? (
               <button className="ui button red" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
@@ -431,13 +351,21 @@ export default class GameBoard extends Component {
         <div className="row">
           <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
+
             {(game.statusito == GameStatusitos.DRAWING) ? (
               (userIsCurrPlayer) ? (
                 <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
               ): (
                 <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
               )
+            ): (game.statusito == GameStatusitos.PLAYING) ? (
+              (userIsCurrPlayer)? (
+                <button className="ui button blue corner" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
+              ): (
+                <button className="ui button blue corner" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>
+              )
             ): null}
+
             <div className="handArea" style={handAreaStyle}>
                 {userCards.map((card, index) => (
                   <MyDrag
@@ -472,6 +400,11 @@ export default class GameBoard extends Component {
                   )
                 ))}
               </div>
+              <div className="nextArea">
+                <br></br>
+                <br></br>
+                <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
+              </div>
             </div>
 
           //Opened di
@@ -482,6 +415,11 @@ export default class GameBoard extends Component {
                 {diCards.map((diCard, index) => (
                   <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
                 ))}
+              </div>
+              <div className="nextArea">
+                <br></br>
+                <br></br>
+                <button className="ui button red" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>
               </div>
             </div>
 
@@ -494,12 +432,28 @@ export default class GameBoard extends Component {
                     <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
                   ))}
               </div>
+              <div className="nextArea">
+                <br></br>
+                <br></br>
+                {(game.collectPointsActive == true && game.underdogs.includes(user.username))? (
+                  <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+                ):null}
+              </div>
             </div>
           ): (
 
             //Played cards
             <div className="column" id="tableColumn">
               <p className="banner"><b>{CurrLang.tableArea}</b></p>
+
+              {(game.statusito == GameStatusitos.PLAYING) ? (
+                (game.seePrevTableActive == true)? (
+                  <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
+                ): (
+                  <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
+                )
+              ): null}
+
               <div className="rowTable">
 
                 {Object.keys(tablePlayers).map((player, index) => (
@@ -521,6 +475,19 @@ export default class GameBoard extends Component {
                     <div className="rowTableShadow"></div>
                 ): null}
 
+              </div>
+              <div className="nextArea">
+                <br></br>
+                <br></br>
+                {(game.statusito == GameStatusitos.DI && !game.shownThree)? (
+                  <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>
+                ): (game.statusito == GameStatusitos.PLAYING && game.collectPointsActive && game.underdogs.includes(user.username))? (
+                  <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+                ): (game.statusito == GameStatusitos.PLAYING && game.clearTableActive)? (
+                  <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
+                ): (
+                  <p>Placeholder</p>
+                )}
               </div>
             </div>
           )}
