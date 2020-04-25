@@ -151,4 +151,10 @@ export let GamesController = {
     game.userCancelOpenDi();
     Games.saveGame(game);
   },
+
+  userSetRoleGame(gameId, user, role) {
+    let game = Games.findOne(gameId);
+    game.userSetRole(user, role);
+    Games.saveGame(game);
+  },
 }

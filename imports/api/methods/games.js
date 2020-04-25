@@ -257,3 +257,14 @@ export const userCancelOpenDiGame = new ValidatedMethod({
     GamesController.userCancelOpenDiGame(gameId, Meteor.user());
   }
 });
+
+export const userSetRoleGame = new ValidatedMethod({
+  name: 'games.userSetRoleGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+    role: {type: String}
+  }).validator(),
+  run({gameId, role}) {
+    GamesController.userSetRoleGame(gameId, Meteor.user(), role);
+  }
+});

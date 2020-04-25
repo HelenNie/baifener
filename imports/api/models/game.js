@@ -15,6 +15,12 @@ export const GameStatusitos = {
   FINISHED: 'FINISHED'
 }
 
+export const Roles = {
+  DEFENDER: 'defender', 
+  ATTACKER: 'attacker',
+  TBD: 'tbd',
+}
+
 export const Partners = {};
 for (var i = 0; i < Users.length; i++) {
   var partnerIdx = (i+2) % Users.length;
@@ -23,7 +29,7 @@ for (var i = 0; i < Users.length; i++) {
 
 export const NumPlayers = 4;
 
-export const SuitsMap = {'H':'hearts', 'S':'spade', 'D':'diamond', 'C':'clover'}
+export const SuitsMap = {'H':'heart', 'S':'spade', 'D':'diamond', 'C':'club'}
 export const RanksMap = {'three':'3', 'five':'5', 'ten':'T', 'king':'K', 'joker':'O'}
 
 export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"]
@@ -306,8 +312,10 @@ export class Game {
       this.seeingPrevTable = false;
       this.diOriginal = this.di;
 
-      this.modalOpen = {drawFirst: true, openDi: false};
+      //will not have hardcoded usernames once consolidated into player objects
+      this.modalOpen = {setRole: true, setRoleAgain: false, drawFirst: false, openDi: false};
       this.modalOpenDiUser = '';
+      this.playerRoles = {};
     }
   }
 
@@ -317,7 +325,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal', 'modalOpen', 'modalOpenDiUser'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal', 'modalOpen', 'modalOpenDiUser', 'playerRoles'];
   }
 
 /**
@@ -354,7 +362,6 @@ export class Game {
         }
         this.players[2] = this.players[partnerIdx];
         this.players[partnerIdx] = player3;
-        console.log("Players: ", this.players);
       }
       
       if (CurrTestState == TestStates.REAL){
@@ -389,6 +396,43 @@ export class Game {
     }
   }
 
+  userSetRole(user, role) {
+    this.playerRoles[user.username] = role;
+
+    if (Object.keys(this.playerRoles).length == NumPlayers) { 
+      var attackers = [];
+      var defenders = [];
+      var tbd = [];
+
+      for (var player in this.playerRoles) {
+        switch (this.playerRoles[player]) {
+          case Roles.ATTACKER:
+            attackers.push(player);
+            break;
+          case Roles.DEFENDER:
+            defenders.push(player);
+            break;
+          default:
+            tbd.push(player);
+            break;
+        }
+      }
+
+      var partnersAgree = (this.playerRoles[user.username] == this.playerRoles[Partners[user.username]]);
+
+      if ((attackers.length == 2 && defenders.length == 2 && partnersAgree) || tbd.length == 4) {
+        this.underdogs = attackers;
+        this.modalOpen.setRole = false;
+        this.modalOpen.setRoleAgain = false;
+        this.modalOpen.drawFirst = true;
+      } else {
+        this.playerRoles = {};
+        this.modalOpen.setRole = false;
+        this.modalOpen.setRoleAgain = true;
+      }
+    }
+  }
+
   userSetFirstDrawer(user) {
     this.currentPlayerIndex = this.userIdToIndex(user._id);
     this.modalOpen.drawFirst = false;
@@ -417,12 +461,23 @@ export class Game {
         console.log("That's not a 3...");
         return;
       }
+
       var index = this.hands[user.username].indexOf(card);
       this.hands[user.username].splice(index, 1);
+      this.currTableCards[card] = this.threeShower;
+
       this.zhu = card.slice(-1);
       this.threeShower = user.username;
-      this.currTableCards[card] = this.threeShower;
       this.shownThree = true;
+
+      if (this.underdogs.length == 0) {
+        var topDogs = [user.username, Partners[user.username]];
+        for (var player in Partners) {
+          if (player != topDogs[0] && player != topDogs[1]) {
+            this.underdogs = [player, Partners[player]];
+          }
+        }
+      }
 
       this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
 
@@ -488,14 +543,6 @@ export class Game {
     this.diOpener = user.username;
     this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
     this.modalOpen.openDi = false;
-
-    //Set who underdogs are based on diOpener
-    var topDogs = [this.diOpener, Partners[this.diOpener]];
-    for (var player in Partners) {
-      if (player != topDogs[0] && player != topDogs[1]) {
-        this.underdogs = [player, Partners[player]];
-      }
-    }
 
     //retrieve 3 if still on table
     if (this.shownThree && !this.retrievedThree) {

@@ -6,8 +6,8 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame} from '../api/methods/games.js';
+import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners, Roles} from '../api/models/game.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -127,6 +127,11 @@ export default class GameBoard extends Component {
   handleStartGame() {
     let game = this.props.game;
     userStartGameGame.call({gameId: game._id});
+  }
+
+  handleSetRole(role) {
+    let game = this.props.game;
+    userSetRoleGame.call({gameId: game._id, role: role});
   }
 
   handleSetFirstDrawer() {
@@ -293,15 +298,16 @@ export default class GameBoard extends Component {
       playerStyle = {};
       if (playerName == user.username) {
         playerStyle['backgroundColor'] = '#55876c';
+        playerStyle['border'] = '4px solid 55876c';
       } else if (playerName == Partners[user.username]) {
         playerStyle['backgroundColor'] = '#8cb7a0';
+        playerStyle['border'] = '4px solid 8cb7a0';
       } else {
         playerStyle['backgroundColor'] = 'lightgray';
+        playerStyle['border'] = '4px solid lightgray';
       }
       if (game.usernameToIndex(playerName) == game.getCurrentPlayerIndex()) {
         playerStyle['border'] = '4px solid gold';
-      } else {
-        playerStyle['border'] = '0px solid black';
       }
       tablePlayers[playerName] = playerStyle;
     }
@@ -311,14 +317,48 @@ export default class GameBoard extends Component {
         <GameHeader user={user}/>
 
         <ReactModal
-          isOpen = {game.modalOpen.drawFirst}
+          isOpen = {game.modalOpen.setRole || game.modalOpen.setRoleAgain}
           className = "modal"
           overlayClassName = "overlay"
           ariaHideApp={false}>
           <br></br>
           <p className="modalBanner">Let's get started!</p>
+
+          {(!(user.username in game.playerRoles)) ? (
+            <div className="modalDiv"> 
+              {(game.modalOpen.setRoleAgain) ? (
+                <p>Looks like you and your friends do not agree on your roles...Let's try this again!</p>
+              ): null}
+                <p><b>Select your team:</b></p>
+                <br></br>
+                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
+                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
+                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
+            </div>
+          ): (
+            <p>Waiting for other players to confirm...</p>
+          )}
+
+        </ReactModal>
+
+        <ReactModal
+          isOpen = {game.modalOpen.drawFirst}
+          className = "modal"
+          overlayClassName = "overlay"
+          ariaHideApp={false}>
           <br></br>
-          <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
+          <p className="modalBanner">Will you draw first?</p>
+
+          {(game.playerRoles[user.username] == Roles.ATTACKER || game.playerRoles[user.username] == Roles.TBD) ? (
+            <div className="modalDiv"> 
+              <br></br>
+               <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
+            </div>
+          ): (
+            <p>Waiting for opponents to start drawing...</p>
+          )}
+
+          
         </ReactModal>
 
         <ReactModal
@@ -351,6 +391,14 @@ export default class GameBoard extends Component {
         <div className="row">
           <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
+
+            {(!(game.modalOpen.setRole || game.modalOpen.setRoleAgain)) ? (
+              <p className="playerRole">Role: {game.playerRoles[user.username]}</p>
+            ): null}
+
+            {(game.shownThree) ? (
+              <img src={"/images/" + SuitsMap[game.zhu] + ".png"} className="zhuImage"></img>
+            ): null}
 
             {(game.statusito == GameStatusitos.DRAWING) ? (
               (userIsCurrPlayer) ? (
@@ -402,8 +450,11 @@ export default class GameBoard extends Component {
               </div>
               <div className="nextArea">
                 <br></br>
-                <br></br>
-                <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
+                {(game.underdogs.indexOf(user.username) == -1) ? (
+                  <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
+                ): (
+                  <p>Waiting for opponents to open kitty...</p>
+                )}
               </div>
             </div>
 
@@ -417,7 +468,6 @@ export default class GameBoard extends Component {
                 ))}
               </div>
               <div className="nextArea">
-                <br></br>
                 <br></br>
                 <button className="ui button red" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>
               </div>
@@ -433,7 +483,6 @@ export default class GameBoard extends Component {
                   ))}
               </div>
               <div className="nextArea">
-                <br></br>
                 <br></br>
                 {(game.collectPointsActive == true && game.underdogs.includes(user.username))? (
                   <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
@@ -471,16 +520,19 @@ export default class GameBoard extends Component {
                   </div>
                 ))}  
 
-                {(game.seeingPrevTable) ? (
+                {(game.seeingPrevTable || game.statusito == GameStatusitos.DI && game.diOpener != user.username) ? (
                     <div className="rowTableShadow"></div>
                 ): null}
 
               </div>
               <div className="nextArea">
                 <br></br>
-                <br></br>
                 {(game.statusito == GameStatusitos.DI && !game.shownThree)? (
-                  <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>
+                  (game.underdogs.indexOf(user.username) == -1) ? (
+                    <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>
+                  ): (
+                    <p>Waiting for opponents to look for trump suit in kitty...</p>
+                  )
                 ): (game.statusito == GameStatusitos.PLAYING && game.collectPointsActive && game.underdogs.includes(user.username))? (
                   <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
                 ): (game.statusito == GameStatusitos.PLAYING && game.clearTableActive)? (
