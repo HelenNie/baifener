@@ -4,6 +4,7 @@ import GameHeader from './GameHeader.jsx';
 import {CurrLang} from './GameBoard.jsx';
 
 export const Users = ['one', 'two', 'three', 'four'];
+export const Partners = {'one':'three', 'two':'four', 'three':'one', 'four':'two'};
 export const Password = "password";
 
 export default class LoginForm extends Component {

@@ -1,11 +1,11 @@
-import { Users } from '../../ui/LoginForm.jsx';
+import { Users, Partners } from '../../ui/LoginForm.jsx';
 
 export const GameStatuses = {
   WAITING: 'WAITING',  // waiting player to join
   STARTED: 'STARTED',  // all spots are filled; can start playing
   FINISHED: 'FINISHED', // game is finished
   ABANDONED: 'ABANDONED' // all players left; game is abandoned
-}
+};
 
 export const GameStatusitos = {
   DRAWING: 'DRAWING', 
@@ -13,27 +13,22 @@ export const GameStatusitos = {
   PLAYING: 'PLAYING',
   WRAPUP: 'WRAPUP',
   FINISHED: 'FINISHED'
-}
+};
 
 export const Roles = {
   DEFENDER: 'defender', 
   ATTACKER: 'attacker',
   TBD: 'tbd',
-}
-
-export const Partners = {};
-for (var i = 0; i < Users.length; i++) {
-  var partnerIdx = (i+2) % Users.length;
-  Partners[Users[i]] = Users[partnerIdx];
-}
+};
 
 export const NumPlayers = 4;
 
-export const SuitsMap = {'H':'heart', 'S':'spade', 'D':'diamond', 'C':'club'}
-export const RanksMap = {'three':'3', 'five':'5', 'ten':'T', 'king':'K', 'joker':'O'}
+export const SuitsMap = {'H':'heart', 'S':'spade', 'D':'diamond', 'C':'club'};
+export const RanksMap = {three:'3', joker:'O'};
+export const PointsMap = {'5': 5, 'T': 10, 'K': 10};
 
-export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"]
-export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()})
+export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"];
+export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
 export const DiLength = 6;
 export const Di = DeckNoDi.splice(0, DiLength);
 
@@ -60,8 +55,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: true, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {}
   },
   TEST_DRAWING: {
     status: GameStatuses.WAITING,
@@ -87,8 +84,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_THREE: {
     status: GameStatuses.WAITING,
@@ -114,8 +113,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_SUIT_FROM_DI: {
     status: GameStatuses.WAITING,
@@ -141,8 +142,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_SUIT_FROM_DI_JOKER_1: {
     status: GameStatuses.WAITING,
@@ -168,8 +171,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_SUIT_FROM_DI_JOKER_2: {
     status: GameStatuses.WAITING,
@@ -195,8 +200,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: []
+    underdogs: [],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_PLAYING: { //Login in one,two,three,four order for this.underdogs to work properly
     status: GameStatuses.WAITING,
@@ -222,8 +229,10 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: ['two', 'four']
+    underdogs: ['two', 'four'],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   },
   TEST_WRAPUP: {
     status: GameStatuses.WAITING,
@@ -249,12 +258,14 @@ export const TestStates = {
     threeFromDiCount: 0,
     turnCycleCount: 0,
     clearTableActive: false,
-    collectPointsActive: false,
-    underdogs: ['two', 'four']
+    underdogs: ['two', 'four'],
+    modalOpen: {setRole: false, setRoleAgain: false, drawFirst: false, openDi: false},
+    modalOpenDiUser: '',
+    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
   }
-}
+};
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_WRAPUP;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -292,8 +303,10 @@ export class Game {
       this.threeFromDiCount = CurrTestState.threeFromDiCount;
       this.turnCycleCount = CurrTestState.turnCycleCount;
       this.clearTableActive = CurrTestState.clearTableActive;
-      this.collectPointsActive = CurrTestState.collectPointsActive;
       this.underdogs = CurrTestState.underdogs;
+      this.modalOpen = CurrTestState.modalOpen;
+      this.modalOpenDiUser = CurrTestState.modalOpenDiUser;
+      this.playerRoles = CurrTestState.playerRoles;
 
       //Not in test states
       this.players = [];
@@ -311,11 +324,7 @@ export class Game {
       this.seePrevTableActive = false;
       this.seeingPrevTable = false;
       this.diOriginal = this.di;
-
-      //will not have hardcoded usernames once consolidated into player objects
-      this.modalOpen = {setRole: true, setRoleAgain: false, drawFirst: false, openDi: false};
-      this.modalOpenDiUser = '';
-      this.playerRoles = {};
+      this.clearPrevTableActive = false;
     }
   }
 
@@ -325,7 +334,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'collectPointsActive', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal', 'modalOpen', 'modalOpenDiUser', 'playerRoles'];
+    return ['status', 'statusito', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCard', 'shownThree', 'hands', 'currentPlayerIndex', 'diOpener', 'startGameCount', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'numPlayers', 'partners', 'clearTableActive', 'cardLocations', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'underdogs', 'seePrevTableActive', 'cardZIndexes', 'threeShower', 'retrievedThree', 'seeingPrevTable', 'diOriginal', 'modalOpen', 'modalOpenDiUser', 'playerRoles', 'clearPrevTableActive'];
   }
 
 /**
@@ -455,19 +464,28 @@ export class Game {
     }
   }
 
+  userCardMigration(user, card) {
+    if (this.statusito == GameStatusitos.DRAWING || (this.statusito == GameStatusitos.DI && !this.retrievedThree)) {
+      this.userShowOrRetrieveThree(user, card);
+    } else if (this.statusito == GameStatusitos.DI && this.diOpener != '') {
+      this.userSwapHandAndDi(user, card);
+    } else if (this.statusito == GameStatusitos.PLAYING) {
+      this.userPlayOrTakeBackCard(user,card);
+    }
+  }
+
   userShowOrRetrieveThree(user, card) {
     if (!this.shownThree) {
-      if (card.slice(0,1) != RanksMap['three']) {
+      if (card.slice(0,1) != RanksMap.three) {
         console.log("That's not a 3...");
         return;
       }
 
+      this.threeShower = user.username;
       var index = this.hands[user.username].indexOf(card);
       this.hands[user.username].splice(index, 1);
       this.currTableCards[card] = this.threeShower;
-
       this.zhu = card.slice(-1);
-      this.threeShower = user.username;
       this.shownThree = true;
 
       if (this.underdogs.length == 0) {
@@ -507,13 +525,13 @@ export class Game {
     for (var i = 0; i < this.di.length; i++) {
       card = this.di[i];
       suit = card.slice(-1);
-      if (card.slice(0,1) == RanksMap['three']) {
+      if (card.slice(0,1) == RanksMap.three) {
         this.threeFromDiCount = i+1;
         break;
       } else if (i == this.di.length - 1) {
         //If last 1 or 2 cards of di are joker(s) 
-        if (card.slice(0,1) == RanksMap['joker']) {
-          if (this.di[i-1].slice(0,1) != RanksMap['joker']) {
+        if (card.slice(0,1) == RanksMap.joker) {
+          if (this.di[i-1].slice(0,1) != RanksMap.joker) {
             suit = this.di[i-1].slice(-1);
           } else {
             suit = this.di[i-2].slice(-1);
@@ -546,7 +564,7 @@ export class Game {
 
     //retrieve 3 if still on table
     if (this.shownThree && !this.retrievedThree) {
-      var three = RanksMap['three']+this.zhu;
+      var three = RanksMap.three + this.zhu;
       console.log(three);
       delete this.currTableCards[three];
       this.hands[this.threeShower].push(three);
@@ -578,16 +596,6 @@ export class Game {
     }
   }
 
-  userCardMigration(user, card) {
-    if (this.statusito == GameStatusitos.DRAWING || (this.statusito == GameStatusitos.DI && !this.retrievedThree)) {
-      this.userShowOrRetrieveThree(user, card);
-    } else if (this.statusito == GameStatusitos.DI && this.diOpener != '') {
-      this.userSwapHandAndDi(user, card);
-    } else if (this.statusito == GameStatusitos.PLAYING) {
-      this.userPlayOrTakeBackCard(user,card);
-    }
-  }
-
   userStartGame(user) {
     if(this.di.length == DiLength) {
       this.statusito = GameStatusitos.PLAYING;
@@ -599,26 +607,13 @@ export class Game {
 
   userPlayOrTakeBackCard(user, card) {
     if(card in this.currTableCards) {
-      if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
-        delete this.currTableCards[card];
-        this.hands[user.username].push(card);
-        this.currTurnNumCards--;
-        this.cardZIndexes[card] = ++this.highestZIndex;
-        console.log(user.username, " took card back");
-      } else {
-        console.log("Not your turn");
-      }
+      delete this.currTableCards[card];
+      this.hands[user.username].push(card);
+      this.currTurnNumCards--;
+      this.cardZIndexes[card] = ++this.highestZIndex;
+      console.log(user.username, " took card back");
     } else {
-      if (this.currentPlayerIndex == -1) {
-        if (this.clearTableActive) {
-          console.log("Clear table first before playing!");
-          return;
-        }
-        this.currentPlayerIndex = this.userIdToIndex(user._id);
-        this.seePrevTableActive = false;
-        console.log("Turns reset");
-      }
-      if (this.currentPlayerIndex == this.userIdToIndex(user._id)) {
+      if (this.currentPlayerIndex == this.usernameToIndex(user.username) &&! (this.clearTableActive || this.clearPrevTableActive)) {
         var index = this.hands[user.username].indexOf(card);
         this.hands[user.username].splice(index, 1);
         this.currTableCards[card] = user.username;
@@ -652,71 +647,77 @@ export class Game {
     if (this.turnCycleCount % NumPlayers == 0) {
       this.currentPlayerIndex = -1;
       this.prevTableCards = this.currTableCards;
-      if (this.userPointsOnTable()) {
-        this.collectPointsActive = true;
-      } else {
-        this.clearTableActive = true;
-      }
+      this.clearTableActive = true;
     }
     console.log("End turn");
   }
 
-  userCollectPoints() {
-    var pointCards = [RanksMap['five'], RanksMap['ten'], RanksMap['king']];
-    if (this.statusito == GameStatusitos.WRAPUP) {
-      for (let i = this.di.length - 1; i > -1; i--) {
-        if (pointCards.indexOf(this.di[i].charAt(0)) >= 0) {
-          this.taiXiaPoints.push(this.di[i]);
-          this.di.splice(i, 1);
-        }
+  userCollectPointsTable() {
+    var card = '';
+    for (var card in this.currTableCards) {
+      if (Object.keys(PointsMap).indexOf(card.charAt(0)) >= 0) {
+        this.taiXiaPoints.push(card);
+        delete this.currTableCards[card];
+        console.log("Collected: ", card);
       }
-      this.collectPointsActive = false;
-      this.userEndGame();
-    } else {
-      var card = '';
-      for (var card in this.currTableCards) {
-        if (pointCards.indexOf(card.charAt(0)) >= 0) {
-          this.taiXiaPoints.push(card);
-          delete this.currTableCards[card];
-          console.log("Collected: ", card);
-        }
-      }
-      this.userClearTable();
     }
   }
 
-  userClearTable() {
-    this.currTableCards = {};
-    this.clearTableActive = false;
-    this.collectPointsActive = false;
-    this.seePrevTableActive = true;
-    this.seeingPrevTable = false;
-    if (this.currentPlayerIndex == -1 && this.hands[Object.keys(this.hands)[0]].length == 0) {
-      this.statusito = GameStatusitos.WRAPUP;
-      this.seePrevTableActive = false;
-      if (this.userPointsInDi()) {
-        this.collectPointsActive = true;
-      } else {
-        this.userEndGame();
+  userCollectPointsDi() {
+    var pointCards = [RanksMap.five, RanksMap.ten, RanksMap.king];
+    for (let i = this.di.length - 1; i > -1; i--) {
+      if (Object.keys(PointsMap).indexOf(this.di[i].charAt(0)) >= 0) {
+        this.taiXiaPoints.push(this.di[i]);
+        this.di.splice(i, 1);
       }
     }
+  }
+
+  userClearTable(user) {
+    if (this.userPointsOnTable() && this.underdogs.indexOf(user.username) > -1) {
+      this.userCollectPointsTable();
+      //Pause
+    }
+
+    this.currTableCards = {};
+    this.clearTableActive = false;
     console.log("Table cleared");
+
+    if (this.currentPlayerIndex == -1 && this.hands[Object.keys(this.hands)[0]].length == 0) {
+      //Pause
+      this.statusito = GameStatusitos.WRAPUP;
+      //Pause
+      if (this.userPointsInDi() && this.underdogs.indexOf(user.username) > -1) {
+        this.userCollectPointsDi();
+        //pause
+      }
+      this.userEndGame();
+    }
+
+    this.seePrevTableActive = true;
+    this.currentPlayerIndex = this.usernameToIndex(user.username);
+  }
+
+  userClearPrevTable(user) {
+    this.currTableCards = {};
+    this.clearPrevTableActive = false;
+    this.seeingPrevTable = false;
+    this.seePrevTableActive = true;
   }
 
   userSeePrevTable() {
     this.currTableCards = this.prevTableCards;
     this.seeingPrevTable = true;
     this.seePrevTableActive = false;
-    this.clearTableActive = true;
+    this.clearPrevTableActive = true;
 
     console.log("See previous table");
   }
 
   userPointsOnTable() {
-    var pointCards = [RanksMap['five'], RanksMap['ten'], RanksMap['king']];
     var tableCards = Object.keys(this.currTableCards);
     for (var i = 0; i < tableCards.length; i++) {
-      if (pointCards.indexOf(tableCards[i].charAt(0)) >= 0) {
+      if (Object.keys(PointsMap).indexOf(tableCards[i].charAt(0)) >= 0) {
         return true;
       }
     }
@@ -724,9 +725,8 @@ export class Game {
   }
 
   userPointsInDi() {
-    var pointCards = [RanksMap['five'], RanksMap['ten'], RanksMap['king']];
     for (var i = 0; i < this.di.length; i++) {
-      if (pointCards.indexOf(this.di[i].charAt(0)) >= 0) {
+      if (Object.keys(PointsMap).indexOf(this.di[i].charAt(0)) >= 0) {
         return true;
       }
     }
@@ -748,13 +748,10 @@ export class Game {
   }
 
   userEndGame() {
-    this.status = GameStatuses.FINISHED;
-    this.statusito = GameStatusitos.FINISHED;
-
     this.currTableCards = {};
 
     //Restore original di if diopener is in the middle of switching out
-    if (this.di.length != DiLength) {
+    if (this.statusito == GameStatusitos.DI && this.diOpener != '' && this.di.length != DiLength) {
       this.di = this.diOriginal;
       var card;
       var index;
@@ -766,6 +763,9 @@ export class Game {
         }
       }
     }
+
+    this.status = GameStatuses.FINISHED;
+    this.statusito = GameStatusitos.FINISHED;
   }
 
  /**
@@ -776,6 +776,11 @@ export class Game {
       return null;
     }
     return this.currentPlayerIndex;
+  }
+
+
+  arePartners(user1, user2) {
+    return Partners[user1] == user2;
   }
 
 /**

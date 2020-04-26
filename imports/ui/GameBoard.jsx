@@ -6,8 +6,8 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Partners, Roles} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame} from '../api/methods/games.js';
+import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Roles} from '../api/models/game.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -30,7 +30,6 @@ export const Langs = {
     startPlaying: '开始',
     finishTurn: '结束出牌',
     clearTable: '清空',
-    collectPoints: '台下拿分',
     seePrevTable: '看上一局',
     handArea: '我的牌',
     diArea: '底',
@@ -76,7 +75,6 @@ export const Langs = {
     startPlaying: 'Start',
     finishTurn: 'End Turn',
     clearTable: 'Clear Table',
-    collectPoints: 'Collect Points',
     seePrevTable: 'See Previous Round',
     handArea: 'HAND',
     diArea: 'Kitty',
@@ -179,9 +177,9 @@ export default class GameBoard extends Component {
     userClearTableGame.call({gameId: game._id});
   }
 
-  handleCollectPoints() {
+  handleClearPrevTable() {
     let game = this.props.game;
-    userCollectPointsGame.call({gameId: game._id});
+    userClearPrevTableGame.call({gameId: game._id});
   }
 
   handleSeePrevTable() {
@@ -262,12 +260,9 @@ export default class GameBoard extends Component {
   render() {
     let game = this.props.game;
     let user = this.props.user;
-    let userIsCurrPlayer = false;
-    let handAreaStyle = {};
-    if (game.userIdToIndex(user._id) == game.getCurrentPlayerIndex()) {
-      userIsCurrPlayer = true;
-    }
-
+    let currPlayer = game.players[game.getCurrentPlayerIndex()];
+    let userIsCurrPlayer = (currPlayer ? (user.username == currPlayer.username) : false);
+    
     let userCards = game.hands[user.username];
     let diCards = game.di; 
     let pointCards = game.taiXiaPoints;
@@ -277,12 +272,13 @@ export default class GameBoard extends Component {
       threeCard = RanksMap['three']+game.zhu;
     }
 
+    let handAreaStyle = {};
     if (userIsCurrPlayer && game.statusito != GameStatusitos.DI) {
       userIsCurrPlayer = true;
       handAreaStyle['backgroundColor'] = "gold";
     }
 
-    //set up players in order starting with diopener, and marking relevant roles
+    //set up players in order starting with diopener, and styling accordingly
     let tablePlayers = {};
     let playerName = '';
     let playerStyle = {};
@@ -298,18 +294,18 @@ export default class GameBoard extends Component {
       playerStyle = {};
       if (playerName == user.username) {
         playerStyle['backgroundColor'] = '#55876c';
-        playerStyle['border'] = '4px solid 55876c';
-      } else if (playerName == Partners[user.username]) {
+        playerStyle['border'] = '4px solid #55876c';
+      } else if (game.arePartners(playerName, user.username)) {
         playerStyle['backgroundColor'] = '#8cb7a0';
-        playerStyle['border'] = '4px solid 8cb7a0';
+        playerStyle['border'] = '4px solid #8cb7a0';
       } else {
         playerStyle['backgroundColor'] = 'lightgray';
         playerStyle['border'] = '4px solid lightgray';
       }
-      if (game.usernameToIndex(playerName) == game.getCurrentPlayerIndex()) {
-        playerStyle['border'] = '4px solid gold';
-      }
       tablePlayers[playerName] = playerStyle;
+    }
+    if (currPlayer && !game.clearPrevTableActive) {
+      tablePlayers[currPlayer.username]['border'] = '4px solid gold';
     }
 
     return (
@@ -476,17 +472,11 @@ export default class GameBoard extends Component {
           //Di during WRAPUP
           ): (game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED) ? (
             <div className="column" id="tableColumn">
-              <p className="banner"><b>{CurrLang.diArea}</b></p>
+              <p className="banner"><b>CurrLang.diArea</b></p>
               <div className="diAreaWrapup">
                   {diCards.map((diCard, index) => (
                     <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
                   ))}
-              </div>
-              <div className="nextArea">
-                <br></br>
-                {(game.collectPointsActive == true && game.underdogs.includes(user.username))? (
-                  <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
-                ):null}
               </div>
             </div>
           ): (
@@ -496,8 +486,10 @@ export default class GameBoard extends Component {
               <p className="banner"><b>{CurrLang.tableArea}</b></p>
 
               {(game.statusito == GameStatusitos.PLAYING) ? (
-                (game.seePrevTableActive == true)? (
+                (game.seePrevTableActive)? (
                   <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
+                ): (game.clearPrevTableActive)? (
+                  <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>
                 ): (
                   <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
                 )
@@ -510,7 +502,7 @@ export default class GameBoard extends Component {
                     <p className="tableBanner"><b>{player}</b></p>
                     {Object.keys(tableCards).map((card, index) => (
                       (tableCards[card] == player)? (
-                        (tableCards[card] == user.username)? (
+                        (player == user.username && userIsCurrPlayer)? (
                           <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
                         ): (
                           <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
@@ -520,7 +512,7 @@ export default class GameBoard extends Component {
                   </div>
                 ))}  
 
-                {(game.seeingPrevTable || game.statusito == GameStatusitos.DI && game.diOpener != user.username) ? (
+                {(game.seeingPrevTable) ? (
                     <div className="rowTableShadow"></div>
                 ): null}
 
@@ -533,10 +525,14 @@ export default class GameBoard extends Component {
                   ): (
                     <p>Waiting for opponents to look for trump suit in kitty...</p>
                   )
-                ): (game.statusito == GameStatusitos.PLAYING && game.collectPointsActive && game.underdogs.includes(user.username))? (
-                  <button className="ui button blue" onClick={this.handleCollectPoints.bind(this)}>{CurrLang.collectPoints}</button>
+                ): (game.statusito == GameStatusitos.DI && game.shownThree) ? (
+                  (game.underdogs.indexOf(user.username) == -1) ? (
+                    <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
+                  ): (
+                    <p>Waiting for opponents to open kitty...</p>
+                  )
                 ): (game.statusito == GameStatusitos.PLAYING && game.clearTableActive)? (
-                  <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>{CurrLang.clearTable}</button>
+                  <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>Click here if you won this round</button>
                 ): (
                   <p>Placeholder</p>
                 )}

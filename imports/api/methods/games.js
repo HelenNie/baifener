@@ -101,6 +101,16 @@ export const userClearTableGame = new ValidatedMethod({
   }
 });
 
+export const userClearPrevTableGame = new ValidatedMethod({
+  name: 'games.userClearPrevTableGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userClearPrevTableGame(gameId, Meteor.user());
+  }
+});
+
 export const userLiangThreeGame = new ValidatedMethod({
   name: 'games.userLiangThreeGame',
   validate: new SimpleSchema({
