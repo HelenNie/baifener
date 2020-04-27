@@ -6,8 +6,8 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStatusitos, DiLength, SuitsMap, RanksMap, NumPlayers, Roles} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userPointsOnTableGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame} from '../api/methods/games.js';
+import {Game, GameStatuses, GameStages, ModalStates, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers} from '../api/models/game.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame} from '../api/methods/games.js';
 
 
 export const Langs = {
@@ -108,16 +108,6 @@ export const CurrLang = Langs.ENGLISH;
 
 export default class GameBoard extends Component {
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     // Originally used to dynamically resize handArea and round dimensions to multiple of draggable 'grid' to fit an even number of cards into width and height of handArea, but not using draggable 'grid' right now
-  //     // columnRef: React.createRef(), // add ref={this.state.columnRef} to handArea column
-  //     // handAreaWidth: '', // add style={{width: this.state.handAreaWidth+'px', height: this.state.handAreaHeight+'px'}} to handArea
-  //     // handAreaHeight: ''
-  //   }
-  // }
-
   handleBackToGameList() {
     this.props.backToGameListHandler();
   }
@@ -192,66 +182,19 @@ export default class GameBoard extends Component {
     userEndGameGame.call({gameId: game._id});
   }
 
-  // Originally used to dynamically resize handArea and round dimensions to multiple of draggable 'grid' to fit an even number of cards into width and height of handArea, but not using draggable 'grid' right now
-  // handleResize(elem, e) {
-  //   var parentPadding = 10; //px //parent = .column
-  //   var widthShare = 1; //100%
-  //   var heightShare = 0.7; //70%
-  //   var gridSize = 10; //px //not used currently
-
-  //   var parent = elem.state.columnRef.current;
-  //   if (parent) {
-  //     var parentWidth = parent.offsetWidth;
-  //     var parentHeight = parent.offsetHeight;
-  //     elem.setState({
-  //       handAreaWidth: Math.floor( ( ( parentWidth - 2 * parentPadding ) * widthShare ) / gridSize ) * gridSize,
-  //       handAreaHeight: Math.floor(( ( parentHeight - 2 * parentPadding ) * heightShare ) / gridSize ) * gridSize
-  //     });
-  //   }    
-  // }
-
-  // componentDidMount() {
-  //   this.handleResize(this, '');
-
-  //   var elem = this;
-  //   window.addEventListener('resize', this.handleResize.bind(this, elem));
-  // }
-
   renderStatus() {
     let game = this.props.game;
-
-    let currentPlayerIndex = game.getCurrentPlayerIndex();
-    let currPlayerStatus = "";
-    if (currentPlayerIndex == -1 || currentPlayerIndex == null) {
-      currPlayerStatus = "-";
-    } else {
-      currPlayerStatus = game.players[currentPlayerIndex].username;
-    }
-
-    let zhuStatus = "";
-    if (game.zhu == "") {
-      zhuStatus = "-";
-    } else {
-      zhuStatus = CurrLang.suits[game.zhu];
-    }    
 
     if (game.status === GameStatuses.STARTED) {
       return (
         <div className="ui attached center aligned segment">
-          <p><b>{CurrLang.stage}:</b> {CurrLang.statusito[game.statusito]}</p>
-          <p><b>{CurrLang.zhu}:</b> {zhuStatus}</p>
-          <p><b>{CurrLang.currPlayer}:</b> {currPlayerStatus}</p>
-        </div>
-        )
-    } else if (game.status === GameStatuses.FINISHED) {
-      return (
-        <div className="ui attached center aligned segment">
-          <p>{CurrLang.gameFinished}!</p>
+          <p><b>{CurrLang.stage}:</b>{game.stage}</p>
         </div>
         )
     } else {
       return (
         <div className="ui attached center aligned segment">
+          <p>{CurrLang.gameFinished}!</p>
         </div>
         )
     }
@@ -267,30 +210,22 @@ export default class GameBoard extends Component {
     let diCards = game.di; 
     let pointCards = game.taiXiaPoints;
     let tableCards = game.currTableCards;
-    let threeCard = '';
-    if (game.shownThree) {
-      threeCard = RanksMap['three']+game.zhu;
-    }
 
     let handAreaStyle = {};
-    if (userIsCurrPlayer && game.statusito != GameStatusitos.DI) {
-      userIsCurrPlayer = true;
+    if (userIsCurrPlayer) {
       handAreaStyle['backgroundColor'] = "gold";
     }
 
-    //set up players in order starting with diopener, and styling accordingly
+    //wrap function //set up players in order starting with diOpener, and styling accordingly
     let tablePlayers = {};
+
     let playerName = '';
     let playerStyle = {};
-    let diOpenerIdx = 0;
+    let startingIdx = game.getFirstPlayerShown();
     let tableOrder = [0, 1, 3, 2];
 
-    if (game.diopener) {
-      diOpenerIdx = game.usernameToIndex(game.diOpener);
-    }
-
     for (var i = 0; i < tableOrder.length; i++) {
-      playerName = game.players[(diOpenerIdx + tableOrder[i]) % NumPlayers].username;
+      playerName = game.players[(startingIdx + tableOrder[i]) % NumPlayers].username;
       playerStyle = {};
       if (playerName == user.username) {
         playerStyle['backgroundColor'] = '#55876c';
@@ -304,7 +239,8 @@ export default class GameBoard extends Component {
       }
       tablePlayers[playerName] = playerStyle;
     }
-    if (currPlayer && !game.clearPrevTableActive) {
+
+    if (game.showCurrPlayerBorder(user)) {
       tablePlayers[currPlayer.username]['border'] = '4px solid gold';
     }
 
@@ -312,8 +248,9 @@ export default class GameBoard extends Component {
       <div className="ui container">
         <GameHeader user={user}/>
 
+      {/* Modals */}
         <ReactModal
-          isOpen = {game.modalOpen.setRole || game.modalOpen.setRoleAgain}
+          isOpen = {(game.modalState == ModalStates.SET_ROLE) || (game.modalState == ModalStates.SET_ROLE_AGAIN)}
           className = "modal"
           overlayClassName = "overlay"
           ariaHideApp={false}>
@@ -322,7 +259,7 @@ export default class GameBoard extends Component {
 
           {(!(user.username in game.playerRoles)) ? (
             <div className="modalDiv"> 
-              {(game.modalOpen.setRoleAgain) ? (
+              {(game.modalState == ModalStates.SET_ROLE_AGAIN) ? (
                 <p>Looks like you and your friends do not agree on your roles...Let's try this again!</p>
               ): null}
                 <p><b>Select your team:</b></p>
@@ -338,7 +275,7 @@ export default class GameBoard extends Component {
         </ReactModal>
 
         <ReactModal
-          isOpen = {game.modalOpen.drawFirst}
+          isOpen = {game.modalState == ModalStates.SET_DRAW_FIRST}
           className = "modal"
           overlayClassName = "overlay"
           ariaHideApp={false}>
@@ -358,7 +295,7 @@ export default class GameBoard extends Component {
         </ReactModal>
 
         <ReactModal
-          isOpen = {game.modalOpen.openDi && game.modalOpenDiUser == user.username}
+          isOpen = {game.modalState == ModalStates.OPEN_DI && game.diOpener == user.username}
           className = "modal"
           overlayClassName = "overlay"
           ariaHideApp={false}>
@@ -374,7 +311,7 @@ export default class GameBoard extends Component {
           
           <button className="ui button black" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
 
-          {(game.statusito != GameStatusitos.FINISHED)? (
+          {(game.stage != GameStages.FINISHED)? (
               <button className="ui button red" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
           ):null}
 
@@ -388,21 +325,22 @@ export default class GameBoard extends Component {
           <div className="column">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
 
-            {(!(game.modalOpen.setRole || game.modalOpen.setRoleAgain)) ? (
+            {/* WRAP */}
+            {(game.stage != GameStages.SET_UP) ? (
               <p className="playerRole">Role: {game.playerRoles[user.username]}</p>
             ): null}
 
-            {(game.shownThree) ? (
+            {(game.threeState != ThreeStates.NOT_SHOWN) ? (
               <img src={"/images/" + SuitsMap[game.zhu] + ".png"} className="zhuImage"></img>
             ): null}
 
-            {(game.statusito == GameStatusitos.DRAWING) ? (
+            {(game.stage == GameStages.DRAW) ? (
               (userIsCurrPlayer) ? (
                 <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
               ): (
                 <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
               )
-            ): (game.statusito == GameStatusitos.PLAYING) ? (
+            ): (game.stage == GameStages.PLAY) ? (
               (userIsCurrPlayer)? (
                 <button className="ui button blue corner" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
               ): (
@@ -429,10 +367,11 @@ export default class GameBoard extends Component {
 
           <div className="column" id="dummyColumn1"></div>
 
-          
+
+          {/* Wrap main Areas and next areas separately */}
 
           {/* Di to find three */}
-          {(game.statusito == GameStatusitos.DI && game.threeFromDiCount > 0 && game.diOpener == '') ? (
+          {(game.stage == GameStages.FIND_THREE_IN_DI) ? (
             <div className="column" id="tableColumn">
               <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diArea">
@@ -446,7 +385,7 @@ export default class GameBoard extends Component {
               </div>
               <div className="nextArea">
                 <br></br>
-                {(game.underdogs.indexOf(user.username) == -1) ? (
+                {(game.playerRoles[user.username] == Roles.DEFENDER) ? (
                   <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
                 ): (
                   <p>Waiting for opponents to open kitty...</p>
@@ -455,7 +394,7 @@ export default class GameBoard extends Component {
             </div>
 
           //Opened di
-          ): (game.statusito == GameStatusitos.DI && game.diOpener == user.username) ? (
+          ): (game.stage == GameStages.DI && game.diOpener == user.username) ? (
             <div className="column" id="tableColumn">
               <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diArea">
@@ -469,10 +408,10 @@ export default class GameBoard extends Component {
               </div>
             </div>
 
-          //Di during WRAPUP
-          ): (game.statusito == GameStatusitos.WRAPUP || game.statusito == GameStatusitos.FINISHED) ? (
+          //Di during WRAPUP and FINISHED
+          ): ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) ? (
             <div className="column" id="tableColumn">
-              <p className="banner"><b>CurrLang.diArea</b></p>
+              <p className="banner"><b>{CurrLang.diArea}</b></p>
               <div className="diAreaWrapup">
                   {diCards.map((diCard, index) => (
                     <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
@@ -485,14 +424,12 @@ export default class GameBoard extends Component {
             <div className="column" id="tableColumn">
               <p className="banner"><b>{CurrLang.tableArea}</b></p>
 
-              {(game.statusito == GameStatusitos.PLAYING) ? (
-                (game.seePrevTableActive)? (
-                  <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
-                ): (game.clearPrevTableActive)? (
-                  <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>
-                ): (
-                  <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
-                )
+              {(game.tableState == TableStates.SEE_PREV_TABLE)? (
+                <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
+              ): (game.tableState == TableStates.CLEAR_PREV_TABLE)? (
+                <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>
+              ): (game.stage == GameStages.PLAY)? (
+                <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
               ): null}
 
               <div className="rowTable">
@@ -502,37 +439,35 @@ export default class GameBoard extends Component {
                     <p className="tableBanner"><b>{player}</b></p>
                     {Object.keys(tableCards).map((card, index) => (
                       (tableCards[card] == player)? (
-                        (player == user.username && userIsCurrPlayer)? (
-                          <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                        ): (
-                          <img src={"/images/" + card + ".png"} className="handle" draggable="false" key={card}></img>
-                        )
+                        <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
                       ):null
                     ))}
                   </div>
                 ))}  
 
-                {(game.seeingPrevTable) ? (
+                {(game.disableTableArea(user)) ? (
                     <div className="rowTableShadow"></div>
                 ): null}
 
               </div>
               <div className="nextArea">
                 <br></br>
-                {(game.statusito == GameStatusitos.DI && !game.shownThree)? (
-                  (game.underdogs.indexOf(user.username) == -1) ? (
+                {(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN)? (
+                  (game.playerRoles[user.username] == Roles.DEFENDER) ? (
                     <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>
                   ): (
                     <p>Waiting for opponents to look for trump suit in kitty...</p>
                   )
-                ): (game.statusito == GameStatusitos.DI && game.shownThree) ? (
-                  (game.underdogs.indexOf(user.username) == -1) ? (
+                ): (game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) ? (
+                  (game.playerRoles[user.username] == Roles.DEFENDER) ? (
                     <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
                   ): (
                     <p>Waiting for opponents to open kitty...</p>
                   )
-                ): (game.statusito == GameStatusitos.PLAYING && game.clearTableActive)? (
+                ): (game.tableState == TableStates.CLEAR_TABLE)? (
                   <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>Click here if you won this round</button>
+                ): (game.stage == GameStages.DI && game.diOpener != user.username) ? (
+                  <p>Waiting for {game.diOpener} to start the game...</p>
                 ): (
                   <p>Placeholder</p>
                 )}

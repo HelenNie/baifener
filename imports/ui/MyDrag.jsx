@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 
 import {ZIndexBase} from '../api/models/game.js';
-import {userDrawCardGame, userOpenCloseDiGame, userCardMigrationGame, userStartGameGame, userPlayCardGame, userTakeBackCardGame, userClearTableGame, userLiangThreeGame, userTakeBackThreeGame, userCollectPointsGame, userThreeFromDiGame, userThreeFromDiTakeDiGame, userEndTurnGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
+import {userCardMigrationGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
 
 
 export default class MyDrag extends React.Component {
@@ -53,7 +53,7 @@ export default class MyDrag extends React.Component {
 
   handleBringToFront = (e) => {
     var myZ = Number(e.currentTarget.style.zIndex);
-    var highestZ = this.props.game.userGetHighestZIndex();
+    var highestZ = this.props.game.getHighestZIndex();
     if (myZ < highestZ || highestZ == ZIndexBase) {
       e.currentTarget.style.zIndex = highestZ + 1;
       userSetZIndexGame.call({gameId: this.props.game._id, card: this.props.card, z:Number(e.currentTarget.style.zIndex)});  
@@ -78,32 +78,3 @@ export default class MyDrag extends React.Component {
     );
   }
 }
-
-    //Setting defaultPosition for where card first shows up
-    // if (this.props.location.x == 0 && this.props.location.y == 0) {
-    //   let x = (this.props.index % numCardsInRow) * cardWidth;
-    //   let y = Math.floor(this.props.index / numCardsInRow) * cardHeight;
-    //   userSetCardLocGame.call({gameId: this.state.game._id, card: this.state.card, x: x, y: y});
-    //   this.state.controlledPosition = {x:x, y:y};
-    // } else {
-    //   this.state.controlledPosition = this.props.location;
-    //   console.log(this.state.card, ": ", this.props.location); 
-    // }
-
-    // onControlledDragStop = (e, position) => {
-    //   this.onControlledDrag(e, position);
-    //   this.onStop();
-
-    //   //replace with draggable coordinates
-    //   let cardX = e.screenX;
-    //   let cardY = e.screenY;
-
-    //   if(cardX > boundary) {
-    //     if (this.props.status == GameStatusitos.PLAYING) {
-    //       userPlayCardGame.call({gameId: this.props.game._id, card: this.props.card});
-    //     } else if (this.props.status == GameStatusitos.DRAWING || (this.props.status == GameStatusitos.DI && !this.props.game.diOpened && this.props.game.threeFromDiCount == 0)) {
-    //       userLiangThreeGame.call({gameId: this.props.game._id, card: this.props.card});
-    //       userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: 0, y: 0});
-    //     }
-    //   }
-    // };

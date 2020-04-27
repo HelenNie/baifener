@@ -44,18 +44,6 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userPlayCardGame(gameId, user, card) {
-    let game = Games.findOne(gameId);
-    game.userPlayCard(user, card);
-    Games.saveGame(game);
-  },
-
-  userTakeBackCardGame(gameId, user, card) {
-    let game = Games.findOne(gameId);
-    game.userTakeBackCard(user, card);
-    Games.saveGame(game);
-  },
-
   userClearTableGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userClearTable(user);
@@ -68,39 +56,9 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userLiangThreeGame(gameId, user, card) {
-    let game = Games.findOne(gameId);
-    game.userLiangThree(user, card);
-    Games.saveGame(game);
-  },
-  
-  userTakeBackThreeGame(gameId, user, card) {
-    let game = Games.findOne(gameId);
-    game.userTakeBackThree(user, card);
-    Games.saveGame(game);
-  },
-
-  userCollectPointsGame(gameId, user) {
-    let game = Games.findOne(gameId);
-    game.userCollectPoints();
-    Games.saveGame(game);
-  },
-
   userThreeFromDiGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userThreeFromDi(user);
-    Games.saveGame(game);
-  },
-
-  userRevealDiGame(gameId, user) {
-    let game = Games.findOne(gameId);
-    game.userRevealDi(user);
-    Games.saveGame(game);
-  },
-
-  userTaixiaPointsGame(gameId, user) {
-    let game = Games.findOne(gameId);
-    game.userTaixiaPoints(user);
     Games.saveGame(game);
   },
 
@@ -131,12 +89,6 @@ export let GamesController = {
   userEndGameGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userEndGame();
-    Games.saveGame(game);
-  },
-
-  userPointsOnTableGame(gameId, user) {
-    let game = Games.findOne(gameId);
-    game.userPointsOnTable();
     Games.saveGame(game);
   },
 
