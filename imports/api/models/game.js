@@ -475,7 +475,7 @@ export class Game {
       this.userTakeCardfromDi(user, card);
     } else if (this.stage == GameStages.DI) {
       this.userPutCardInDi(user, card);
-    } else if (this.stage == GameStages.PLAY && (card in this.hands[user.username])) {
+    } else if (this.stage == GameStages.PLAY && (this.hands[user.username].indexOf(card) > -1)) {
       this.userPlayCard(user,card);
     } else if (this.stage == GameStages.PLAY) {
       this.userTakeBackCard(user,card);
@@ -590,7 +590,8 @@ export class Game {
   }
 
   userPutCardInDi(user, card) {
-    if (user.username == this.diOpener) {
+    if (user.username != this.diOpener) {
+      console.log("You are not diOpener");
       return;
     }
     if (this.di.length == DiLength) {
@@ -673,17 +674,17 @@ export class Game {
   playedWrongNumCards() {
     if (this.turnCycleCount % NumPlayers != 0) {
       if (this.currTurnNumCards != this.currCycleNumCards) {
-        return false;
+        return true;
       }
     } else {
       this.currCycleNumCards = this.currTurnNumCards;
     }
-    return true;
+    return false;
   }
 
   //combine these two helper methods once currTable and di are both arrays of card objects
   userCollectPointsTable(user) {
-    if (this.playerRoles[user.username] == Roles.ATTACKER) {
+    if (this.playerRoles[user.username] == Roles.DEFENDER) {
       return;
     }
     for (var card in this.currTableCards) {
@@ -696,14 +697,14 @@ export class Game {
   }
 
   userCollectPointsDi(user) {
-    if (this.playerRoles[user.username] == Roles.ATTACKER) {
+    if (this.playerRoles[user.username] == Roles.DEFENDER) {
       return;
     }
     for (let i = this.di.length - 1; i > -1; i--) {
       if (Object.keys(PointsMap).indexOf(this.di[i].slice(0, 1)) >= 0) {
         this.taiXiaPoints.push(this.di[i]);
         this.di.splice(i, 1);
-        console.log("Collected: ", card);
+        console.log("Collected: ", this.di[i]);
       }
     }
   }
@@ -790,9 +791,9 @@ export class Game {
 
   getFirstPlayerShown() {
     if (this.stage == GameStages.PLAY) {
-      return this.usernameToIndex(game.diOpener);
+      return this.usernameToIndex(this.diOpener);
     } else if (this.firstDrawer != '') {
-      return this.usernameToIndex(game.firstDrawer);
+      return this.usernameToIndex(this.firstDrawer);
     } else {
       return 0;
     }
@@ -806,14 +807,14 @@ export class Game {
     var bool = true;
     bool = bool && (this.currentPlayerIndex > -1);
     bool = bool && (this.tableState != TableStates.CLEAR_PREV_TABLE);
-    bool = bool && !(this.stage == GameStages.DI && this.diOpener != user.username);
+    bool = bool && (this.stage != GameStages.DI);
     return bool;
   }
 
   disableTableArea(user) {
-    var bool = true;
-    bool = bool && (this.tableState == TableStates.CLEAR_PREV_TABLE);
-    bool = bool && (this.stage == GameStages.DI && this.diOpener != user.username);
+    var bool = false;
+    bool = bool || (this.tableState == TableStates.CLEAR_PREV_TABLE);
+    bool = bool || (this.stage == GameStages.DI);
     return bool;
   }
 
