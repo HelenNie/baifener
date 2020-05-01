@@ -276,7 +276,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -325,15 +325,8 @@ export class Game {
 
       //Not in test states
       this.cardLocations = {}; //merge into card objects
-      for (var i = 0; i < DeckComplete.length; i++) {
-        this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
-      }
       this.cardZIndexes = {}; //merge into card objects
-      for (var i = 0; i < DeckComplete.length; i++) {
-        this.cardZIndexes[DeckComplete[i]] = ZIndexBase;
-      }
       this.highestZIndex = ZIndexBase;
-
       this.currCycleNumCards = 0; //label as counter
       this.currTurnNumCards = 0; //label as counter
       this.diOriginal = this.di;
@@ -365,9 +358,28 @@ export class Game {
 
     //If all four players are present
     if (this.players.length == NumPlayers) {
-      this.arrangeSeating();
-      this.status = GameStatuses.STARTED;
+      this.setUpGame();
     }
+  }
+
+  setUpGame() {
+    this.arrangeSeating();
+
+    if (CurrTestState == TestStates.REAL) {
+      for (var i = 0; i < this.players.length; i++) {
+        this.hands[this.players[i].username] = [];
+      }
+    }
+
+    for (var i = 0; i < DeckComplete.length; i++) {
+      this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
+    }
+
+    for (var i = 0; i < DeckComplete.length; i++) {
+      this.cardZIndexes[DeckComplete[i]] = ZIndexBase;
+    }
+
+    this.status = GameStatuses.STARTED;
   }
 
   arrangeSeating() {
@@ -799,15 +811,20 @@ export class Game {
     }
   }
 
+  getCurrPlayer() {
+    return this.players[this.getCurrentPlayerIndex()].username;
+  }
+
   arePartners(user1, user2) {
     return Partners[user1] == user2;
   }
 
   showCurrPlayerBorder(user) {
     var bool = true;
-    bool = bool && (this.currentPlayerIndex > -1);
+    bool = bool && (this.getCurrentPlayerIndex() > -1);
     bool = bool && (this.tableState != TableStates.CLEAR_PREV_TABLE);
     bool = bool && (this.stage != GameStages.DI);
+    bool = bool && (this.stage != GameStages.FINISHED);
     return bool;
   }
 

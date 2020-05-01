@@ -38,14 +38,32 @@ body {
 
 /* GameBoard levels */
 
-.ui.attached.center.aligned.segment {
-    height: 50px;
-    background: rgba(255, 255, 255, 0.75);
+.row {
+    padding: 1%;   
 }
 
-.row {
+#mainRow {
     height: 90%;
-    padding: 1%;
+}
+
+#topRow {
+    height: 45px;
+}
+
+.topButton {
+    position: relative;
+    float: left;
+}
+
+.messageArea {
+    width: 86.87%;
+    height: 36px;
+    position: relative;
+    float: left;
+    color: #F4F1DE;
+    background-color: black;
+    opacity: 50%;
+    padding: 0.6%;
 }
 
 .column {
@@ -54,9 +72,12 @@ body {
     height: 100%;
     position: relative;
     padding: 1%;
-    border-radius: 15px;
-    border: 1px solid black;
-    background-color: honeydew;
+    border-radius: 5px;
+    background-color: #F4F1DE;
+}
+
+.column.smart {
+    box-shadow: 5px 5px 5px grey;
 }
 
 #dummyColumn1 {
@@ -184,7 +205,7 @@ body {
     left: 0px;
     background-color: black;
     border-radius: 5px;
-    opacity: 50%;
+    
 }
 
 .tableBanner {

@@ -9,6 +9,35 @@ import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStages, ModalStates, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers} from '../api/models/game.js';
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame} from '../api/methods/games.js';
 
+export const TableOrder = [0, 1, 3, 2];
+
+export const CssAttributes = {
+  backgroundColor: 'backgroundColor',
+  border: 'border'
+}
+
+export const CssValues = {
+  tableArea: {
+    user: {
+      backgroundColor: '#55876c',
+      border: '4px solid #55876c'
+    },
+    partner: {
+      backgroundColor: '#8cb7a0',
+      border: '4px solid #8cb7a0'
+    },
+    opponents: {
+      backgroundColor: 'lightgray',
+      border: '4px solid lightgray'
+    },
+    currPlayer: {
+      border: '4px solid gold'
+    }
+  },
+  handArea: {
+    backgroundColor: 'gold'
+  }
+}
 
 export const Langs = {
   CHINESE: {
@@ -182,172 +211,283 @@ export default class GameBoard extends Component {
     userEndGameGame.call({gameId: game._id});
   }
 
-  renderStatus() {
-    let game = this.props.game;
+  renderTablePlayersStyle(game, user) {
+    //set up players in order starting with diOpener, and styling accordingly
+    let tablePlayers = {};
+    let playerName = '';
+    let startingIdx = game.getFirstPlayerShown();
 
-    if (game.status === GameStatuses.STARTED) {
-      return (
-        <div className="ui attached center aligned segment">
-          <p><b>{CurrLang.stage}:</b>{game.stage}</p>
-        </div>
-        )
+    for (var i = 0; i < TableOrder.length; i++) {
+      playerName = game.players[(startingIdx + TableOrder[i]) % NumPlayers].username;
+      if (playerName == user.username) {
+        tablePlayers[playerName] = CssValues.tableArea.user;
+      } else if (game.arePartners(playerName, user.username)) {
+        tablePlayers[playerName] = CssValues.tableArea.partner;
+      } else {
+        tablePlayers[playerName] = CssValues.tableArea.opponents;
+      }
+    }
+
+    if (game.showCurrPlayerBorder(user)) {
+      let currPlayer = game.players[game.getCurrentPlayerIndex()];
+      tablePlayers[currPlayer.username][CssAttributes.border] = CssValues.tableArea.currPlayer.border;
+    }
+
+    return tablePlayers;
+  }
+
+  renderHandAreaStyle(game, user) {
+    let handAreaStyle = {};
+    if (user.username == game.getCurrPlayer()) {
+      handAreaStyle[CssAttributes.backgroundColor] = CssValues.handArea.backgroundColor;
+    }
+    return handAreaStyle;
+  }
+
+  renderModal(game, user, modal) {
+    var banner;
+    var content;
+
+    switch (modal) {
+      case ModalStates.SET_ROLE:
+        banner = "Select your team!";
+        content = user.username in game.playerRoles ? 
+          "Waiting for other players to confirm..." :
+          <div className="modalContent">
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
+          </div>;
+        break;
+      case ModalStates.SET_ROLE_AGAIN:
+        banner = "Select your team!";
+        content = user.username in game.playerRoles ? 
+          "Waiting for other players to confirm..." :
+          <div className="modalContent">
+            <p>Looks like you and your friends do not agree on your roles...Let's try this again!</p>
+            <br></br>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
+          </div>;
+          break;
+      case ModalStates.SET_DRAW_FIRST:
+        banner = "Will you draw first?";
+        content = game.playerRoles[user.username] == Roles.DEFENDER ? 
+          "Waiting for opponents to start drawing..." :
+          <div className="modalContent">
+            <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
+          </div>;
+          break;
+      default:
+        banner = "Are you ready to open the kitty?";
+        content = 
+          <div className="modalContent">
+            <p>"Are you sure you want to open to kitty?"</p>
+            <button className="ui green button" onClick={this.handleConfirmOpenDi.bind(this)}>Meow!</button>
+            <button className="ui green button" onClick={this.handleCancelOpenDi.bind(this)}>Nope</button>
+          </div>;
+    }
+
+    return (
+      <ReactModal
+          isOpen = { game.modalState == modal }
+          className = "modal"
+          overlayClassName = "overlay"
+          ariaHideApp={false}>
+          <br></br>
+          <p className="modalBanner">{ banner }</p>
+          <div className="modalDiv"> 
+            <br></br>
+            { content }
+          </div>
+      </ReactModal>
+      );
+  }
+
+  renderHandAreaItems(game, user) {
+    var items = [];
+    var item1;
+    var item2;
+
+    if (game.stage != GameStages.SET_UP) {
+      items.push(<p className="playerRole" key="1">Role: {game.playerRoles[user.username]}</p>);
+    }
+    if (game.threeState != ThreeStates.NOT_SHOWN) {
+      items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} className="zhuImage" key="2"></img>);
+    }
+    if (game.stage == GameStages.DRAW) {
+      item1 = <button className="ui button blue corner" key="3" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>;
+      item2 = <button className="ui button blue corner" key="3" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>;
+      items.push(this.renderByRole(game, user, item1, item2, game.getCurrPlayer()));
+    }
+    if (game.stage == GameStages.PLAY) {
+      item1 = <button className="ui button blue corner" key="4" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>;
+      item2 = <button className="ui button blue corner" key="4" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>;
+      items.push(this.renderByRole(game, user, item1, item2, game.getCurrPlayer()));
+    }
+
+    return items;
+  }
+
+  renderTableAreaItems(game, user) {
+    var button;
+
+    if (game.tableState == TableStates.SEE_PREV_TABLE) {
+      button = <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>;
+    } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
+      button = <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>;
     } else {
-      return (
-        <div className="ui attached center aligned segment">
-          <p>{CurrLang.gameFinished}!</p>
+      button = <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>;
+    }
+
+    return button;
+  }
+
+  renderTableCol(game, user) {
+    let diCards = game.di; 
+    let tableCards = game.currTableCards;
+    let tablePlayers = this.renderTablePlayersStyle(game, user);
+
+    var bannerText;
+    var content;
+
+    if (game.stage == GameStages.FIND_THREE_IN_DI) {
+      // Di to find three view
+      bannerText = CurrLang.diArea;
+      content = 
+        <div className="diArea">
+          {diCards.slice(0, game.threeFromDiCount).map((diCard, index) => (
+            <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+          ))}
         </div>
-        )
+    } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
+      //Open di view
+      bannerText = CurrLang.diArea;
+      content = 
+          <div className="diArea">
+            {diCards.map((diCard, index) => (
+              <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
+            ))}
+          </div>
+    } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
+      //Di during WRAPUP and FINISHED view
+      bannerText = CurrLang.diArea;
+      content = 
+          <div className="diAreaWrapup">
+              {diCards.map((diCard, index) => (
+                <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+              ))}
+          </div>
+    } else {
+      //Playing view
+      bannerText = CurrLang.tableArea;
+      content = 
+        <div className="rowTable">
+          {this.renderTableAreaItems(game, user)}
+          {Object.keys(tablePlayers).map((player, index) => (
+            <div className="tableArea" key={index} style={tablePlayers[player]}>
+              <p className="tableBanner"><b>{player}</b></p>
+              {Object.keys(tableCards).map((card, index) => (
+                (tableCards[card] == player)? (
+                  <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                ):null
+              ))}
+            </div>
+          ))}  
+
+          {(game.disableTableArea(user)) ? (
+            <div className="rowTableShadow"></div>
+          ): null}
+        </div>;
+    }
+
+    return ({banner: <p className="banner"><b>{ bannerText }</b></p>, content: content});
+  }
+
+  renderNextArea(game, user) {
+    let items = [];
+    var item1;
+    var item2;
+
+    if (game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN) {
+      //Find three in di button
+      item1 = <button className="ui button blue" key="1" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>;
+      item2 = <p key="1">Waiting for opponents to look for trump suit in kitty...</p>;
+      items.push(this.renderByRole(game, user, item1, item2, Roles.DEFENDER));
+    } else if ((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) {
+      //Open di button
+      item1 = <button className="ui button blue" key="2" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>;
+      item2 = <p key="2">Waiting for opponents to open kitty...</p>;
+      items.push(this.renderByRole(game, user, item1, item2, Roles.DEFENDER));
+    } else if (game.stage == GameStages.DI) {
+      //Start playing button
+      item1 = <button className="ui button red" key="3" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>;
+      item2 = <p key="3">Waiting for {game.diOpener} to start the game...</p>;
+      items.push(this.renderByRole(game, user, item1, item2, game.diOpener));
+    } else if (game.tableState == TableStates.CLEAR_TABLE) {
+      //Clear table button
+      items.push(<button className="ui button blue" key="4" onClick={this.handleClearTable.bind(this)}>Click here if you won this round</button>);
+    } else {
+      //Default
+      items.push(<p key="5">Placeholder</p>);
+    }
+
+    return items;
+  }
+
+  renderByRole(game, user, item1, item2, role) {
+    if (game.playerRoles[user.username] == role) {
+      return item1;
+    } else {
+      return item2;
     }
   }
 
   render() {
     let game = this.props.game;
     let user = this.props.user;
-    let currPlayer = game.players[game.getCurrentPlayerIndex()];
-    let userIsCurrPlayer = (currPlayer ? (user.username == currPlayer.username) : false);
     
     let userCards = game.hands[user.username];
-    let diCards = game.di; 
     let pointCards = game.taiXiaPoints;
-    let tableCards = game.currTableCards;
 
-    let handAreaStyle = {};
-    if (userIsCurrPlayer) {
-      handAreaStyle['backgroundColor'] = "gold";
-    }
+    let handAreaStyle = this.renderHandAreaStyle(game, user);
 
-    //wrap function //set up players in order starting with diOpener, and styling accordingly
-    let tablePlayers = {};
-
-    let playerName = '';
-    let playerStyle = {};
-    let startingIdx = game.getFirstPlayerShown();
-    let tableOrder = [0, 1, 3, 2];
-
-    for (var i = 0; i < tableOrder.length; i++) {
-      playerName = game.players[(startingIdx + tableOrder[i]) % NumPlayers].username;
-      playerStyle = {};
-      if (playerName == user.username) {
-        playerStyle['backgroundColor'] = '#55876c';
-        playerStyle['border'] = '4px solid #55876c';
-      } else if (game.arePartners(playerName, user.username)) {
-        playerStyle['backgroundColor'] = '#8cb7a0';
-        playerStyle['border'] = '4px solid #8cb7a0';
-      } else {
-        playerStyle['backgroundColor'] = 'lightgray';
-        playerStyle['border'] = '4px solid lightgray';
-      }
-      tablePlayers[playerName] = playerStyle;
-    }
-
-    if (game.showCurrPlayerBorder(user)) {
-      tablePlayers[currPlayer.username]['border'] = '4px solid gold';
-    }
+    console.log(game.stage);
 
     return (
       <div className="ui container">
+        {/* Header */}
         <GameHeader user={user}/>
 
-      {/* Modals */}
-        <ReactModal
-          isOpen = {(game.modalState == ModalStates.SET_ROLE) || (game.modalState == ModalStates.SET_ROLE_AGAIN)}
-          className = "modal"
-          overlayClassName = "overlay"
-          ariaHideApp={false}>
-          <br></br>
-          <p className="modalBanner">Let's get started!</p>
+        {/* Modals */}
+        {this.renderModal(game, user, ModalStates.SET_ROLE)}
+        {this.renderModal(game, user, ModalStates.SET_ROLE_AGAIN)}
+        {this.renderModal(game, user, ModalStates.SET_DRAW_FIRST)}
+        {this.renderModal(game, user, ModalStates.OPEN_DI)}
 
-          {(!(user.username in game.playerRoles)) ? (
-            <div className="modalDiv"> 
-              {(game.modalState == ModalStates.SET_ROLE_AGAIN) ? (
-                <p>Looks like you and your friends do not agree on your roles...Let's try this again!</p>
-              ): null}
-                <p><b>Select your team:</b></p>
-                <br></br>
-                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
-                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
-                <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
-            </div>
-          ): (
-            <p>Waiting for other players to confirm...</p>
-          )}
-
-        </ReactModal>
-
-        <ReactModal
-          isOpen = {game.modalState == ModalStates.SET_DRAW_FIRST}
-          className = "modal"
-          overlayClassName = "overlay"
-          ariaHideApp={false}>
-          <br></br>
-          <p className="modalBanner">Will you draw first?</p>
-
-          {(game.playerRoles[user.username] == Roles.ATTACKER || game.playerRoles[user.username] == Roles.TBD) ? (
-            <div className="modalDiv"> 
-              <br></br>
-               <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
-            </div>
-          ): (
-            <p>Waiting for opponents to start drawing...</p>
-          )}
-
-          
-        </ReactModal>
-
-        <ReactModal
-          isOpen = {game.modalState == ModalStates.OPEN_DI && game.diOpener == user.username}
-          className = "modal"
-          overlayClassName = "overlay"
-          ariaHideApp={false}>
-          <br></br>
-          <p className="modalBanner">Are you ready to open the kitty?</p>
-          <br></br>
-          <button className="ui green button" onClick={this.handleConfirmOpenDi.bind(this)}>Meow!</button>
-          <button className="ui green button" onClick={this.handleCancelOpenDi.bind(this)}>Nope</button>
-        </ReactModal>
-
-        {/* Buttons */}
-        <div className="buttons">
-          
-          <button className="ui button black" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
-
+        {/* TopRow */}
+        <div className="row" id="topRow">
+          {/* Buttons */}
+          <button className="ui button black topButton" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
           {(game.stage != GameStages.FINISHED)? (
-              <button className="ui button red" onClick={this.handleEndGame.bind(this)} style={{float: 'right'}}>{CurrLang.endGame}</button>
-          ):null}
-
+            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)}>{CurrLang.endGame}</button>
+          ): (
+            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)} disabled>{CurrLang.endGame}</button>
+          )}  
+          {/* Message */}
+          <div className="messageArea">
+            <p>:{game.stage}</p>
+          </div>
         </div>
 
-        {/* Status banner */}
-        {this.renderStatus()}
+        {/* MainRow */}
+        <div className="row" id="mainRow">
 
-        {/* Hand */}
-        <div className="row">
-          <div className="column">
+          {/* Hand */}
+          <div className="column smart">
             <p className="banner"><b>{CurrLang.handArea}</b></p>
-
-            {/* WRAP */}
-            {(game.stage != GameStages.SET_UP) ? (
-              <p className="playerRole">Role: {game.playerRoles[user.username]}</p>
-            ): null}
-
-            {(game.threeState != ThreeStates.NOT_SHOWN) ? (
-              <img src={"/images/" + SuitsMap[game.zhu] + ".png"} className="zhuImage"></img>
-            ): null}
-
-            {(game.stage == GameStages.DRAW) ? (
-              (userIsCurrPlayer) ? (
-                <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>
-              ): (
-                <button className="ui button blue corner" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>
-              )
-            ): (game.stage == GameStages.PLAY) ? (
-              (userIsCurrPlayer)? (
-                <button className="ui button blue corner" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>
-              ): (
-                <button className="ui button blue corner" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>
-              )
-            ): null}
-
+            {this.renderHandAreaItems(game, user)}
             <div className="handArea" style={handAreaStyle}>
                 {userCards.map((card, index) => (
                   <MyDrag
@@ -367,117 +507,20 @@ export default class GameBoard extends Component {
 
           <div className="column" id="dummyColumn1"></div>
 
-
-          {/* Wrap main Areas and next areas separately */}
-
-          {/* Di to find three */}
-          {(game.stage == GameStages.FIND_THREE_IN_DI) ? (
-            <div className="column" id="tableColumn">
-              <p className="banner"><b>{CurrLang.diArea}</b></p>
-              <div className="diArea">
-                {diCards.map((diCard, index) => (
-                  (index < game.threeFromDiCount) ? (
-                    <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
-                  ): (
-                    <p key={diCard}></p>
-                  )
-                ))}
-              </div>
-              <div className="nextArea">
-                <br></br>
-                {(game.playerRoles[user.username] == Roles.DEFENDER) ? (
-                  <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
-                ): (
-                  <p>Waiting for opponents to open kitty...</p>
-                )}
-              </div>
+          {/* Table and di areas */}
+          <div className="column smart" id="tableColumn">
+            { this.renderTableCol(game, user).banner }
+            { this.renderTableCol(game, user).content }
+            <div className="nextArea">
+              <br></br>
+              { this.renderNextArea(game, user) }
             </div>
-
-          //Opened di
-          ): (game.stage == GameStages.DI && game.diOpener == user.username) ? (
-            <div className="column" id="tableColumn">
-              <p className="banner"><b>{CurrLang.diArea}</b></p>
-              <div className="diArea">
-                {diCards.map((diCard, index) => (
-                  <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
-                ))}
-              </div>
-              <div className="nextArea">
-                <br></br>
-                <button className="ui button red" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>
-              </div>
-            </div>
-
-          //Di during WRAPUP and FINISHED
-          ): ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) ? (
-            <div className="column" id="tableColumn">
-              <p className="banner"><b>{CurrLang.diArea}</b></p>
-              <div className="diAreaWrapup">
-                  {diCards.map((diCard, index) => (
-                    <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
-                  ))}
-              </div>
-            </div>
-          ): (
-
-            //Played cards
-            <div className="column" id="tableColumn">
-              <p className="banner"><b>{CurrLang.tableArea}</b></p>
-
-              {(game.tableState == TableStates.SEE_PREV_TABLE)? (
-                <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>
-              ): (game.tableState == TableStates.CLEAR_PREV_TABLE)? (
-                <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>
-              ): (game.stage == GameStages.PLAY)? (
-                <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>
-              ): null}
-
-              <div className="rowTable">
-
-                {Object.keys(tablePlayers).map((player, index) => (
-                  <div className="tableArea" key={index} style={tablePlayers[player]}>
-                    <p className="tableBanner"><b>{player}</b></p>
-                    {Object.keys(tableCards).map((card, index) => (
-                      (tableCards[card] == player)? (
-                        <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                      ):null
-                    ))}
-                  </div>
-                ))}  
-
-                {(game.disableTableArea(user)) ? (
-                    <div className="rowTableShadow"></div>
-                ): null}
-
-              </div>
-              <div className="nextArea">
-                <br></br>
-                {(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN)? (
-                  (game.playerRoles[user.username] == Roles.DEFENDER) ? (
-                    <button className="ui button blue" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>
-                  ): (
-                    <p>Waiting for opponents to look for trump suit in kitty...</p>
-                  )
-                ): (game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) ? (
-                  (game.playerRoles[user.username] == Roles.DEFENDER) ? (
-                    <button className="ui button blue" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>
-                  ): (
-                    <p>Waiting for opponents to open kitty...</p>
-                  )
-                ): (game.tableState == TableStates.CLEAR_TABLE)? (
-                  <button className="ui button blue" onClick={this.handleClearTable.bind(this)}>Click here if you won this round</button>
-                ): (game.stage == GameStages.DI && game.diOpener != user.username) ? (
-                  <p>Waiting for {game.diOpener} to start the game...</p>
-                ): (
-                  <p>Placeholder</p>
-                )}
-              </div>
-            </div>
-          )}
+          </div>
 
           <div className="column" id="dummyColumn2"></div>
         
-          <div className="column" id="pointsColumn">
+          {/* Points area */}
+          <div className="column smart" id="pointsColumn">
             <p className="banner"><b>{CurrLang.pointsArea}</b></p>
             <div className="pointsArea">
                 {pointCards.map((pointCard, index) => (
