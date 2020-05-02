@@ -178,19 +178,14 @@ body {
     opacity: 65%;
 }
 
-#zhuImage {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 10px;
-    left: 15px;
-}
-
 .tableBanner {
     width: 100%;
     height: 15px;
     position: relative;
 }
+
+
+/* Next area */
 
 #nextArea {
     height: 24%;
@@ -202,6 +197,21 @@ body {
     color: orange;
     font-style: italic;
     font-size: 15px;
+}
+
+#nextAreaPlaceholder {
+    width: 50px;
+    height: 50px;
+}
+
+/* Table area items */
+
+#zhuImage {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    left: 15px;
 }
 
 /* Hand area items */
@@ -228,10 +238,70 @@ body {
     left: 15px;
 }
 
-.ui.button.blue.corner {
+/* round buttons */
+
+.roundCornerButton {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 6px;
+    right: 13px;
+    width: 40px;
+    height: 40px;
+    border: none;
+}
+
+#roundCornerButtonDraw {
+    background: url("/images/button_draw.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonDraw:hover {
+    background: url("/images/button_draw_hover.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonDraw:disabled {
+    background: url("/images/button_draw_disabled.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonDEndTurn {
+    background: url("/images/button_end_turn.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonEndTurn:hover {
+    background: url("/images/button_end_turn_hover.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonEndTurn:disabled {
+    background: url("/images/button_end_turn_disabled.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonSeePrevTable {
+    background: url("/images/button_see_prev_table.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonSeePrevTable:hover {
+    background: url("/images/button_see_prev_table_hover.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonSeePrevTable:disabled {
+    background: url("/images/button_see_prev_table_disabled.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonClearPrevTable {
+    background: url("/images/button_clear_prev_table.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonClearPrevTable:hover {
+    background: url("/images/button_clear_prev_table_hover.png") no-repeat;
+    background-size: 100% 100%;
 }
 
 /* Modal */

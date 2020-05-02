@@ -276,7 +276,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.REAL;
+export const CurrTestState = TestStates.TEST_DRAWING;
 
 /**
  * Game model, encapsulating game-related logics 

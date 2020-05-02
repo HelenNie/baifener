@@ -57,11 +57,6 @@ export const Langs = {
       buttons: {
         back: '回去',
         endGame: '结束游戏',
-        drawCard: '摸牌',
-        finishTurn: '结束出牌',
-        clearTable: '清空',
-        seePrevTable: '看上一局',
-        clearPrevTable: '清空上一局'
       },
       banners: {
         handArea: '我的牌',
@@ -122,11 +117,6 @@ export const Langs = {
       buttons: {
         back: 'Back',
         endGame: 'End Game',
-        drawCard: 'Draw Card',
-        finishTurn: 'End Turn',
-        clearTable: 'Clear Table',
-        seePrevTable: 'See Previous Plays',
-        clearPrevTable: 'Clear Previous Plays'
       },
       banners: {
         handArea: 'My Hand',
@@ -353,13 +343,13 @@ export default class GameBoard extends Component {
       items.push(<p id="playerRole" key="1">{CurrLang.gameBoard.handArea.role}: {CurrLang.gameBoard.roles[game.playerRoles[user.username]]}</p>);
     }
     if (game.stage == GameStages.DRAW) {
-      item1 = <button className="ui button blue corner" key="2" onClick={this.handleDrawCard.bind(this)}>{CurrLang.gameBoard.buttons.drawCard}</button>;
-      item2 = <button className="ui button blue corner" key="2" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.gameBoard.buttons.drawCard}</button>;
+      item1 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="2" onClick={this.handleDrawCard.bind(this)}></button>
+      item2 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="2" onClick={this.handleDrawCard.bind(this)} disabled></button>
       items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
     }
     if (game.stage == GameStages.PLAY) {  
-      item1 = <button className="ui button blue corner" key="3" onClick={this.handleEndTurn.bind(this)}>{CurrLang.gameBoard.buttons.finishTurn}</button>;
-      item2 = <button className="ui button blue corner" key="3" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.gameBoard.buttons.finishTurn}</button>;
+      item1 = <button className="roundCornerButton" id="roundCornerButtonEndTurn" key="2" onClick={this.handleEndTurn.bind(this)}></button>
+      item2 = <button className="roundCornerButton" id="roundCornerButtonEndTurn" key="2" onClick={this.handleEndTurn.bind(this)} disabled></button>
       items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
     }
 
@@ -374,11 +364,11 @@ export default class GameBoard extends Component {
     }
 
     if (game.tableState == TableStates.SEE_PREV_TABLE) {
-      items.push(<button className="ui button blue corner" key="2" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.gameBoard.buttons.seePrevTable}</button>);
+      items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
     } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
-      items.push(<button className="ui button blue corner" key="2" onClick={this.handleClearPrevTable.bind(this)}>{CurrLang.gameBoard.buttons.clearPrevTable}</button>);
-    } else {
-      items.push(<button className="ui button blue corner" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.gameBoard.buttons.seePrevTable}</button>);
+      items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
+    } else if (game.stage == GameStages.PLAY) {
+      items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
     }
 
     return items;
@@ -470,7 +460,7 @@ export default class GameBoard extends Component {
       items.push(<button className="ui button orange" key="4" onClick={this.handleClearTable.bind(this)}>{CurrLang.gameBoard.nextArea.wonRoundButton}</button>);
     } else {
       //Default
-      items.push(<p key="5">Placeholder</p>);
+      items.push(<img id="nextAreaPlaceholder" key="5" src={"/images/nextAreaPlaceholder.png"}></img>);
     }
 
     return items;
