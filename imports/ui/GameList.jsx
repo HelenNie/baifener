@@ -35,10 +35,10 @@ export default class GameList extends Component {
   }
 
   renderPlayers(game) {
-    let player1 = game.players.length > 0? game.players[0].username: CurrLang.waiting+"...";
-    let player2 = game.players.length > 1? game.players[1].username: CurrLang.waiting+"...";
-    let player3 = game.players.length > 2? game.players[2].username: CurrLang.waiting+"...";
-    let player4 = game.players.length > 3? game.players[3].username: CurrLang.waiting+"...";
+    let player1 = game.players.length > 0? game.players[0].username: CurrLang.gameList.waiting+"...";
+    let player2 = game.players.length > 1? game.players[1].username: CurrLang.gameList.waiting+"...";
+    let player3 = game.players.length > 2? game.players[2].username: CurrLang.gameList.waiting+"...";
+    let player4 = game.players.length > 3? game.players[3].username: CurrLang.gameList.waiting+"...";
     return (
       <div>
         <div>
@@ -62,7 +62,7 @@ export default class GameList extends Component {
     <div className="ui container">
       <GameHeader user={this.props.user}/>
 
-      <h1 className="ui top attached header">{CurrLang.listOfGames}</h1>
+      <h1 className="ui top attached header">{CurrLang.gameList.listOfGames}</h1>
       <div className="ui attached segment">
         <div className="ui three cards">
           {this.activeGames().map((game, index) => {
@@ -75,7 +75,7 @@ export default class GameList extends Component {
                         <i className="idea icon"/>
                       </span>
                     ): null}
-                    {CurrLang.gameNumber} {index+1}
+                    {CurrLang.gameList.gameNumber} {index+1}
                   </div>
                 </div>
                 <div className="content">
@@ -85,17 +85,17 @@ export default class GameList extends Component {
                 <div className="extra content">
                   {/* can leave only if user is in the game, and the game is not started */}
                   {this.myCurrentGameId() === game._id && game.status === GameStatuses.WAITING? (
-                    <button className="ui red button" onClick={this.handleLeaveGame.bind(this, game._id)}>{CurrLang.leaveGame}</button>
+                    <button className="ui red button" onClick={this.handleLeaveGame.bind(this, game._id)}>{CurrLang.gameList.leaveGame}</button>
                   ): null}
 
                   {/* can join only if user is not in any game, and the game is not started */}
                   {this.myCurrentGameId() === null && game.status === GameStatuses.WAITING? (
-                    <button className="ui green button" onClick={this.handleJoinGame.bind(this, game._id)}>{CurrLang.joinGame}</button>
+                    <button className="ui green button" onClick={this.handleJoinGame.bind(this, game._id)}>{CurrLang.gameList.joinGame}</button>
                   ): null}
 
                   {/* can enter only if the game is started */}
                   {game.status === GameStatuses.STARTED? (
-                    <button className="ui green button" onClick={this.handleEnterGame.bind(this, game._id)}>{CurrLang.enterGame}</button>
+                    <button className="ui green button" onClick={this.handleEnterGame.bind(this, game._id)}>{CurrLang.gameList.enterGame}</button>
                   ): null}
 
                   {/* just a invisible dummy button to make up the space */}
@@ -111,11 +111,11 @@ export default class GameList extends Component {
       <div className="ui attached segment">
         {this.myCurrentGameId() === null? (
           <div>
-            <button className="ui green button" onClick={this.handleNewGame.bind(this)}>{CurrLang.newGame}</button>
+            <button className="ui green button" onClick={this.handleNewGame.bind(this)}>{CurrLang.gameList.newGame}</button>
           </div>
         ): (
           <div>
-            <button className="ui green button" onClick={this.handleNewGame.bind(this)} disabled>{CurrLang.newGame}</button>
+            <button className="ui green button" onClick={this.handleNewGame.bind(this)} disabled>{CurrLang.gameList.newGame}</button>
           </div>
         )}
       </div>

@@ -1,7 +1,10 @@
 /* Master levels */
 
 body {
-    height: 95vh;
+    min-height: 680px;
+    min-width: 1435px;
+    max-height: 680px;
+    max-width: 1435px;
     background-image: url("/images/wood_light.jpg");
     background-size: cover;
 }
@@ -9,8 +12,6 @@ body {
 #render-target {
     height: 100%;
     width: 100%;
-    min-height: 660px;
-    min-width: 1300px;
 }
 
 .ui.container {
@@ -38,6 +39,7 @@ body {
 
 /* GameBoard levels */
 
+/* Rows */
 .row {
     padding: 1%;   
 }
@@ -47,8 +49,10 @@ body {
 }
 
 #topRow {
-    height: 45px;
+    height: 7%;
 }
+
+/* topRow items */
 
 .topButton {
     position: relative;
@@ -56,7 +60,7 @@ body {
 }
 
 .messageArea {
-    width: 86.87%;
+    width: 87.55%;
     height: 36px;
     position: relative;
     float: left;
@@ -65,6 +69,8 @@ body {
     opacity: 50%;
     padding: 0.6%;
 }
+
+/* Columns */
 
 .column {
     float: left;
@@ -76,38 +82,67 @@ body {
     background-color: #F4F1DE;
 }
 
-.column.smart {
-    box-shadow: 5px 5px 5px grey;
-}
-
-#dummyColumn1 {
-    width: 2%;
-    padding: 0%;
-    border: 0px solid black;
-    background-color: transparent;
-}
-
-#tableColumn {
-    height: 71%;
-}
-
-#dummyColumn2 {
-    height: 2%;
-    padding: 0%;
-    border: 0px solid black;
-    background-color: transparent;
-}
-
-#pointsColumn {
-    height: 27%;
-}
-
 /* Clear floats after the columns */
 .row:after {
     content: "";
     display: table;
     clear: both;
 }
+
+.column.smart {
+    box-shadow: 5px 5px 5px grey;
+}
+
+.column.dummy {
+    padding: 0%;
+    border: 0px solid black;
+    background-color: transparent;
+}
+
+#dummyColumn1 {
+    width: 2%;
+}
+
+#dummyColumn2 {
+    height: 2%;
+}
+
+#tableColumn {
+    height: 71%;
+}
+
+#pointsColumn {
+    height: 27%;
+}
+
+/* Areas */
+
+.area {
+    width: 100%;
+    position: relative;
+    padding: 2%;
+    border-radius: 5px;
+}
+
+#handArea {
+    height: 92%;
+    background-color: #9B6A6C;
+}
+
+#diArea {
+    height: 72%;
+    background-color: peachpuff;
+    text-align: center;
+}
+
+#pointsArea {
+    height: 67%;
+    text-align: center;
+    background-color: floralwhite;
+    border: 1px dashed gray;
+}
+
+/* Banners */
 
 .banner {
     height: 20px;
@@ -116,78 +151,13 @@ body {
     text-align: center;
 }
 
-.handArea {
-    width: 100%;
-    height: 92%;
-    position: relative;
-    padding: 2%;
-    background-color: #9B6A6C;
-    border-radius: 5px;
-}
+/* Table area */
 
-.landingArea {
-    position: relative;
-    width: 56px;
-    height: 76px;
-    bottom: 89%;
-    left: 98%;
-    transform: translate(-55px);
-    border: 3px dashed black;
-    text-align: center;
-    color: black;
-    font-weight: bold;
-}
-
-.landingText {
-    transform: translate(0px, 25px);
-}
-
-.rowTable {
+#tableArea {
     height: 72%;
 }
 
-.nextArea {
-    height: 24%;
-    position: relative;
-    text-align: center;
-}
-
-.diArea {
-    width: 100%;
-    height: 72%;
-    position: relative;
-    padding: 2%;
-    background-color: peachpuff;
-    text-align: center;
-    border-radius: 15px;
-}
-
-.diAreaWrapup {
-    width: 100%;
-    height: 72%;
-    position: relative;
-    padding: 2%;
-    background-color: peachpuff;
-    text-align: center;
-    border-radius: 15px;
-}
-
-.dummyArea {
-    height: 5%;
-}
-
-.pointsArea {
-    width: 100%;
-    height: 67%;
-    position: relative;
-    padding: 1%;
-    text-align: center;
-    background-color: floralwhite;
-    border: 1px dashed gray;
-    border-radius: 5px;
-}
-
-.tableArea {
+.playerArea {
     float: left;
     width: 50%;
     height: 48%;
@@ -197,15 +167,23 @@ body {
     border-radius: 5px;
 }
 
-.rowTableShadow{
+#tableAreaShadow{
     width: 100%;
     height: 96%;
     position: relative;
     bottom: 0px;
     left: 0px;
-    background-color: black;
     border-radius: 5px;
-    
+    background-color: black;
+    opacity: 65%;
+}
+
+#zhuImage {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    left: 15px;
 }
 
 .tableBanner {
@@ -214,21 +192,63 @@ body {
     position: relative;
 }
 
-.handle {
-	cursor: pointer;
+#nextArea {
+    height: 24%;
+    position: relative;
+    text-align: center;
 }
+
+.nextAreaWaitText {
+    color: orange;
+    font-style: italic;
+    font-size: 15px;
+}
+
+/* Hand area items */
+
+#landingArea {
+    position: absolute;
+    width: 56px;
+    height: 76px;
+    top: 10px;
+    right: 10px;
+    text-align: center;
+    border: 3px dashed white;
+}
+
+#landingText {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#playerRole {
+    position: absolute;
+    top: 20px;
+    left: 15px;
+}
+
+.ui.button.blue.corner {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Modal */
 
 .modal {
     position: absolute;
     width: 500px;
     height: 250px;
+    padding: 2%;
     top: 57%;
     left: 50%;
     margin-left: -250px;
     margin-top: -125px;
-    background-color: orange;
-    border: 5px solid orange;
+    background-color: #F3B3A6;
     text-align: center;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px grey;
     z-index: 10000;
 }
 
@@ -236,13 +256,13 @@ body {
   outline: none;
 }
 
-.overlay {
+.modalOverlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.85);
     z-index: 10000;
 }
 
@@ -250,25 +270,17 @@ body {
     height: 20px;
     position: relative;
     font-size: 20px;
+    font-weight: bold;
     text-align: center;
 }
 
-.ui.button.blue.corner {
-    position: absolute;
-    top: 7px;
-    left: 500px;
+.modalWaitText {
+    color: gray;
+    font-style: italic;
 }
 
-.zhuImage {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: 10px;
-    left: 350px;
-}
+/* Card */
 
-.playerRole {
-    position: absolute;
-    top: 20px;
-    left: 15px;
+.handle {
+    cursor: pointer;
 }

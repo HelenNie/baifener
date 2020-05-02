@@ -11,11 +11,6 @@ import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGa
 
 export const TableOrder = [0, 1, 3, 2];
 
-export const CssAttributes = {
-  backgroundColor: 'backgroundColor',
-  border: 'border'
-}
-
 export const CssValues = {
   tableArea: {
     user: {
@@ -41,98 +36,138 @@ export const CssValues = {
 
 export const Langs = {
   CHINESE: {
-    baifener: '百分',
-    logIn: '登录',
-    logOut: '退出',
-    enterYourName: '用户名', 
-    listOfGames: '你的游戏',
-    joinGame: '加入',
-    enterGame: '进入',
-    leaveGame: '离开',
-    newGame: '新游戏',
-    gameNumber: '游戏',
-    waiting: '等待',
-    back: '回去',
-    drawCard: '摸牌',
-    openDiForThree: '揭底找三',
-    openDi: '揭底',
-    startPlaying: '开始',
-    finishTurn: '结束出牌',
-    clearTable: '清空',
-    seePrevTable: '看上一局',
-    handArea: '我的牌',
-    diArea: '底',
-    pointsArea: '台下分',
-    tableArea: '牌桌',
-    stage: '阶段',
-    zhu: '主',
-    currPlayer: '现任玩家',
-    endGame: '结束游戏',
-    gameFinished: '游戏结束',
-    statusito: {
-      'DRAWING': '摸牌', 
-      'DI': '摸底',
-      'PLAYING': '作战',
-      'WRAPUP': '拿底',
-      'FINISHED': '结束'
+    gameHeader: {
+      baifener: '百分儿',
+      logOut: '退出'
     },
-    suits: {
-      'H':'红桃', 
-      'S':'黑桃', 
-      'D':'方片', 
-      'C':'梅花'
+    loginForm: {
+      logIn: '登录',
+      enterYourName: '用户名'
     },
-    me: '我',
-    partner: '同伙',
+    gameList: {
+      listOfGames: '游戏单',
+      joinGame: '加入',
+      enterGame: '进入',
+      leaveGame: '离开',
+      newGame: '新游戏',
+      gameNumber: '游戏',
+      waiting: '等待中'
+    },
+    gameBoard: {
+      buttons: {
+        back: '回去',
+        endGame: '结束游戏',
+        drawCard: '摸牌',
+        finishTurn: '结束出牌',
+        clearTable: '清空',
+        seePrevTable: '看上一局',
+        clearPrevTable: '清空上一局'
+      },
+      banners: {
+        handArea: '我的牌',
+        diArea: '底',
+        pointsArea: '台下分',
+        tableArea: '牌桌',
+      },
+      modals: {
+        selectTeam: "请选择你的队!",
+        setRoleAgainText: "看样子你和你的朋友还没有分好队...请再试一次!",
+        setRoleWaiting: "在等其他玩家确认...",
+        drawFirst: "谁先摸?",
+        drawFirstButton: "点击先摸",
+        drawFirstWaiting: "等对手先摸...",
+        openKitty: "确定要揭底?",
+        openKittyYes: "确定",
+        openKittyNo: "取消"
+      },
+      handArea: {
+        role: "队",
+        card: "牌"
+      },
+      nextArea: {
+        openDiForThree: '揭底找三',
+        openDi: '揭底',
+        startPlaying: '开始',
+        wonRoundButton: "你的牌最大吗",
+        findThreeWaiting: "等对手揭底找三...",
+        openKittyWaiting: "等对手揭底...",
+        startGameWaiting: "等游戏开始..."
+      },
+      roles: {
+        DEFENDER: "台上",
+        ATTACKER: "台下",
+        TBD: "未知"
+      }
+    }    
   },
   ENGLISH: {
-    baifener: 'Baifener',
-    logIn: 'Log In',
-    logOut: 'Log Out',
-    enterYourName: 'Enter your username', 
-    listOfGames: 'Your Games',
-    joinGame: 'Join',
-    enterGame: 'Enter',
-    leaveGame: 'Leave',
-    newGame: 'New Game',
-    gameNumber: 'Game',
-    waiting: 'Waiting',
-    back: 'Back',
-    drawCard: 'Draw Card',
-    openDiForThree: 'Look for Three in Kitty',
-    openDi: 'Reveal Kitty',
-    startPlaying: 'Start',
-    finishTurn: 'End Turn',
-    clearTable: 'Clear Table',
-    seePrevTable: 'See Previous Round',
-    handArea: 'HAND',
-    diArea: 'Kitty',
-    pointsArea: 'ATTACKER POINTS',
-    tableArea: 'TABLE',
-    stage: 'Stage',
-    zhu: 'Trump Suit',
-    currPlayer: 'Current Player',
-    endGame: 'End Game',
-    gameFinished: 'Game Finished',
-    statusito: {
-      'DRAWING': 'Drawing', 
-      'DI': 'Reveal Trump',
-      'PLAYING': 'Playing',
-      'WRAPUP': 'Trump Points',
-      'FINISHED': 'Finished'
+    gameHeader: {
+      baifener: 'Baifener',
+      logOut: 'Log Out'
     },
-    suits: {
-      'H':'Hearts', 
-      'S':'Spades', 
-      'D':'Diamonds', 
-      'C':'Clubs'
+    loginForm: {
+      logIn: 'Log In',
+      enterYourName: 'Enter your username'
     },
-    me: 'Me',
-    partner: 'Partner',
+    gameList: {
+      listOfGames: 'Your Games',
+      joinGame: 'Join',
+      enterGame: 'Enter',
+      leaveGame: 'Leave',
+      newGame: 'New Game',
+      gameNumber: 'Game',
+      waiting: 'Waiting'
+    },
+    gameBoard: {
+      buttons: {
+        back: 'Back',
+        endGame: 'End Game',
+        drawCard: 'Draw Card',
+        finishTurn: 'End Turn',
+        clearTable: 'Clear Table',
+        seePrevTable: 'See Previous Plays',
+        clearPrevTable: 'Clear Previous Plays'
+      },
+      banners: {
+        handArea: 'My Hand',
+        diArea: 'Kitty',
+        pointsArea: 'Attacker Team Points',
+        tableArea: 'Cards Table',
+      },
+      modals: {
+        selectTeam: "Select your team!",
+        setRoleAgainText: "Looks like you and your friends do not agree on your roles...Let's try this again!",
+        setRoleWaiting: "Waiting for other players to confirm...",
+        drawFirst: "Who will draw first?",
+        drawFirstButton: "Click here to draw first",
+        drawFirstWaiting: "Waiting for opponents to draw first...",
+        openKitty: "Are you sure you want to open the kitty?",
+        openKittyYes: "Meow",
+        openKittyNo: "Nope"
+      },
+      handArea: {
+        role: "Role",
+        card: "Card"
+      },
+      nextArea: {
+        openDiForThree: 'Look for Three in Kitty',
+        openDi: 'Open Kitty',
+        startPlaying: 'Start',
+        wonRoundButton: "Click here if you won this round",
+        findThreeWaiting: "Waiting for opponents to look for trump suit in kitty...",
+        openKittyWaiting: "Waiting for opponents to open kitty...",
+        startGameWaiting: "Waiting for game to start..."
+      },
+      roles: {
+        DEFENDER: "Defender",
+        ATTACKER: "Attacker",
+        TBD: "TBD"
+      }
+    }
   }
 }
 
-export const CurrLang = Langs.ENGLISH;
+export const CurrLang = Langs.CHINESE;
 
 
 export default class GameBoard extends Component {
@@ -220,17 +255,18 @@ export default class GameBoard extends Component {
     for (var i = 0; i < TableOrder.length; i++) {
       playerName = game.players[(startingIdx + TableOrder[i]) % NumPlayers].username;
       if (playerName == user.username) {
-        tablePlayers[playerName] = CssValues.tableArea.user;
+        tablePlayers[playerName] = Object.assign({}, CssValues.tableArea.user);
       } else if (game.arePartners(playerName, user.username)) {
-        tablePlayers[playerName] = CssValues.tableArea.partner;
+        tablePlayers[playerName] = Object.assign({}, CssValues.tableArea.partner);
       } else {
-        tablePlayers[playerName] = CssValues.tableArea.opponents;
+        tablePlayers[playerName] = Object.assign({}, CssValues.tableArea.opponents);
       }
     }
 
     if (game.showCurrPlayerBorder(user)) {
       let currPlayer = game.players[game.getCurrentPlayerIndex()];
-      tablePlayers[currPlayer.username][CssAttributes.border] = CssValues.tableArea.currPlayer.border;
+      let tablePlayer = 
+      tablePlayers[currPlayer.username].border = CssValues.tableArea.currPlayer.border;
     }
 
     return tablePlayers;
@@ -239,7 +275,7 @@ export default class GameBoard extends Component {
   renderHandAreaStyle(game, user) {
     let handAreaStyle = {};
     if (user.username == game.getCurrPlayer()) {
-      handAreaStyle[CssAttributes.backgroundColor] = CssValues.handArea.backgroundColor;
+      handAreaStyle = Object.assign({}, CssValues.handArea);
     }
     return handAreaStyle;
   }
@@ -247,58 +283,61 @@ export default class GameBoard extends Component {
   renderModal(game, user, modal) {
     var banner;
     var content;
+    var condition = true;
 
     switch (modal) {
       case ModalStates.SET_ROLE:
-        banner = "Select your team!";
+        banner = CurrLang.gameBoard.modals.selectTeam;
         content = user.username in game.playerRoles ? 
-          "Waiting for other players to confirm..." :
+          <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p> :
           <div className="modalContent">
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>{CurrLang.gameBoard.roles[Roles.DEFENDER]}</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>{CurrLang.gameBoard.roles[Roles.ATTACKER]}</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>{CurrLang.gameBoard.roles[Roles.TBD]}</button>
           </div>;
         break;
       case ModalStates.SET_ROLE_AGAIN:
-        banner = "Select your team!";
+        banner = CurrLang.gameBoard.modals.selectTeam;
         content = user.username in game.playerRoles ? 
-          "Waiting for other players to confirm..." :
+          <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p> :
           <div className="modalContent">
-            <p>Looks like you and your friends do not agree on your roles...Let's try this again!</p>
+            <p>{CurrLang.gameBoard.modals.setRoleAgainText}</p>
             <br></br>
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>Defender</button>
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>Attacker</button>
-            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>TBD</button>
+            <br></br>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>{CurrLang.gameBoard.roles[Roles.DEFENDER]}</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>{CurrLang.gameBoard.roles[Roles.ATTACKER]}</button>
+            <button className="ui green button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>{CurrLang.gameBoard.roles[Roles.TBD]}</button>
           </div>;
-          break;
+        break;
       case ModalStates.SET_DRAW_FIRST:
-        banner = "Will you draw first?";
+        banner = CurrLang.gameBoard.modals.drawFirst;
         content = game.playerRoles[user.username] == Roles.DEFENDER ? 
-          "Waiting for opponents to start drawing..." :
+          <p className="modalWaitText">{CurrLang.gameBoard.modals.drawFirstWaiting}</p> :
           <div className="modalContent">
-            <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>Click here to draw first</button>
+            <button className="ui green button" onClick={this.handleSetFirstDrawer.bind(this)}>{CurrLang.gameBoard.modals.drawFirstButton}</button>
           </div>;
-          break;
+        break;
       default:
-        banner = "Are you ready to open the kitty?";
+        banner = CurrLang.gameBoard.modals.openKitty;
         content = 
           <div className="modalContent">
-            <p>"Are you sure you want to open to kitty?"</p>
-            <button className="ui green button" onClick={this.handleConfirmOpenDi.bind(this)}>Meow!</button>
-            <button className="ui green button" onClick={this.handleCancelOpenDi.bind(this)}>Nope</button>
+            <button className="ui green button" onClick={this.handleConfirmOpenDi.bind(this)}>{CurrLang.gameBoard.modals.openKittyYes}</button>
+            <button className="ui black button" onClick={this.handleCancelOpenDi.bind(this)}>{CurrLang.gameBoard.modals.openKittyNo}</button>
           </div>;
+        condition = user.username == game.diOpener;
+        break;
     }
 
     return (
       <ReactModal
-          isOpen = { game.modalState == modal }
+          isOpen = { game.modalState == modal && condition}
           className = "modal"
-          overlayClassName = "overlay"
+          overlayClassName = "modalOverlay"
           ariaHideApp={false}>
-          <br></br>
           <p className="modalBanner">{ banner }</p>
+          <br></br>
+          <br></br>
           <div className="modalDiv"> 
-            <br></br>
             { content }
           </div>
       </ReactModal>
@@ -311,37 +350,38 @@ export default class GameBoard extends Component {
     var item2;
 
     if (game.stage != GameStages.SET_UP) {
-      items.push(<p className="playerRole" key="1">Role: {game.playerRoles[user.username]}</p>);
-    }
-    if (game.threeState != ThreeStates.NOT_SHOWN) {
-      items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} className="zhuImage" key="2"></img>);
+      items.push(<p id="playerRole" key="1">{CurrLang.gameBoard.handArea.role}: {CurrLang.gameBoard.roles[game.playerRoles[user.username]]}</p>);
     }
     if (game.stage == GameStages.DRAW) {
-      item1 = <button className="ui button blue corner" key="3" onClick={this.handleDrawCard.bind(this)}>{CurrLang.drawCard}</button>;
-      item2 = <button className="ui button blue corner" key="3" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.drawCard}</button>;
-      items.push(this.renderByRole(game, user, item1, item2, game.getCurrPlayer()));
+      item1 = <button className="ui button blue corner" key="2" onClick={this.handleDrawCard.bind(this)}>{CurrLang.gameBoard.buttons.drawCard}</button>;
+      item2 = <button className="ui button blue corner" key="2" onClick={this.handleDrawCard.bind(this)} disabled>{CurrLang.gameBoard.buttons.drawCard}</button>;
+      items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
     }
-    if (game.stage == GameStages.PLAY) {
-      item1 = <button className="ui button blue corner" key="4" onClick={this.handleEndTurn.bind(this)}>{CurrLang.finishTurn}</button>;
-      item2 = <button className="ui button blue corner" key="4" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.finishTurn}</button>;
-      items.push(this.renderByRole(game, user, item1, item2, game.getCurrPlayer()));
+    if (game.stage == GameStages.PLAY) {  
+      item1 = <button className="ui button blue corner" key="3" onClick={this.handleEndTurn.bind(this)}>{CurrLang.gameBoard.buttons.finishTurn}</button>;
+      item2 = <button className="ui button blue corner" key="3" onClick={this.handleEndTurn.bind(this)} disabled>{CurrLang.gameBoard.buttons.finishTurn}</button>;
+      items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
     }
 
     return items;
   }
 
   renderTableAreaItems(game, user) {
-    var button;
+    var items = [];
 
-    if (game.tableState == TableStates.SEE_PREV_TABLE) {
-      button = <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.seePrevTable}</button>;
-    } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
-      button = <button className="ui button blue corner" onClick={this.handleClearPrevTable.bind(this)}>Clear prev table</button>;
-    } else {
-      button = <button className="ui button blue corner" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.seePrevTable}</button>;
+    if (game.threeState != ThreeStates.NOT_SHOWN) {
+      items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuImage" key="1"></img>);
     }
 
-    return button;
+    if (game.tableState == TableStates.SEE_PREV_TABLE) {
+      items.push(<button className="ui button blue corner" key="2" onClick={this.handleSeePrevTable.bind(this)}>{CurrLang.gameBoard.buttons.seePrevTable}</button>);
+    } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
+      items.push(<button className="ui button blue corner" key="2" onClick={this.handleClearPrevTable.bind(this)}>{CurrLang.gameBoard.buttons.clearPrevTable}</button>);
+    } else {
+      items.push(<button className="ui button blue corner" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled>{CurrLang.gameBoard.buttons.seePrevTable}</button>);
+    }
+
+    return items;
   }
 
   renderTableCol(game, user) {
@@ -354,39 +394,39 @@ export default class GameBoard extends Component {
 
     if (game.stage == GameStages.FIND_THREE_IN_DI) {
       // Di to find three view
-      bannerText = CurrLang.diArea;
+      bannerText = CurrLang.gameBoard.banners.diArea;
       content = 
-        <div className="diArea">
+        <div className="area" id="diArea">
           {diCards.slice(0, game.threeFromDiCount).map((diCard, index) => (
             <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
           ))}
         </div>
     } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
       //Open di view
-      bannerText = CurrLang.diArea;
+      bannerText = CurrLang.gameBoard.banners.diArea;
       content = 
-          <div className="diArea">
-            {diCards.map((diCard, index) => (
-              <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
-            ))}
-          </div>
+        <div className="area" id="diArea">
+          {diCards.map((diCard, index) => (
+            <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
+          ))}
+        </div>
     } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
       //Di during WRAPUP and FINISHED view
-      bannerText = CurrLang.diArea;
+      bannerText = CurrLang.gameBoard.banners.diArea;
       content = 
-          <div className="diAreaWrapup">
-              {diCards.map((diCard, index) => (
-                <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
-              ))}
-          </div>
+        <div className="area" id="diArea">
+            {diCards.map((diCard, index) => (
+              <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+            ))}
+        </div>
     } else {
       //Playing view
-      bannerText = CurrLang.tableArea;
+      bannerText = CurrLang.gameBoard.banners.tableArea;
       content = 
-        <div className="rowTable">
+        <div id="tableArea">
           {this.renderTableAreaItems(game, user)}
           {Object.keys(tablePlayers).map((player, index) => (
-            <div className="tableArea" key={index} style={tablePlayers[player]}>
+            <div className="playerArea" key={index} style={tablePlayers[player]}>
               <p className="tableBanner"><b>{player}</b></p>
               {Object.keys(tableCards).map((card, index) => (
                 (tableCards[card] == player)? (
@@ -397,7 +437,7 @@ export default class GameBoard extends Component {
           ))}  
 
           {(game.disableTableArea(user)) ? (
-            <div className="rowTableShadow"></div>
+            <div id="tableAreaShadow"></div>
           ): null}
         </div>;
     }
@@ -412,22 +452,22 @@ export default class GameBoard extends Component {
 
     if (game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN) {
       //Find three in di button
-      item1 = <button className="ui button blue" key="1" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.openDiForThree}&rarr;</button>;
-      item2 = <p key="1">Waiting for opponents to look for trump suit in kitty...</p>;
-      items.push(this.renderByRole(game, user, item1, item2, Roles.DEFENDER));
+      item1 = <button className="ui button orange" key="1" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDiForThree}&rarr;</button>;
+      item2 = <p className="nextAreaWaitText" key="1">{CurrLang.gameBoard.nextArea.findThreeWaiting}</p>;
+      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.DEFENDER, item1, item2));
     } else if ((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) {
       //Open di button
-      item1 = <button className="ui button blue" key="2" onClick={this.handleOpenDi.bind(this)}>{CurrLang.openDi}</button>;
-      item2 = <p key="2">Waiting for opponents to open kitty...</p>;
-      items.push(this.renderByRole(game, user, item1, item2, Roles.DEFENDER));
+      item1 = <button className="ui button orange" key="2" onClick={this.handleOpenDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDi}</button>;
+      item2 = <p className="nextAreaWaitText" key="2">{CurrLang.gameBoard.nextArea.openKittyWaiting}</p>;
+      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.DEFENDER, item1, item2));
     } else if (game.stage == GameStages.DI) {
       //Start playing button
-      item1 = <button className="ui button red" key="3" onClick={this.handleStartGame.bind(this)}>{CurrLang.startPlaying}</button>;
-      item2 = <p key="3">Waiting for {game.diOpener} to start the game...</p>;
-      items.push(this.renderByRole(game, user, item1, item2, game.diOpener));
+      item1 = <button className="ui button orange" key="3" onClick={this.handleStartGame.bind(this)}>{CurrLang.gameBoard.nextArea.startPlaying}</button>;
+      item2 = <p className="nextAreaWaitText" key="3">{CurrLang.gameBoard.nextArea.startGameWaiting}</p>;
+      items.push(this.renderByRole(game, user.username, game.diOpener, item1, item2));
     } else if (game.tableState == TableStates.CLEAR_TABLE) {
-      //Clear table button
-      items.push(<button className="ui button blue" key="4" onClick={this.handleClearTable.bind(this)}>Click here if you won this round</button>);
+      //Won round button
+      items.push(<button className="ui button orange" key="4" onClick={this.handleClearTable.bind(this)}>{CurrLang.gameBoard.nextArea.wonRoundButton}</button>);
     } else {
       //Default
       items.push(<p key="5">Placeholder</p>);
@@ -436,8 +476,8 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  renderByRole(game, user, item1, item2, role) {
-    if (game.playerRoles[user.username] == role) {
+  renderByRole(game, userAttr, role, item1, item2) {
+    if (userAttr == role) {
       return item1;
     } else {
       return item2;
@@ -469,11 +509,11 @@ export default class GameBoard extends Component {
         {/* TopRow */}
         <div className="row" id="topRow">
           {/* Buttons */}
-          <button className="ui button black topButton" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.back}</button>
+          <button className="ui button black topButton" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.gameBoard.buttons.back}</button>
           {(game.stage != GameStages.FINISHED)? (
-            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)}>{CurrLang.endGame}</button>
+            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)}>{CurrLang.gameBoard.buttons.endGame}</button>
           ): (
-            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)} disabled>{CurrLang.endGame}</button>
+            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)} disabled>{CurrLang.gameBoard.buttons.endGame}</button>
           )}  
           {/* Message */}
           <div className="messageArea">
@@ -486,9 +526,9 @@ export default class GameBoard extends Component {
 
           {/* Hand */}
           <div className="column smart">
-            <p className="banner"><b>{CurrLang.handArea}</b></p>
+            <p className="banner"><b>{CurrLang.gameBoard.banners.handArea}</b></p>
             {this.renderHandAreaItems(game, user)}
-            <div className="handArea" style={handAreaStyle}>
+            <div className="area" id="handArea" style={handAreaStyle}>
                 {userCards.map((card, index) => (
                   <MyDrag
                     key={card}
@@ -499,30 +539,31 @@ export default class GameBoard extends Component {
                     zIndex={game.cardZIndexes[card]}
                   />
                 ))}
-            </div>
-            <div className="landingArea">
-              <p className="landingText">Card</p>
+                <div id="landingArea">
+                  <br></br>
+                  <p id="landingText">{CurrLang.gameBoard.handArea.card}</p>
+                </div>
             </div>
           </div>
 
-          <div className="column" id="dummyColumn1"></div>
+          <div className="column dummy" id="dummyColumn1"></div>
 
           {/* Table and di areas */}
           <div className="column smart" id="tableColumn">
             { this.renderTableCol(game, user).banner }
             { this.renderTableCol(game, user).content }
-            <div className="nextArea">
+            <div id="nextArea">
               <br></br>
               { this.renderNextArea(game, user) }
             </div>
           </div>
 
-          <div className="column" id="dummyColumn2"></div>
+          <div className="column dummy" id="dummyColumn2"></div>
         
           {/* Points area */}
           <div className="column smart" id="pointsColumn">
-            <p className="banner"><b>{CurrLang.pointsArea}</b></p>
-            <div className="pointsArea">
+            <p className="banner"><b>{CurrLang.gameBoard.banners.pointsArea}</b></p>
+            <div className="area" id="pointsArea">
                 {pointCards.map((pointCard, index) => (
                   <img src={"/images/" + pointCard + ".png"} className="handle" draggable="false" key={pointCard}></img>
                 ))}

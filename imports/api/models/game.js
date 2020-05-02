@@ -58,7 +58,7 @@ export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Ma
 export const Di = DeckNoDi.splice(0, DiLength);
 
 
-export const CardLandingLoc = {x: 522, y: 0}; //is there a better way to do this?
+export const CardLandingLoc = {x: 584, y: 0}; //is there a better way to do this?
 export const ZIndexBase = 2;
 
 export const TestStates = {
@@ -633,6 +633,7 @@ export class Game {
       console.log("Clear the table first!");
       return;
     }
+    this.tableState = TableStates.NONE;
     var index = this.hands[user.username].indexOf(card);
     this.currTableCards[card] = user.username;
     this.hands[user.username].splice(index, 1);
@@ -812,7 +813,12 @@ export class Game {
   }
 
   getCurrPlayer() {
-    return this.players[this.getCurrentPlayerIndex()].username;
+    if (this.getCurrentPlayerIndex() !== null && this.getCurrentPlayerIndex() > -1) {
+      console.log(this.players[this.getCurrentPlayerIndex()].username);
+      return this.players[this.getCurrentPlayerIndex()].username;
+    }
+    console.log("here")
+    return '';
   }
 
   arePartners(user1, user2) {
@@ -821,10 +827,9 @@ export class Game {
 
   showCurrPlayerBorder(user) {
     var bool = true;
-    bool = bool && (this.getCurrentPlayerIndex() > -1);
+    bool = bool && (this.getCurrentPlayerIndex() !== null && this.getCurrentPlayerIndex() > -1);
     bool = bool && (this.tableState != TableStates.CLEAR_PREV_TABLE);
     bool = bool && (this.stage != GameStages.DI);
-    bool = bool && (this.stage != GameStages.FINISHED);
     return bool;
   }
 

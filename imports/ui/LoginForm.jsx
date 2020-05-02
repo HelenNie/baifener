@@ -52,10 +52,10 @@ export default class LoginForm extends Component {
 
             <div className="inline fields">
               <div className="field">
-                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={CurrLang.enterYourName}/>
+                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={CurrLang.loginForm.enterYourName}/>
               </div>
               <div className="field">
-                <input className="ui green button" type="submit" value={CurrLang.logIn}/>
+                <input className="ui green button" type="submit" value={CurrLang.loginForm.logIn}/>
               </div>
             </div>
           </form>

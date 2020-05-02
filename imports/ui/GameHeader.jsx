@@ -10,7 +10,7 @@ export default class GameBoard extends Component {
     return (
       <div className="ui menu inverted">
         <div className="header item">
-          {CurrLang.baifener}
+          {CurrLang.gameHeader.baifener}
         </div>
 
         {this.props.user? (
@@ -20,7 +20,7 @@ export default class GameBoard extends Component {
               {this.props.user.username}
             </div>
             <a className="item" onClick={this.handleLogout.bind(this)}>
-              {CurrLang.logOut}
+              {CurrLang.gameHeader.logOut}
             </a>
           </div>
         ): null}
