@@ -2,9 +2,9 @@
 
 body {
     min-height: 680px;
-    min-width: 1435px;
+    min-width: 1440px;
     max-height: 680px;
-    max-width: 1435px;
+    max-width: 1440px;
     background-image: url("/images/wood_light.jpg");
     background-size: cover;
 }
@@ -41,7 +41,7 @@ body {
 
 /* Rows */
 .row {
-    padding: 1%;   
+    padding: 10px;   
 }
 
 #mainRow {
@@ -60,7 +60,7 @@ body {
 }
 
 .messageArea {
-    width: 87.55%;
+    width: 87.65%;
     height: 36px;
     position: relative;
     float: left;
@@ -74,7 +74,7 @@ body {
 
 .column {
     float: left;
-    width: 49%;
+    width: 49.5%;
     height: 100%;
     position: relative;
     padding: 1%;
@@ -100,7 +100,7 @@ body {
 }
 
 #dummyColumn1 {
-    width: 2%;
+    width: 1%;
 }
 
 #dummyColumn2 {
@@ -125,7 +125,12 @@ body {
 }
 
 #handArea {
-    height: 92%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 13px;
+    padding-right: 13px;
+    height: 520px;
+    width: 676px;
     background-color: #9B6A6C;
 }
 
@@ -216,12 +221,25 @@ body {
 
 /* Hand area items */
 
+.quarter-circle-top-right{
+     position: absolute;
+     width: 110px;
+     height: 110px;
+     top: 15-6px;
+     right: 13-6px;
+     background: orange;
+     border-radius: 0 0 0 110px;
+     -moz-border-radius: 0 0 0 110px;
+     -webkit-border-radius: 0 0 0 110px;
+}
+
 #landingArea {
+    /* dimentions and offsets are adjusted by border stroke width to align with card objects */
     position: absolute;
     width: 56px;
     height: 76px;
-    top: 10px;
-    right: 10px;
+    top: 15-3px;
+    right: 13-3px;
     text-align: center;
     border: 3px dashed white;
 }
@@ -264,7 +282,7 @@ body {
     background-size: 100% 100%;
 }
 
-#roundCornerButtonDEndTurn {
+#roundCornerButtonEndTurn {
     background: url("/images/button_end_turn.png") no-repeat;
     background-size: 100% 100%;
 }

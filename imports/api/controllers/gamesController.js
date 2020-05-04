@@ -68,9 +68,9 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userSetCardLocGame(gameId, card, x, y) {
+  userSetCardLocGame(gameId, user, card, x, y, simple) {
     let game = Games.findOne(gameId);
-    game.userSetCardLoc(card, x, y);
+    game.userSetCardLoc(user, card, x, y, simple);
     Games.saveGame(game);
   },
 

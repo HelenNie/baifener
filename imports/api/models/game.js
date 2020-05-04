@@ -57,8 +57,11 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
 export const Di = DeckNoDi.splice(0, DiLength);
 
-
-export const CardLandingLoc = {x: 584, y: 0}; //is there a better way to do this?
+export const CardLocMax = {
+  x: 10,
+  y: 7
+}
+export const CardLandingLoc = {x: 12, y: 0}; // make calculated: width area / width card
 export const ZIndexBase = 2;
 
 export const TestStates = {
@@ -276,7 +279,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_DRAWING;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -325,6 +328,8 @@ export class Game {
 
       //Not in test states
       this.cardLocations = {}; //merge into card objects
+      this.cardLocMngrLocs = {}; //merge into card objects
+      this.cardLocMngr = {};
       this.cardZIndexes = {}; //merge into card objects
       this.highestZIndex = ZIndexBase;
       this.currCycleNumCards = 0; //label as counter
@@ -339,7 +344,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalState', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer'];
+    return ['status', 'stage', 'modalState', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs'];
   }
 
 
@@ -373,6 +378,18 @@ export class Game {
 
     for (var i = 0; i < DeckComplete.length; i++) {
       this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
+    }
+
+    for (var i = 0; i < DeckComplete.length; i++) {
+      this.cardLocMngrLocs[DeckComplete[i]] = {x: -1, y: -1};
+    }
+
+    for (var i = 0; i <this.players.length; i++) {
+      this.cardLocMngr[this.players[i].username] = [];
+      for (var j = 0; j < CardLocMax.y; j++) {
+        //Including 1 buffer slot at the end of each row array for middle step when moving cards within full row
+        this.cardLocMngr[this.players[i].username].push(Array(CardLocMax.x + 1));
+      }
     }
 
     for (var i = 0; i < DeckComplete.length; i++) {
@@ -460,7 +477,7 @@ export class Game {
 
   userDrawCard(user) {
     let card = this.deck[this.nextCardIndex];
-    this.prepCardForHand(card);
+    this.prepCardForHand(user, card);
     this.hands[user.username].push(card);
 
     this.currentPlayerIndex = (this.currentPlayerIndex+1) % NumPlayers;
@@ -473,8 +490,7 @@ export class Game {
     console.log(user.username, " drew: ", card);
   }
 
-  prepCardForHand(card) {
-    this.userSetCardLoc(card, CardLandingLoc.x, CardLandingLoc.y);
+  prepCardForHand(user, card) {
     this.cardZIndexes[card] = ++this.highestZIndex;
   }
 
@@ -500,8 +516,7 @@ export class Game {
       return;
     }
 
-    var index = this.hands[user.username].indexOf(card);
-    this.hands[user.username].splice(index, 1);
+    this.prepCardForLeavingHand(user, card);
     this.currTableCards[card] = user.username;
     this.zhu = card.slice(-1);
     this.threeShower = user.username;
@@ -512,6 +527,20 @@ export class Game {
       this.setPlayerRoles();
     }
     console.log(user.username + " liang " + card);
+  }
+
+  prepCardForLeavingHand(user, card) {
+    var x = this.cardLocations[card].x;
+    var y = this.cardLocations[card].y;
+
+    this.cardLocMngr[user.username][y][x] = null;
+    this.cardLocMngrLocs[card] = {x: -1, y: - 1};
+    this.userSetCardLoc(user, card, CardLandingLoc.x, CardLandingLoc.y, true);
+
+    this.userSetCardLocFillSpace(user, x, y, CardLocMax.x-1);
+
+    var index = this.hands[user.username].indexOf(card);
+    this.hands[user.username].splice(index, 1);
   }
 
   setPlayerRoles() {
@@ -531,11 +560,11 @@ export class Game {
       console.log("That's not your 3...");
       return;
     }
-    this.retrieveThreeHelper(three);    
+    this.retrieveThreeHelper(user, three);    
   }
 
-  retrieveThreeHelper(three) {
-    this.prepCardForHand(three);
+  retrieveThreeHelper(user, three) {
+    this.prepCardForHand(user, three);
     this.hands[this.threeShower].push(three);
     delete this.currTableCards[three];
     this.threeState = ThreeStates.RETRIEVED;
@@ -590,13 +619,13 @@ export class Game {
     //retrieve 3 if still on table
     if (this.threeState == ThreeStates.SHOWN) {
       var three = RanksMap.three + this.zhu;
-      this.retrieveThreeHelper(three);
+      this.retrieveThreeHelper(user, three);
     }
   }
 
   userTakeCardfromDi(user, card) {
     var index = this.di.indexOf(card);
-    this.prepCardForHand(card);
+    this.prepCardForHand(user, card);
     this.hands[user.username].push(card);
     this.di.splice(index, 1);
   }
@@ -610,9 +639,8 @@ export class Game {
       console.log("Di already has 6 cards");
       return;
     } 
-    var index = this.hands[user.username].indexOf(card);
+    this.prepCardForLeavingHand(user, card);
     this.di.push(card);
-    this.hands[user.username].splice(index, 1);
   }
 
   userStartGame(user) {
@@ -634,9 +662,8 @@ export class Game {
       return;
     }
     this.tableState = TableStates.NONE;
-    var index = this.hands[user.username].indexOf(card);
+    this.prepCardForLeavingHand(user, card);
     this.currTableCards[card] = user.username;
-    this.hands[user.username].splice(index, 1);
     this.currTurnNumCards++;
     console.log(user.username, " played card");
   }
@@ -654,7 +681,7 @@ export class Game {
       console.log("That card is from the last round!");
       return;
     }
-    this.prepCardForHand(card);
+    this.prepCardForHand(user, card);
     this.hands[user.username].push(card);
     delete this.currTableCards[card];
     this.currTurnNumCards--;
@@ -778,9 +805,101 @@ export class Game {
     this.status = GameStatuses.FINISHED;
   }
 
-  userSetCardLoc(card, x, y) {
-    this.cardLocations[card].x = x;
-    this.cardLocations[card].y = y;
+  userSetCardLoc(user, card, x, y, simple) {
+    if (simple) {
+      //adding card to hand or during dragging
+      this.cardLocations[card] = {x: x, y: y};
+      return;
+    }
+
+    var xOld = this.cardLocMngrLocs[card].x;
+    var yOld = this.cardLocMngrLocs[card].y;
+    var yGroup = this.cardLocMngr[user.username][y];
+    var displacedCard;
+
+    //console.log("yGroup: ", yGroup);
+
+    if (card == yGroup[x]) {
+      //no location change
+      return;
+    } else if (!(x < CardLocMax.x || yGroup[CardLocMax.x-1] == null || (yGroup[CardLocMax.x-1] != null && x == CardLocMax.x && y == yOld))) {
+      //return card to previous location if dropoff slot is out-of-bounds or row is full, but exception for moving card already in a full row to the end of the row
+      xOld = (xOld != -1) ? xOld : CardLandingLoc.x;
+      yOld = (yOld != -1) ? yOld : CardLandingLoc.y;
+      this.cardLocations[card] = {x: xOld, y: yOld};
+    } else if (yGroup[x] == null) {
+      //add card to empty dropoff slot
+      this.userSetCardLocOldHelper(user, xOld, yOld);
+      var lastX = this.userSetCardLocAddToEndHelper(user, x, y);
+      this.userSetCardLocNewHelper(user, card, lastX, y);
+      //console.log("Set loc for: ", card);
+    } else if (y == yOld && x > xOld) {
+      //if moving card back in same row, fill space then add card
+      displacedCard = "" + yGroup[x].slice(0);
+      this.userSetCardLocNewHelper(user, card, x, y);
+      this.userSetCardLocHelper(user, displacedCard, x + 1, y);
+      this.userSetCardLocOldHelper(user, xOld, yOld);
+    } else {
+      //if card is displacing another card, recurse
+      displacedCard = "" + yGroup[x].slice(0);
+      this.userSetCardLocOldHelper(user, xOld, yOld);
+      this.userSetCardLocNewHelper(user, card, x, y);
+      //console.log("Set loc for: ", card);
+      this.userSetCardLocHelper(user, displacedCard, x + 1, y);
+    }
+  }
+
+  userSetCardLocHelper(user, card, x, y) {
+    var yGroup = this.cardLocMngr[user.username][y];
+    var displacedCard;
+
+    if (yGroup[x] == null) {
+      this.userSetCardLocNewHelper(user, card, x, y);
+      //console.log("Set loc for (R): ", card);
+    } else {
+      displacedCard = "" + yGroup[x].slice(0);
+      this.userSetCardLocNewHelper(user, card, x, y);
+      //console.log("Set loc for (R): ", card);
+      this.userSetCardLocHelper(user, displacedCard, x + 1, y);
+    }
+  }
+
+  userSetCardLocOldHelper(user, xOld, yOld) {
+    if (xOld == -1) {
+      return;
+    }
+    this.cardLocMngr[user.username][yOld][xOld] = null;
+    this.userSetCardLocFillSpaceHelper(user, xOld, yOld);
+  }
+
+  userSetCardLocNewHelper(user, card, x, y) {
+    this.cardLocMngr[user.username][y][x] = card;
+    this.cardLocMngrLocs[card] = {x: x, y: y};
+    this.cardLocations[card] = {x: x, y: y}
+  }
+
+  userSetCardLocFillSpaceHelper(user, x, y, xEnd){
+    var yGroup = this.cardLocMngr[user.username][y];
+
+    //change to while loop
+    for (var i = x; i < CardLocMax.x; i++) {
+      if (yGroup[i + 1] != null) {
+        yGroup[i] = "" + yGroup[i + 1].slice(0);
+        yGroup[i + 1] = null;
+        this.cardLocMngrLocs[yGroup[i]] = {x: i, y: y};
+        this.cardLocations[yGroup[i]] = {x: i, y: y}
+      } else {
+        break;
+      }
+    }
+  }
+
+  userSetCardLocAddToEndHelper(user, x, y){
+    var yGroup = this.cardLocMngr[user.username][y];
+
+    if (yGroup[0] == null) return 0;
+    while (yGroup[x-1] == null) x--;
+    return x;
   }
 
   userSetZIndex(card, z) {
@@ -814,10 +933,8 @@ export class Game {
 
   getCurrPlayer() {
     if (this.getCurrentPlayerIndex() !== null && this.getCurrentPlayerIndex() > -1) {
-      console.log(this.players[this.getCurrentPlayerIndex()].username);
       return this.players[this.getCurrentPlayerIndex()].username;
     }
-    console.log("here")
     return '';
   }
 

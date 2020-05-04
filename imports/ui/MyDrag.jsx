@@ -4,18 +4,67 @@ import Draggable from 'react-draggable';
 import {ZIndexBase} from '../api/models/game.js';
 import {userCardMigrationGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
 
+export const CardSize = {
+  x: 50,
+  y: 70
+};
 
 export default class MyDrag extends React.Component {
 
-  state = {
-    activeDrags: 0,
-    deltaPosition: {
-      x: 0, y: 0
-    },
-    controlledPosition: {
-      x: 0, y: 0
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeDrags: 0,
+      deltaPosition: {
+        x: 0, y: 0
+      },
+      controlledPosition: {
+        x: this.props.location.x * CardSize.x,
+        y: this.props.location.y * CardSize.y
+      }
+    };
   };
+
+  static getDerivedStateFromProps(nextProps, prevState){
+    var nextControlledPosition = {
+      x: nextProps.location.x * CardSize.x,
+      y: nextProps.location.y * CardSize.y
+    }
+
+    // if (nextProps.card == "QH") {
+    //   console.log("CHILD CHECKING: ", nextProps.card);
+    //   console.log("nextControlledPosition: ", nextControlledPosition);
+    //   console.log("currControlledPosition: ", prevState.controlledPosition);
+    // }
+
+    if(nextControlledPosition.x != prevState.controlledPosition.x || nextControlledPosition.y != prevState.controlledPosition.y){
+      // if (nextProps.card == "QH") {
+      //   console.log("PASS ON NEW POS: ", nextControlledPosition);
+      // }
+      return {
+        controlledPosition: nextControlledPosition,
+      };
+    }
+    else return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // if (this.props.card == "QH") {
+    //   console.log("DIDUPDATE prevProps: ", prevProps.location);
+    //   console.log("DIDUPDATE currProps: ", this.props.location);
+    // }
+    if(prevProps.location.x !== this.props.location.x || prevProps.location.y !== this.props.location.y){
+      this.setState({
+        controlledPosition: {
+          x: this.props.location.x * CardSize.x,
+          y: this.props.location.y * CardSize.y
+        },
+      });
+      // if (this.props.card == "QH") {
+      //   console.log("CHILD DID UPDATE: ", this.state.controlledPosition);
+      // }
+    }
+  }
 
   handleDrag = (e, ui) => {
     const {x, y} = this.state.deltaPosition;
@@ -39,12 +88,14 @@ export default class MyDrag extends React.Component {
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
-    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: x, y: y});
+    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSize.x), y: Math.round(y / CardSize.y), simple: true});
   };
 
   onControlledDragStop = (e, position) => {
     this.onControlledDrag(e, position);
     this.onStop();
+    const {x, y} = position;
+    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSize.x), y: Math.round(y / CardSize.y), simple: false});
   };
 
   handleCardMigration = () => {
@@ -64,14 +115,16 @@ export default class MyDrag extends React.Component {
     const dragHandlers = {onStart: this.onStart, onStop: this.onControlledDragStop};
     const {deltaPosition, controlledPosition} = this.state;
 
-    this.state.controlledPosition = this.props.location;
+    // if (this.props.card == "QH") {
+    //   console.log("RE-RENDERING: ", this.state.controlledPosition);
+    // }
 
     return (
       <Draggable 
         key={this.props.card}
         onDrag={this.onControlledDrag} {...dragHandlers}
-        defaultPosition={this.state.controlledPosition}
-        // grid={[10, 10]}
+        position={this.state.controlledPosition}
+        grid={[CardSize.x, CardSize.y]}
         bounds='parent'>
         <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute', zIndex: this.props.zIndex}}></img>
       </Draggable>

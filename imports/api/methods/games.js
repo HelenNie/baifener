@@ -115,10 +115,11 @@ export const userSetCardLocGame = new ValidatedMethod({
     gameId: {type: String},
     card: {type: String},
     x:  {type: Number},
-    y:  {type: Number}
+    y:  {type: Number},
+    simple: {type: Boolean}
   }).validator(),
-  run({gameId, card, x, y}) {
-    GamesController.userSetCardLocGame(gameId, card, x, y);
+  run({gameId, card, x, y, simple}) {
+    GamesController.userSetCardLocGame(gameId, Meteor.user(), card, x, y, simple);
   }
 });
 

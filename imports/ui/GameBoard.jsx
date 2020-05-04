@@ -483,8 +483,6 @@ export default class GameBoard extends Component {
 
     let handAreaStyle = this.renderHandAreaStyle(game, user);
 
-    console.log(game.stage);
-
     return (
       <div className="ui container">
         {/* Header */}
@@ -529,6 +527,7 @@ export default class GameBoard extends Component {
                     zIndex={game.cardZIndexes[card]}
                   />
                 ))}
+                <div className="quarter-circle-top-right"></div>
                 <div id="landingArea">
                   <br></br>
                   <p id="landingText">{CurrLang.gameBoard.handArea.card}</p>
