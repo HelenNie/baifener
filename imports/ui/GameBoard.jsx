@@ -334,6 +334,18 @@ export default class GameBoard extends Component {
       );
   }
 
+  renderHandAreaLines(game, user) {
+    //de-hardcode
+    var items = [];
+    var firstTop = 70 + 15;
+    var top;
+    for (var i = 0; i < 5; i++) {
+      top = firstTop + 100 * i;
+      items.push(<hr className='handAreaLine' key={i} style={{top: top + 'px'}}/>);
+    }
+    return items;
+  }
+
   renderHandAreaItems(game, user) {
     var items = [];
     var item1;
@@ -532,6 +544,7 @@ export default class GameBoard extends Component {
                   <br></br>
                   <p id="landingText">{CurrLang.gameBoard.handArea.card}</p>
                 </div>
+                {this.renderHandAreaLines(game, user)}
             </div>
           </div>
 

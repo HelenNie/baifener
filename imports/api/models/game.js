@@ -59,7 +59,7 @@ export const Di = DeckNoDi.splice(0, DiLength);
 
 export const CardLocMax = {
   x: 10,
-  y: 7
+  y: 5
 }
 export const CardLandingLoc = {x: 12, y: 0}; // make calculated: width area / width card
 export const ZIndexBase = 2;

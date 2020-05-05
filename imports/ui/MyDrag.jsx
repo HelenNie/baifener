@@ -6,7 +6,7 @@ import {userCardMigrationGame, userSetCardLocGame, userSetZIndexGame} from '../a
 
 export const CardSize = {
   x: 50,
-  y: 70
+  y: 100
 };
 
 export default class MyDrag extends React.Component {
