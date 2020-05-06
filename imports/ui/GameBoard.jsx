@@ -6,7 +6,7 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStages, ModalStates, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers} from '../api/models/game.js';
+import {Game, GameStatuses, GameStages, ModalStates, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
@@ -254,9 +254,7 @@ export default class GameBoard extends Component {
     }
 
     if (game.showCurrPlayerBorder(user)) {
-      let currPlayer = game.players[game.getCurrentPlayerIndex()];
-      let tablePlayer = 
-      tablePlayers[currPlayer.username].border = CssValues.tableArea.currPlayer.border;
+      tablePlayers[game.getCurrPlayer()].border = CssValues.tableArea.currPlayer.border;
     }
 
     return tablePlayers;
@@ -268,6 +266,18 @@ export default class GameBoard extends Component {
       handAreaStyle = Object.assign({}, CssValues.handArea);
     }
     return handAreaStyle;
+  }
+
+  renderHandAreaLines(game, user) {
+    var items = [];
+    var margin = 7;
+    var firstTop = CardSize.y + margin;
+    var top;
+    for (var i = 0; i < CardLocMax.y; i++) {
+      top = firstTop + CardSlotSize.y * i;
+      items.push(<hr className='handAreaLine' key={i} style={{top: top + 'px'}}/>);
+    }
+    return items;
   }
 
   renderModal(game, user, modal) {
@@ -334,18 +344,6 @@ export default class GameBoard extends Component {
       );
   }
 
-  renderHandAreaLines(game, user) {
-    //de-hardcode
-    var items = [];
-    var firstTop = 70 + 15;
-    var top;
-    for (var i = 0; i < 5; i++) {
-      top = firstTop + 100 * i;
-      items.push(<hr className='handAreaLine' key={i} style={{top: top + 'px'}}/>);
-    }
-    return items;
-  }
-
   renderHandAreaItems(game, user) {
     var items = [];
     var item1;
@@ -400,7 +398,7 @@ export default class GameBoard extends Component {
       content = 
         <div className="area" id="diArea">
           {diCards.slice(0, game.threeFromDiCount).map((diCard, index) => (
-            <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+            <img src={"/images/" + diCard + ".png"} draggable="false" key={diCard}></img>
           ))}
         </div>
     } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
@@ -418,7 +416,7 @@ export default class GameBoard extends Component {
       content = 
         <div className="area" id="diArea">
             {diCards.map((diCard, index) => (
-              <img src={"/images/" + diCard + ".png"} className="handle" draggable="false" key={diCard}></img>
+              <img src={"/images/" + diCard + ".png"} draggable="false" key={diCard}></img>
             ))}
         </div>
     } else {
@@ -432,7 +430,11 @@ export default class GameBoard extends Component {
               <p className="tableBanner"><b>{player}</b></p>
               {Object.keys(tableCards).map((card, index) => (
                 (tableCards[card] == player)? (
-                  <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                  (player == game.getCurrPlayer())? (
+                    <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                  ): (
+                    <img src={"/images/" + card + ".png"} onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                  )
                 ):null
               ))}
             </div>
@@ -567,7 +569,7 @@ export default class GameBoard extends Component {
             <p className="banner"><b>{CurrLang.gameBoard.banners.pointsArea}</b></p>
             <div className="area" id="pointsArea">
                 {pointCards.map((pointCard, index) => (
-                  <img src={"/images/" + pointCard + ".png"} className="handle" draggable="false" key={pointCard}></img>
+                  <img src={"/images/" + pointCard + ".png"} draggable="false" key={pointCard}></img>
                 ))}
             </div>
           </div>

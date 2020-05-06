@@ -57,11 +57,13 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
 export const Di = DeckNoDi.splice(0, DiLength);
 
-export const CardLocMax = {
-  x: 10,
-  y: 5
-}
-export const CardLandingLoc = {x: 12, y: 0}; // make calculated: width area / width card
+//Adjust with CSS for #handArea, #landingArea, and .body
+export const CardSize = {x: 50, y: 70};
+export const CardSlotMargin = {x: 0, y: 30};
+export const CardSlotSize = {x: CardSize.x + CardSlotMargin.x, y: CardSize.y + CardSlotMargin.y};
+export const CardLocMax = {x: 10, y: 5}; //Based on making sufficient space for arranging cards
+export const CardLandingLoc = {x: CardLocMax.x + 2, y: 0}; //Offset right from arranged cards with space in betweeen
+
 export const ZIndexBase = 2;
 
 export const TestStates = {
@@ -279,7 +281,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_DRAWING;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -537,7 +539,7 @@ export class Game {
     this.cardLocMngrLocs[card] = {x: -1, y: - 1};
     this.userSetCardLoc(user, card, CardLandingLoc.x, CardLandingLoc.y, true);
 
-    this.userSetCardLocFillSpace(user, x, y, CardLocMax.x-1);
+    this.userSetCardLocFillSpaceHelper(user, x, y, CardLocMax.x-1);
 
     var index = this.hands[user.username].indexOf(card);
     this.hands[user.username].splice(index, 1);
@@ -819,11 +821,11 @@ export class Game {
 
     //console.log("yGroup: ", yGroup);
 
-    if (card == yGroup[x]) {
+    if (card == yGroup[x] || (x == CardLandingLoc.x && y == CardLandingLoc.y && xOld == -1)) {
       //no location change
       return;
-    } else if (!(x < CardLocMax.x || yGroup[CardLocMax.x-1] == null || (yGroup[CardLocMax.x-1] != null && x == CardLocMax.x && y == yOld))) {
-      //return card to previous location if dropoff slot is out-of-bounds or row is full, but exception for moving card already in a full row to the end of the row
+    } else if (yGroup[CardLocMax.x-1] != null && y != yOld) {
+      //return card to previous location if dropoff row is full, but exception for moving card already in a full row to the end of the row
       xOld = (xOld != -1) ? xOld : CardLandingLoc.x;
       yOld = (yOld != -1) ? yOld : CardLandingLoc.y;
       this.cardLocations[card] = {x: xOld, y: yOld};

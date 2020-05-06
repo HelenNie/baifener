@@ -1,9 +1,9 @@
 /* Master levels */
 
 body {
-    min-height: 680px;
+    min-height: 666px;
     min-width: 1440px;
-    max-height: 680px;
+    max-height: 666px;
     max-width: 1440px;
     background-image: url("/images/wood_light.jpg");
     background-size: cover;
@@ -125,11 +125,12 @@ body {
 }
 
 #handArea {
-    padding-top: 20px;
-    padding-bottom: 30px;
+    /* 11px offset at the bottom for shelf shadow */
+    padding-top: 13px;
+    padding-bottom: 13+11px;
     padding-left: 13px;
     padding-right: 13px;
-    height: 520px;
+    height: 510px;
     width: 676px;
     background-color: #9B6A6C;
 }
@@ -236,7 +237,7 @@ body {
     position: absolute;
     width: 56px;
     height: 76px;
-    top: 20-3px;
+    top: 13-3px;
     right: 13-3px;
     text-align: center;
     border: 3px dashed white;

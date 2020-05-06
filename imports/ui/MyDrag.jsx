@@ -2,12 +2,8 @@ import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 
 import {ZIndexBase} from '../api/models/game.js';
+import {CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
 import {userCardMigrationGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
-
-export const CardSize = {
-  x: 50,
-  y: 100
-};
 
 export default class MyDrag extends React.Component {
 
@@ -19,16 +15,16 @@ export default class MyDrag extends React.Component {
         x: 0, y: 0
       },
       controlledPosition: {
-        x: this.props.location.x * CardSize.x,
-        y: this.props.location.y * CardSize.y
+        x: this.props.location.x * CardSlotSize.x,
+        y: this.props.location.y * CardSlotSize.y
       }
     };
   };
 
   static getDerivedStateFromProps(nextProps, prevState){
     var nextControlledPosition = {
-      x: nextProps.location.x * CardSize.x,
-      y: nextProps.location.y * CardSize.y
+      x: nextProps.location.x * CardSlotSize.x,
+      y: nextProps.location.y * CardSlotSize.y
     }
 
     // if (nextProps.card == "QH") {
@@ -56,8 +52,8 @@ export default class MyDrag extends React.Component {
     if(prevProps.location.x !== this.props.location.x || prevProps.location.y !== this.props.location.y){
       this.setState({
         controlledPosition: {
-          x: this.props.location.x * CardSize.x,
-          y: this.props.location.y * CardSize.y
+          x: this.props.location.x * CardSlotSize.x,
+          y: this.props.location.y * CardSlotSize.y
         },
       });
       // if (this.props.card == "QH") {
@@ -88,14 +84,14 @@ export default class MyDrag extends React.Component {
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
-    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSize.x), y: Math.round(y / CardSize.y), simple: true});
+    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: true});
   };
 
   onControlledDragStop = (e, position) => {
     this.onControlledDrag(e, position);
     this.onStop();
     const {x, y} = position;
-    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSize.x), y: Math.round(y / CardSize.y), simple: false});
+    userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: false});
   };
 
   handleCardMigration = () => {
@@ -124,7 +120,7 @@ export default class MyDrag extends React.Component {
         key={this.props.card}
         onDrag={this.onControlledDrag} {...dragHandlers}
         position={this.state.controlledPosition}
-        grid={[CardSize.x, CardSize.y]}
+        grid={[CardSlotSize.x, CardSlotSize.y]}
         bounds='parent'>
         <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute', zIndex: this.props.zIndex}}></img>
       </Draggable>
