@@ -65,9 +65,44 @@ body {
     position: relative;
     float: left;
     color: #F4F1DE;
-    background-color: black;
-    opacity: 50%;
+    background-color: white;
+    background-color: rgba(0, 0, 0, 0.3);
     padding: 0.6%;
+}
+
+#playerRole {
+    position: relative;
+    float: left;
+    color: white;
+}
+
+.msgAreaBuffer {
+    position: relative;
+    float: left;
+    color: orange;
+    margin-left: 25px;
+}
+
+#zhuImageLabel {
+    position: relative;
+    float: left;
+    color: white;
+    margin-left: 25px;
+}
+
+#zhuImageTBD {
+    position: relative;
+    float: left;
+    color: white;
+    margin-left: 4px;
+}
+
+#zhuImage {
+    position: relative;
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
 }
 
 /* Columns */
@@ -120,17 +155,17 @@ body {
 .area {
     width: 100%;
     position: relative;
-    padding: 2%;
+    padding: 10px;
     border-radius: 5px;
 }
 
 #handArea {
     /* 11px offset at the bottom for shelf shadow */
     padding-top: 13px;
-    padding-bottom: 13+11px;
+    padding-bottom: 13+13px;
     padding-left: 13px;
     padding-right: 13px;
-    height: 510px;
+    height: 512px;
     width: 676px;
     background-color: #9B6A6C;
 }
@@ -142,7 +177,7 @@ body {
 }
 
 #pointsArea {
-    height: 67%;
+    height: 90px;
     text-align: center;
     background-color: floralwhite;
     border: 1px dashed gray;
@@ -210,16 +245,6 @@ body {
     height: 50px;
 }
 
-/* Table area items */
-
-#zhuImage {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 10px;
-    left: 15px;
-}
-
 /* Hand area items */
 
 .quarter-circle-top-right{
@@ -259,12 +284,6 @@ body {
   border-radius: 15px;
   box-shadow: 2px 2px 5px white;
   Opacity: 75%;
-}
-
-#playerRole {
-    position: absolute;
-    top: 20px;
-    left: 15px;
 }
 
 /* round buttons */
@@ -344,11 +363,15 @@ body {
     left: 50%;
     margin-left: -250px;
     margin-top: -125px;
-    background-color: #F3B3A6;
+    background-color: #FFC857;
     text-align: center;
     border-radius: 15px;
     box-shadow: 5px 5px 5px grey;
     z-index: 10000;
+}
+
+.modal.error {
+    background-color: #F3B3A6;
 }
 
 .modal:focus {

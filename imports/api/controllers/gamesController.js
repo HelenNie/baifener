@@ -115,4 +115,10 @@ export let GamesController = {
     game.userSetRole(user, role);
     Games.saveGame(game);
   },
+
+  userErrorAwayGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userErrorAway(user);
+    Games.saveGame(game);
+  }
 }

@@ -21,9 +21,19 @@ export const GameStages = {
 export const ModalStates = {
   NONE: 'NONE',
   SET_ROLE: 'SET_ROLE',
+  SET_ROLE_WAITING: 'SET_ROLE_WAITING',
   SET_ROLE_AGAIN: 'SET_ROLE_AGAIN',
-  SET_DRAW_FIRST: 'SET_DRAW_FIRST',
-  OPEN_DI: 'OPEN_DI',
+  SET_ROLE_AGAIN_WAITING: 'SET_ROLE_AGAIN_WAITING',
+  SET_DRAW_FIRST_DEFENDER: 'SET_DRAW_FIRST_DEFENDER',
+  SET_DRAW_FIRST_ATTACKER: 'SET_DRAW_FIRST_ATTACKER',
+};
+
+export const ErrorStates = {
+  NONE: 'NONE',
+  NOT_THREE: 'NOT_THREE',
+  ALREADY_SHOWN_THREE: 'ALREADY_SHOWN_THREE',
+  NOT_YOUR_TURN: 'NOT_YOUR_TURN',
+  CLEAR_TABLE_FIRST: 'CLEAR_TABLE_FIRST',
 }
 
 export const ThreeStates = {
@@ -70,9 +80,10 @@ export const TestStates = {
   REAL: {
     status: GameStatuses.WAITING,
     stage: GameStages.SET_UP,
-    modalState: ModalStates.SET_ROLE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {},
+    errorByPlayer: {},
     currentPlayerIndex: -1,
     firstDrawer: '',
     deck: DeckNoDi,
@@ -93,9 +104,20 @@ export const TestStates = {
   TEST_DRAWING: {
     status: GameStatuses.WAITING,
     stage: GameStages.DRAW,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
     deck: ["ZC", "ZD", "ZH", "ZS", "3C", "6C", "6D", "6H", "6S", "7C", "2C", "2D", "2H", "2S", "3D", "7D", "7H", "7S", "8C", "8D", "4C", "4D", "4H", "4S", "3H", "8H", "8S", "9C", "9D", "9H", "5C", "5D", "5H", "5S", "3S", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS"],
@@ -120,9 +142,20 @@ export const TestStates = {
   TEST_THREE: {
     status: GameStatuses.WAITING,
     stage: GameStages.DONE_DRAWING,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -147,9 +180,20 @@ export const TestStates = {
   TEST_SUIT_FROM_DI: {
     status: GameStatuses.WAITING,
     stage: GameStages.DONE_DRAWING,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -169,14 +213,25 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
   },
   TEST_SUIT_FROM_DI_JOKER_1: {
     status: GameStatuses.WAITING,
     stage: GameStages.DONE_DRAWING,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -196,14 +251,25 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
   },
   TEST_SUIT_FROM_DI_JOKER_2: {
     status: GameStatuses.WAITING,
     stage: GameStages.DONE_DRAWING,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.NOT_SHOWN,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -223,14 +289,25 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
   },
   TEST_PLAYING: { //Login in one,two,three,four order for roles to work properly
     status: GameStatuses.WAITING,
     stage: GameStages.PLAY,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.RETRIEVED,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -250,14 +327,25 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
   },
   TEST_WRAPUP: { //Login in one,two,three,four order for roles to work properly
     status: GameStatuses.WAITING,
     stage: GameStages.PLAY,
-    modalState: ModalStates.NONE,
     threeState: ThreeStates.RETRIEVED,
     tableState: TableStates.NONE,
+    modalByPlayer: {
+      'one': ModalStates.NONE,
+      'two': ModalStates.NONE,
+      'three': ModalStates.NONE,
+      'four': ModalStates.NONE
+    },
+    errorByPlayer: {
+      'one': ErrorStates.NONE,
+      'two': ErrorStates.NONE,
+      'three': ErrorStates.NONE,
+      'four': ErrorStates.NONE
+    },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -277,11 +365,11 @@ export const TestStates = {
     taiXiaPoints: ["5C", "5D", "5H", "5S"],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'defender', 'two': 'attacker', 'three': 'defender', 'four': 'attacker'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
   }
 };
 
-export const CurrTestState = TestStates.TEST_DRAWING;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -302,9 +390,10 @@ export class Game {
       _.extend(this, gameDoc);
     } else {
       this.players = [];
+      this.modalByPlayer = CurrTestState.modalByPlayer; //merge into player objects
+      this.errorByPlayer = CurrTestState.errorByPlayer; //merge into player objects
       this.status = CurrTestState.status;
       this.stage = CurrTestState.stage;
-      this.modalState = CurrTestState.modalState;
       this.threeState = CurrTestState.threeState;
       this.tableState = CurrTestState.tableState;
       this.zhu = CurrTestState.zhu;
@@ -346,7 +435,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalState', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs'];
   }
 
 
@@ -375,15 +464,15 @@ export class Game {
     if (CurrTestState == TestStates.REAL) {
       for (var i = 0; i < this.players.length; i++) {
         this.hands[this.players[i].username] = [];
+        this.modalByPlayer[this.players[i].username] = ModalStates.SET_ROLE;
+        this.errorByPlayer[this.players[i].username] = ErrorStates.NONE;
       }
     }
 
     for (var i = 0; i < DeckComplete.length; i++) {
       this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
-    }
-
-    for (var i = 0; i < DeckComplete.length; i++) {
       this.cardLocMngrLocs[DeckComplete[i]] = {x: -1, y: -1};
+      this.cardZIndexes[DeckComplete[i]] = ZIndexBase;
     }
 
     for (var i = 0; i <this.players.length; i++) {
@@ -392,10 +481,6 @@ export class Game {
         //Including 1 buffer slot at the end of each row array for middle step when moving cards within full row
         this.cardLocMngr[this.players[i].username].push(Array(CardLocMax.x + 1));
       }
-    }
-
-    for (var i = 0; i < DeckComplete.length; i++) {
-      this.cardZIndexes[DeckComplete[i]] = ZIndexBase;
     }
 
     this.status = GameStatuses.STARTED;
@@ -436,8 +521,19 @@ export class Game {
     }
   }
 
+  userSetModalForAllHelper(modal) {
+    for (var i = 0; i < this.players.length; i++) {
+      this.modalByPlayer[this.players[i].username] = modal;
+    }
+  }
+
   userSetRole(user, role) {
     this.playerRoles[user.username] = role;
+    if (this.modalByPlayer[user.username] = ModalStates.SET_ROLE) {
+      this.modalByPlayer[user.username] = ModalStates.SET_ROLE_WAITING;
+    } else {
+      this.modalByPlayer[user.username] = ModalStates.SET_ROLE_AGAIN_WAITING;
+    }
 
     //If all players have clicked role, check if roles make sense
     if (Object.keys(this.playerRoles).length == NumPlayers) { 
@@ -462,10 +558,19 @@ export class Game {
       var partnersAgree = (this.playerRoles[user.username] == this.playerRoles[Partners[user.username]]);
 
       if ((attackers.length == 2 && defenders.length == 2 && partnersAgree) || tbd.length == 4) {
-        this.modalState = ModalStates.SET_DRAW_FIRST;
+        for (var player in this.playerRoles) {
+          switch (this.playerRoles[player]) {
+            case Roles.DEFENDER:
+              this.modalByPlayer[player] = ModalStates.SET_DRAW_FIRST_DEFENDER;
+              break;
+            default:
+              this.modalByPlayer[player] = ModalStates.SET_DRAW_FIRST_ATTACKER;
+              break;
+          }
+        }
       } else {
         this.playerRoles = {};
-        this.modalState = ModalStates.SET_ROLE_AGAIN;
+        this.userSetModalForAllHelper(ModalStates.SET_ROLE_AGAIN);
       }
     }
   }
@@ -473,7 +578,7 @@ export class Game {
   userSetFirstDrawer(user) {
     this.currentPlayerIndex = this.userIdToIndex(user._id);
     this.firstDrawer = user.username;
-    this.modalState = ModalStates.NONE;
+    this.userSetModalForAllHelper(ModalStates.NONE);
     this.stage = GameStages.DRAW;
   }
 
@@ -499,7 +604,7 @@ export class Game {
   userCardMigration(user, card) {
     if (this.threeState == ThreeStates.NOT_SHOWN) {
       this.userShowThree(user, card);
-    } else if (this.threeState == ThreeStates.SHOWN) {
+    } else if (this.threeState != ThreeStates.NOT_SHOWN && (this.stage == GameStages.DRAW || this.stage == GameStages.DONE_DRAWING)) {
       this.userRetrieveThree(user, card);
     } else if (this.stage == GameStages.DI && this.di.indexOf(card) > -1) {
       this.userTakeCardfromDi(user, card);
@@ -515,6 +620,7 @@ export class Game {
   userShowThree(user, card) {
     if (card.slice(0,1) != RanksMap.three) {
       console.log("That's not a 3...");
+      this.errorByPlayer[user.username] = ErrorStates.NOT_THREE;
       return;
     }
 
@@ -558,6 +664,15 @@ export class Game {
   }
 
   userRetrieveThree(user, three) {
+    if (Object.keys(this.currTableCards).indexOf(three) == -1) {
+      if (three.slice(0,1) == RanksMap.three) {
+        console.log("Three already shown!");
+        this.errorByPlayer[user.username] = ErrorStates.ALREADY_SHOWN_THREE;
+      } else {
+        console.log("That does nothing");
+      }
+      return;
+    }
     if (user.username != this.threeShower) {
       console.log("That's not your 3...");
       return;
@@ -603,19 +718,8 @@ export class Game {
   }
 
   userOpenDi(user) {
-    this.modalState = ModalStates.OPEN_DI;
-    this.diOpener = user.username;
-  }
-
-  userCancelOpenDi() {
-    this.modalState = ModalStates.NONE;
-    this.diOpener = '';
-  }
-
-  userConfirmOpenDi(user) {
     this.diOpener = user.username;
     this.currentPlayerIndex = this.usernameToIndex(this.diOpener);
-    this.modalState = ModalStates.NONE;
     this.stage = GameStages.DI;
 
     //retrieve 3 if still on table
@@ -637,19 +741,11 @@ export class Game {
       console.log("You are not diOpener");
       return;
     }
-    if (this.di.length == DiLength) {
-      console.log("Di already has 6 cards");
-      return;
-    } 
     this.prepCardForLeavingHand(user, card);
     this.di.push(card);
   }
 
   userStartGame(user) {
-    if(this.di.length != DiLength) {
-      console.log("Di need 6 cards to start game");
-      return;
-    }
     this.stage = GameStages.PLAY;
     console.log("Game started");
   }
@@ -657,10 +753,12 @@ export class Game {
   userPlayCard(user, card) {
     if (this.currentPlayerIndex != this.usernameToIndex(user.username)) {
       console.log("Not your turn");
+      this.errorByPlayer[user.username] = ErrorStates.NOT_YOUR_TURN;
       return;
     }
     if (this.tableState == TableStates.CLEAR_PREV_TABLE) {
       console.log("Clear the table first!");
+      this.errorByPlayer[user.username] = ErrorStates.CLEAR_TABLE_FIRST;
       return;
     }
     this.tableState = TableStates.NONE;
@@ -690,16 +788,8 @@ export class Game {
     console.log(user.username, " took card back");
   }
 
-  userEndTurn(user) {
-    if (this.currTurnNumCards == 0) {
-      console.log("You did not play any cards!");
-      return;
-    }
-    if (this.playedWrongNumCards()) {
-      console.log("You did not play the right number of cards!");
-      return;
-    }
-    
+  userEndTurn(user) {    
+    this.currCycleNumCards = this.currTurnNumCards;
     this.currTurnNumCards = 0;
     this.currentPlayerIndex = (this.currentPlayerIndex+1) % NumPlayers;
     this.turnCycleCount = this.turnCycleCount + 1;
@@ -711,17 +801,6 @@ export class Game {
       this.tableState = TableStates.CLEAR_TABLE;
     }
     console.log("End turn");
-  }
-
-  playedWrongNumCards() {
-    if (this.turnCycleCount % NumPlayers != 0) {
-      if (this.currTurnNumCards != this.currCycleNumCards) {
-        return true;
-      }
-    } else {
-      this.currCycleNumCards = this.currTurnNumCards;
-    }
-    return false;
   }
 
   //combine these two helper methods once currTable and di are both arrays of card objects
@@ -805,6 +884,10 @@ export class Game {
 
     this.stage = GameStages.FINISHED;
     this.status = GameStatuses.FINISHED;
+  }
+
+  userErrorAway(user) {
+    this.errorByPlayer[user.username] = ErrorStates.NONE;
   }
 
   userSetCardLoc(user, card, x, y, simple) {
@@ -942,6 +1025,15 @@ export class Game {
 
   arePartners(user1, user2) {
     return Partners[user1] == user2;
+  }
+
+  userPlayedRightNumCards() {
+    if ((this.turnCycleCount % NumPlayers != 0) && (this.currTurnNumCards != this.currCycleNumCards)) {
+      return false;
+    } else if (this.currTurnNumCards == 0) {
+      return false;
+    }
+    return true;
   }
 
   showCurrPlayerBorder(user) {

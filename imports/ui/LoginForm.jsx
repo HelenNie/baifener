@@ -31,11 +31,23 @@ export default class LoginForm extends Component {
 
     let username = this.state.username.trim();
     if (username === '') {
-      this.setState({errorMsg: 'name is required'});
+      this.setState({errorMsg: CurrLang.loginForm.err.noUsername});
       return;
     }
-    //console.log(this.setState({errorMsg: ''}));
-    Meteor.loginWithPassword(username, Password);
+
+    this.handleLogin(username, Password, this.handleLoginCallback.bind(this));
+  }
+
+  handleLogin(username, password, callback) {
+    Meteor.loginWithPassword(username, password, function(err) {
+      if (err) {
+        callback();
+      }
+    });
+  }
+
+  handleLoginCallback() {
+    this.setState({errorMsg: CurrLang.loginForm.err.wrongUsername});
   }
 
   render() {

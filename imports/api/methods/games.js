@@ -195,3 +195,13 @@ export const userSetRoleGame = new ValidatedMethod({
     GamesController.userSetRoleGame(gameId, Meteor.user(), role);
   }
 });
+
+export const userErrorAwayGame = new ValidatedMethod({
+  name: 'games.userErrorAwayGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userErrorAwayGame(gameId, Meteor.user());
+  }
+});
