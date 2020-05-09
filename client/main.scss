@@ -206,6 +206,7 @@ body {
     padding: 2%;
     text-align: center;
     border-radius: 5px;
+    overflow-y: scroll;
 }
 
 #tableAreaShadow{
@@ -296,6 +297,9 @@ body {
     height: 40px;
     border: none;
 }
+.roundCornerButton:focus {
+    outline: none;
+}
 
 #roundCornerButtonDraw {
     background: url("/images/button_draw.png") no-repeat;
@@ -375,7 +379,7 @@ body {
 }
 
 .modal:focus {
-  outline: none;
+    outline: none;
 }
 
 .modalOverlay {
