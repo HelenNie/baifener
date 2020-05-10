@@ -66,7 +66,7 @@ export const Langs = {
       },
       banners: {
         handArea: '我的牌',
-        diArea: '揭底',
+        openDi: '揭底',
         findThreeInDi: '揭底找三',
         diWrap: '底',
         pointsArea: '台下分',
@@ -158,7 +158,7 @@ export const Langs = {
       },
       banners: {
         handArea: 'My Hand',
-        diArea: 'Open Kitty',
+        openDi: 'Open Kitty',
         findThreeInDi: 'Find Three in Kitty',
         diWrap: 'Kitty',
         pointsArea: 'Attacker Team Points',

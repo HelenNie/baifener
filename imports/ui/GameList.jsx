@@ -67,8 +67,8 @@ export default class GameList extends Component {
         <div className="ui three cards">
           {this.activeGames().map((game, index) => {
             return (
-              <div key={game._id} className="ui card">
-                <div className="content">
+              <div key={game._id} className="ui card gray">
+                <div className="content" id="gameCardHeader">
                   <div className="header">
                     {game.status === GameStatuses.WAITING? (
                       <span className="ui right yellow corner label">
@@ -82,7 +82,7 @@ export default class GameList extends Component {
                   {this.renderPlayers(game)}
                 </div>
 
-                <div className="extra content">
+                <div className="extra content" id="gameCardFooter">
                   {/* can leave only if user is in the game, and the game is not started */}
                   {this.myCurrentGameId() === game._id && game.status === GameStatuses.WAITING? (
                     <button className="ui red button" onClick={this.handleLeaveGame.bind(this, game._id)}>{CurrLang.gameList.leaveGame}</button>
@@ -90,7 +90,7 @@ export default class GameList extends Component {
 
                   {/* can join only if user is not in any game, and the game is not started */}
                   {this.myCurrentGameId() === null && game.status === GameStatuses.WAITING? (
-                    <button className="ui green button" onClick={this.handleJoinGame.bind(this, game._id)}>{CurrLang.gameList.joinGame}</button>
+                    <button className="ui yellow button" onClick={this.handleJoinGame.bind(this, game._id)}>{CurrLang.gameList.joinGame}</button>
                   ): null}
 
                   {/* can enter only if the game is started */}
@@ -111,11 +111,11 @@ export default class GameList extends Component {
       <div className="ui attached segment">
         {this.myCurrentGameId() === null? (
           <div>
-            <button className="ui green button" onClick={this.handleNewGame.bind(this)}>{CurrLang.gameList.newGame}</button>
+            <button className="ui button green" onClick={this.handleNewGame.bind(this)}>{CurrLang.gameList.newGame}</button>
           </div>
         ): (
           <div>
-            <button className="ui green button" onClick={this.handleNewGame.bind(this)} disabled>{CurrLang.gameList.newGame}</button>
+            <button className="ui button green" onClick={this.handleNewGame.bind(this)} disabled>{CurrLang.gameList.newGame}</button>
           </div>
         )}
       </div>
