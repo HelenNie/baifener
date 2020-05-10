@@ -37,7 +37,7 @@ export const CssValues = {
 export const Langs = {
   CHINESE: {
     gameHeader: {
-      baifener: '百分儿',
+      baifener: '百分',
       logOut: '退出'
     },
     loginForm: {
@@ -50,9 +50,9 @@ export const Langs = {
     },
     gameList: {
       listOfGames: '游戏单',
-      joinGame: '加入',
-      enterGame: '进入',
-      leaveGame: '离开',
+      joinGame: '加入游戏',
+      enterGame: '进入游戏',
+      leaveGame: '退出游戏',
       newGame: '新游戏',
       gameNumber: '游戏',
       waiting: '等待中'
@@ -66,29 +66,32 @@ export const Langs = {
       },
       banners: {
         handArea: '我的牌',
-        diArea: '底',
+        diArea: '揭底',
+        findThreeInDi: '揭底找三',
+        diWrap: '底',
         pointsArea: '台下分',
         tableArea: '牌桌',
       },
       modals: {
         selectTeam: "请选择你的队!",
         setRoleAgainText: "看样子你和你的朋友还没有分好队...请再试一次!",
-        setRoleWaiting: "在等其他玩家确认...",
-        drawFirst: "谁先摸?",
-        drawFirstButton: "点击先摸",
-        drawFirstWaiting: "等对手先摸...",
+        setRoleWaiting: "正在等其他玩家确认...",
+        drawFirst: "如果该你先摸牌，请点击以下：",
+        drawFirstButton: "我先摸",
+        drawFirstWaiting: "正在等对手先摸...",
         endGame: "是否确定要结束游戏?",
         endGameNotice: "游戏已结束",
-        restartGame: "是否确定要开始游戏?",
+        restartGame: "是否确定要开始新的游戏?",
         restartGameNotice: "已开始新的游戏",
         yes: "是",
         no: "取消",
         ok: "知道了"
       },
       errors: {
-        oops: '有点不对...',
+        oops: '好像有点不对...',
         NOT_THREE: '你是想亮3吗? 你双击的牌不是3!',
-        ALREADY_SHOWN_THREE: '你是想亮3吗? 此局已亮三了!',
+        ALREADY_SHOWN_THREE: '你是想亮3吗? 此局已亮3了!',
+        DI_FULL: '底已经满了！现取出牌来再往里放。',
         NOT_YOUR_TURN: "你是想出牌吗? 请稍等，还不该你出牌!",
         CLEAR_TABLE_FIRST: '你是想出牌吗? 请先清空牌桌!',
       },
@@ -108,10 +111,10 @@ export const Langs = {
         openDiForThree: '揭底找三',
         openDi: '揭底',
         startPlaying: '扣底',
-        wonRoundButton: "你的牌最大吗",
-        findThreeWaiting: "等对手揭底找三...",
-        openKittyWaiting: "等对手揭底...",
-        startGameWaiting: "等游戏开始..."
+        wonRoundButton: "我的牌最大",
+        findThreeWaiting: "正在等对手揭底找三...",
+        openKittyWaiting: "正在等对手揭底...",
+        startGameWaiting: "正在等对手扣底..."
       },
       msgArea: {
         role: "队",
@@ -155,16 +158,18 @@ export const Langs = {
       },
       banners: {
         handArea: 'My Hand',
-        diArea: 'Kitty',
+        diArea: 'Open Kitty',
+        findThreeInDi: 'Find Three in Kitty',
+        diWrap: 'Kitty',
         pointsArea: 'Attacker Team Points',
         tableArea: 'Cards Table',
       },
       modals: {
         selectTeam: "Select your team!",
-        setRoleAgainText: "Looks like you and your friends do not agree on your roles...Let's try this again!",
+        setRoleAgainText: "Looks like you and your friends do not agree on your roles yet...Let's try this again!",
         setRoleWaiting: "Waiting for other players to confirm...",
-        drawFirst: "Who will draw first?",
-        drawFirstButton: "Click here to draw first",
+        drawFirst: "Click below if you will draw first:",
+        drawFirstButton: "I will draw first",
         drawFirstWaiting: "Waiting for opponents to draw first...",
         restartGame: "Are you sure you want to restart the game?",
         restartGameNotice: "A new game has started",
@@ -199,9 +204,9 @@ export const Langs = {
         openDi: 'Open Kitty',
         startPlaying: 'Stash Kitty',
         wonRoundButton: "Click here if you won this round",
-        findThreeWaiting: "Waiting for opponents to look for trump suit in kitty...",
+        findThreeWaiting: "Waiting for opponents to look for three in kitty...",
         openKittyWaiting: "Waiting for opponents to open kitty...",
-        startGameWaiting: "Waiting for game to start..."
+        startGameWaiting: "Waiting for game to stash kitty..."
       },
       msgArea: {
         role: "Role",
@@ -609,7 +614,7 @@ export default class GameBoard extends Component {
 
     if (game.stage == GameStages.FIND_THREE_IN_DI) {
       // Di to find three view
-      bannerText = CurrLang.gameBoard.banners.diArea;
+      bannerText = CurrLang.gameBoard.banners.findThreeInDi;
       content = 
         <div className="area" id="diArea">
           {diCards.slice(0, game.threeFromDiCount).map((diCard, index) => (
@@ -618,7 +623,7 @@ export default class GameBoard extends Component {
         </div>
     } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
       //Open di view
-      bannerText = CurrLang.gameBoard.banners.diArea;
+      bannerText = CurrLang.gameBoard.banners.openDi;
       content = 
         <div className="area" id="diArea">
           {diCards.map((diCard, index) => (
@@ -627,7 +632,7 @@ export default class GameBoard extends Component {
         </div>
     } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
       //Di during WRAPUP and FINISHED view
-      bannerText = CurrLang.gameBoard.banners.diArea;
+      bannerText = CurrLang.gameBoard.banners.diWrap;
       content = 
         <div className="area" id="diArea">
             {diCards.map((diCard, index) => (

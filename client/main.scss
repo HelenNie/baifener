@@ -214,7 +214,7 @@ body {
     left: 0px;
     border-radius: 5px;
     background-color: black;
-    opacity: 65%;
+    opacity: 0.65;
 }
 
 .tableBanner {
@@ -281,7 +281,7 @@ body {
   border-top: 5px solid white;  
   border-radius: 15px;
   box-shadow: 2px 2px 5px white;
-  Opacity: 75%;
+  Opacity: 0.75;
 }
 
 /* round buttons */
@@ -360,7 +360,7 @@ body {
     height: 100%;
     border-radius: 5px;
     background-color: black;
-    opacity: 65%;
+    opacity: 0.65;
     z-index: 10000;
 }
 
@@ -432,6 +432,12 @@ body {
 .modalWaitText {
     color: gray;
     font-style: italic;
+}
+
+/* Card */
+
+.ui.button:disabled {
+    opacity: 0.6 !important;
 }
 
 /* Card */
