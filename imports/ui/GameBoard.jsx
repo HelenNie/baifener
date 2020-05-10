@@ -6,8 +6,8 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame} from '../api/methods/games.js';
+import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -61,6 +61,7 @@ export const Langs = {
       buttons: {
         back: '回去',
         endGame: '结束游戏',
+        undo: '撤回'
       },
       banners: {
         handArea: '我的牌',
@@ -75,6 +76,11 @@ export const Langs = {
         drawFirst: "谁先摸?",
         drawFirstButton: "点击先摸",
         drawFirstWaiting: "等对手先摸...",
+        endGame: "是否确定要结束游戏?",
+        endGameNotice: "游戏已结束",
+        yes: "是",
+        no: "取消",
+        ok: "知道了"
       },
       errors: {
         oops: '有点不对...',
@@ -83,13 +89,22 @@ export const Langs = {
         NOT_YOUR_TURN: "你是想出牌吗? 请稍等，还不该你出牌!",
         CLEAR_TABLE_FIRST: '你是想出牌吗? 请先清空牌桌!',
       },
+      undo: {
+        undoerBanner: '是否确定要撤回这一步?',
+        noticeeBanner: ' 撤回了这一步:',
+        SHOW_THREE: '亮三',
+        OPEN_DI: '揭底',
+        START_GAME: '扣底',
+        PLAY_CARDS: '出牌',
+        CLEAR_TABLE: '拿分'        
+      },
       handArea: {
         card: "牌"
       },
       nextArea: {
         openDiForThree: '揭底找三',
         openDi: '揭底',
-        startPlaying: '开始',
+        startPlaying: '扣底',
         wonRoundButton: "你的牌最大吗",
         findThreeWaiting: "等对手揭底找三...",
         openKittyWaiting: "等对手揭底...",
@@ -132,6 +147,7 @@ export const Langs = {
       buttons: {
         back: 'Back',
         endGame: 'End Game',
+        undo: 'Undo'
       },
       banners: {
         handArea: 'My Hand',
@@ -146,6 +162,11 @@ export const Langs = {
         drawFirst: "Who will draw first?",
         drawFirstButton: "Click here to draw first",
         drawFirstWaiting: "Waiting for opponents to draw first...",
+        endGame: "Are you sure you want to end the game?",
+        endGameNotice: "The game has ended",
+        yes: "Yes",
+        no: "No",
+        ok: "Ok"
       },
       errors: {
         oops: 'Oops!',
@@ -155,13 +176,22 @@ export const Langs = {
         NOT_YOUR_TURN: "Are you trying to play a card? It's not your turn!",
         CLEAR_TABLE_FIRST: 'Are you trying to play a card? Clear the table before playing a card!',
       },
+      undo: {
+        undoerBanner: 'Are you sure you want to undo this step?',
+        noticeeBanner: ' undid this step:',
+        SHOW_THREE: 'Show Three',
+        OPEN_DI: 'Open Kitty',
+        START_GAME: 'Stash Kitty',
+        PLAY_CARDS: 'Play Cards',
+        CLEAR_TABLE: 'Collect Points'  
+      },
       handArea: {
         card: "Card"
       },
       nextArea: {
         openDiForThree: 'Look for Three in Kitty',
         openDi: 'Open Kitty',
-        startPlaying: 'Start',
+        startPlaying: 'Stash Kitty',
         wonRoundButton: "Click here if you won this round",
         findThreeWaiting: "Waiting for opponents to look for trump suit in kitty...",
         openKittyWaiting: "Waiting for opponents to open kitty...",
@@ -224,11 +254,6 @@ export default class GameBoard extends Component {
     userCancelOpenDiGame.call({gameId: game._id});
   }
 
-  handleErrorAway() {
-    let game = this.props.game;
-    userErrorAwayGame.call({gameId: game._id});
-  }
-
   handleCardMigration(card) {
     let game = this.props.game;
     userCardMigrationGame.call({gameId: game._id, card: card});
@@ -257,6 +282,36 @@ export default class GameBoard extends Component {
   handleSeePrevTable() {
     let game = this.props.game;
     userSeePrevTableGame.call({gameId: game._id});
+  }
+
+  handleModalShow(modal) {
+    let game = this.props.game;
+    userModalShowGame.call({gameId: game._id, modal: modal});
+  }
+
+  handleModalAway() {
+    let game = this.props.game;
+    userModalAwayGame.call({gameId: game._id});
+  }
+
+  handleErrorAway() {
+    let game = this.props.game;
+    userErrorAwayGame.call({gameId: game._id});
+  }
+
+  handleUndoShow(modal) {
+    let game = this.props.game;
+    userUndoShowGame.call({gameId: game._id});
+  }
+
+  handleUndoAway() {
+    let game = this.props.game;
+    userUndoAwayGame.call({gameId: game._id});
+  }
+
+  handleUndo() {
+    let game = this.props.game;
+    userUndoGame.call({gameId: game._id});
   }
 
   handleEndGame() {
@@ -356,6 +411,21 @@ export default class GameBoard extends Component {
             <button className="ui red button" onClick={this.handleSetFirstDrawer.bind(this)}>{CurrLang.gameBoard.modals.drawFirstButton}</button>
           </div>;
         break;
+      case ModalStates.END_GAME:
+        banner = CurrLang.gameBoard.modals.endGame;
+        content = 
+          <div className="modalContent">
+            <button className="ui red button" onClick={this.handleEndGame.bind(this)}>{ CurrLang.gameBoard.modals.yes }</button>
+            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.no }</button>
+          </div>;
+        break;
+      case ModalStates.END_GAME_NOTICE:
+        banner = CurrLang.gameBoard.modals.endGameNotice;
+        content = 
+          <div className="modalContent">
+            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.ok }</button>
+          </div>;
+        break;
     }
 
     return (
@@ -364,12 +434,10 @@ export default class GameBoard extends Component {
           className = "modal"
           overlayClassName = "modalOverlay"
           ariaHideApp={false}>
-          <p className="modalBanner">{ banner }</p>
-          <br></br>
-          <br></br>
-          <div className="modalDiv"> 
-            { content }
+          <div className="modalBannerDiv">
+            <p className="modalBanner">{ banner }</p>
           </div>
+          { content }
       </ReactModal>
       );
   }
@@ -392,25 +460,67 @@ export default class GameBoard extends Component {
           className = "modal error"
           overlayClassName = "modalOverlay"
           ariaHideApp={false}>
-          <p className="modalBanner">{ banner }</p>
-          <br></br>
-          <br></br>
-          <div className="modalDiv"> 
-            { content }
+          <div className="modalBannerDiv">
+            <p className="modalBanner">{ banner }</p>
           </div>
+          { content }
       </ReactModal>
       );
   }
+
+  renderModalUndo(game, user) {
+    var undoType = game.undoByPlayer[user.username][UndoParams.MODAL];
+    var undoRole = game.undoByPlayer[user.username][UndoParams.ROLE];
+
+    var banner = CurrLang.gameBoard.buttons.undo;
+
+    switch (undoRole) { 
+      case UndoRoles.UNDOER:
+        var content = 
+          <div className="modalContent">
+            <p>{ CurrLang.gameBoard.undo.undoerBanner }</p>
+            <p>{CurrLang.gameBoard.undo[undoType]}</p>
+            <br></br>
+            <br></br>
+            <button className="ui red button" onClick={this.handleUndo.bind(this)}>{CurrLang.gameBoard.modals.yes}</button>
+            <button className="ui black button" onClick={this.handleUndoAway.bind(this)}>{CurrLang.gameBoard.modals.no}</button>
+          </div>;
+        break;
+      case UndoRoles.NOTICEE:
+        var content = 
+          <div className="modalContent">
+            <p><b><font color="#4D6A6D">{ game.undoer }</font></b>{ CurrLang.gameBoard.undo.noticeeBanner }</p>
+            <p>{CurrLang.gameBoard.undo[undoType]}</p>
+            <br></br>
+            <br></br>
+            <button className="ui black button" onClick={this.handleUndoAway.bind(this)}>{CurrLang.gameBoard.modals.ok}</button>
+          </div>;
+        break;
+    }
+
+    return (
+      <ReactModal
+          isOpen = { undoType != UndoStates.NONE }
+          className = "modal"
+          overlayClassName = "modalOverlay"
+          ariaHideApp={false}>
+          <div className="modalBannerDiv">
+            <p className="modalBanner">{ banner }</p>
+          </div>
+          { content }
+      </ReactModal>
+      );
+  }   
 
   renderMsgAreaItems(game, user) {
     var items = [];
 
     if (game.stage != GameStages.SET_UP) {
-      items.push(<p id="playerRole" key="1">{CurrLang.gameBoard.msgArea.role}: {CurrLang.gameBoard.roles[game.playerRoles[user.username]]}</p>);
+      items.push(<p id="playerRole" key="1">{CurrLang.gameBoard.msgArea.role}:&nbsp;{CurrLang.gameBoard.roles[game.playerRoles[user.username]]}</p>);
     }
     if (game.stage != GameStages.SET_UP) {
       items.push(<p className="msgAreaBuffer" key="2">||</p>);
-      items.push(<p id="zhuImageLabel" key="3">{CurrLang.gameBoard.msgArea.zhu}: </p>);
+      items.push(<p id="zhuImageLabel" key="3">{CurrLang.gameBoard.msgArea.zhu}:&nbsp;</p>);
       if (game.threeState != ThreeStates.NOT_SHOWN) {
         items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuImage" key="5"></img>);
       } else {
@@ -531,12 +641,12 @@ export default class GameBoard extends Component {
       //Find three in di button
       item1 = <button className="ui button orange" key="1" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDiForThree}&rarr;</button>;
       item2 = <p className="nextAreaWaitText" key="1">{CurrLang.gameBoard.nextArea.findThreeWaiting}</p>;
-      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.DEFENDER, item1, item2));
+      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
     } else if ((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) {
       //Open di button
       item1 = <button className="ui button orange" key="2" onClick={this.handleOpenDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDi}</button>;
       item2 = <p className="nextAreaWaitText" key="2">{CurrLang.gameBoard.nextArea.openKittyWaiting}</p>;
-      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.DEFENDER, item1, item2));
+      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
     } else if (game.stage == GameStages.DI) {
       //Start playing button
       if (game.di.length == DiLength) {
@@ -555,6 +665,37 @@ export default class GameBoard extends Component {
     }
 
     return items;
+  }
+
+  renderTopRow(game, user) {
+    var items = [];
+
+    items.push(<button className="ui button black topButton" key='1' onClick={this.handleBackToGameList.bind(this)}>{CurrLang.gameBoard.buttons.back}</button>);
+    
+    if (game.stage != GameStages.FINISHED) {
+      items.push(<button className="ui button red topButton" key='2' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)}>{CurrLang.gameBoard.buttons.endGame}</button>);
+    } else {
+      items.push(<button className="ui button red topButton" key='2' disabled>{CurrLang.gameBoard.buttons.endGame}</button>);
+    }
+
+    if (game.undoByPlayer[user.username][UndoParams.BUTTON] != UndoStates.NONE) {
+      var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
+      items.push(<button className="ui button orange topButton" key = '3' onClick={this.handleUndoShow.bind(this)}>{CurrLang.gameBoard.buttons.undo}:&nbsp;{CurrLang.gameBoard.undo[undoType]}</button>);
+    } else {
+      items.push(<button className="ui button orange topButton" key = '3' disabled>{CurrLang.gameBoard.buttons.undo}</button>);
+    }
+
+    items.push(
+      <div className="messageArea" key = '4'>
+        {this.renderMsgAreaItems(game, user)}
+      </div>
+    );    
+        
+    return (
+      <div className="row" id="topRow">
+        {items}
+      </div>
+      );
   }
 
   renderByRole(game, userAttr, role, item1, item2) {
@@ -582,21 +723,10 @@ export default class GameBoard extends Component {
         {/* Modals */}
         {this.renderModal(game, user)}
         {this.renderModalError(game, user)}
+        {this.renderModalUndo(game, user)}
 
         {/* TopRow */}
-        <div className="row" id="topRow">
-          {/* Buttons */}
-          <button className="ui button black topButton" onClick={this.handleBackToGameList.bind(this)}>{CurrLang.gameBoard.buttons.back}</button>
-          {(game.stage != GameStages.FINISHED)? (
-            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)}>{CurrLang.gameBoard.buttons.endGame}</button>
-          ): (
-            <button className="ui button red topButton" onClick={this.handleEndGame.bind(this)} disabled>{CurrLang.gameBoard.buttons.endGame}</button>
-          )}  
-          {/* Message */}
-          <div className="messageArea">
-            {this.renderMsgAreaItems(game, user)}
-          </div>
-        </div>
+        {this.renderTopRow(game, user)}
 
         {/* MainRow */}
         <div className="row" id="mainRow">
@@ -648,6 +778,9 @@ export default class GameBoard extends Component {
                 ))}
             </div>
           </div>
+          {(game.stage == GameStages.FINISHED) ? (
+            <div id="finishedShadow"></div>
+          ): null}
         </div> 
       </div>
     )
