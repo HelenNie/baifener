@@ -145,6 +145,16 @@ export const userSeePrevTableGame = new ValidatedMethod({
   }
 });
 
+export const userRestartGameGame = new ValidatedMethod({
+  name: 'games.userRestartGameGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+  }).validator(),
+  run({gameId}) {
+    GamesController.userRestartGameGame(gameId, Meteor.user());
+  }
+});
+
 export const userEndGameGame = new ValidatedMethod({
   name: 'games.userEndGameGame',
   validate: new SimpleSchema({

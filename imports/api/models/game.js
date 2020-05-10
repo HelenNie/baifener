@@ -1,4 +1,5 @@
-import { Users, Partners } from '../../ui/LoginForm.jsx';
+import { Partners } from '../../ui/LoginForm.jsx';
+import Games from "../collections/games.js";
 
 export const GameStatuses = {
   WAITING: 'WAITING', 
@@ -26,6 +27,8 @@ export const ModalStates = {
   SET_ROLE_AGAIN_WAITING: 'SET_ROLE_AGAIN_WAITING',
   SET_DRAW_FIRST_DEFENDER: 'SET_DRAW_FIRST_DEFENDER',
   SET_DRAW_FIRST_ATTACKER: 'SET_DRAW_FIRST_ATTACKER',
+  RESTART_GAME: 'RESTART_GAME',
+  RESTART_GAME_NOTICE: 'RESTART_GAME_NOTICE',
   END_GAME: 'END_GAME',
   END_GAME_NOTICE: 'END_GAME_NOTICE'
 };
@@ -85,10 +88,7 @@ export const SuitsMap = {'H':'heart', 'S':'spade', 'D':'diamond', 'C':'club'};
 export const RanksMap = {three:'3', joker:'O'};
 export const PointsMap = {'5': 5, 'T': 10, 'K': 10};
 
-//turn into card objects
 export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS", "KC", "KD", "KH", "KS", "OA", "OB"];
-export const DeckNoDi = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
-export const Di = DeckNoDi.splice(0, DiLength);
 
 //Adjust with CSS for #handArea, #landingArea, and .body
 export const CardSize = {x: 50, y: 70};
@@ -110,8 +110,8 @@ export const TestStates = {
     undoByPlayer: {},
     currentPlayerIndex: -1,
     firstDrawer: '',
-    deck: DeckNoDi,
-    di: Di,
+    deck: [],
+    di: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -226,7 +226,7 @@ export const TestStates = {
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "3H", "OA"],
     currTableCards: {},
     prevTableCards: {},
@@ -286,7 +286,7 @@ export const TestStates = {
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "6S"],
     currTableCards: {},
     prevTableCards: {},
@@ -346,7 +346,7 @@ export const TestStates = {
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "6S", "OB"],
     currTableCards: {},
     prevTableCards: {},
@@ -406,7 +406,7 @@ export const TestStates = {
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
     prevTableCards: {},
@@ -466,7 +466,7 @@ export const TestStates = {
     },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
     prevTableCards: {},
@@ -526,7 +526,7 @@ export const TestStates = {
     },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
-    deck: DeckNoDi,
+    deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
     prevTableCards: {},
@@ -547,7 +547,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -604,11 +604,12 @@ export class Game {
       this.highestZIndex = ZIndexBase;
       this.currCycleNumCards = 0; //label as counter
       this.currTurnNumCards = 0; //label as counter
-      this.diOriginal = this.di; //combine di things
+      this.diOriginal = []; //combine di things
       this.diPreWrap = []; //combine di things
       this.undoer = '';
       this.setRolesBasedOnThree = false;
       this.prevPlayerIndex = -1;
+      this.copy = {};
     }
   }
 
@@ -618,9 +619,30 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy'];
   }
 
+  copyGame() {
+    var tempCopy = {};
+    return Object.assign(tempCopy, this);
+  }
+
+  userLeave(user) {
+    if (this.status !== GameStatuses.WAITING) {
+      throw "cannot leave at current state";
+    }
+    if (this.userIdToIndex(user._id) === null) {
+      throw "user not in game";
+    }
+    this.players = _.reject(this.players, (player) => {
+      return player.userId === user._id;
+    });
+
+    // game is considered abandoned when all players left
+    if (this.players.length === 0) {
+      this.status = GameStatuses.ABANDONED;
+    }
+  }
 
   userJoin(user) {
     if (this.status !== GameStatuses.WAITING) {
@@ -637,6 +659,7 @@ export class Game {
 
     //If all four players are present
     if (this.players.length == NumPlayers) {
+      this.copy = this.copyGame();
       this.setUpGame();
     }
   }
@@ -652,10 +675,14 @@ export class Game {
         this.modalByPlayer[player] = ModalStates.SET_ROLE;
         this.errorByPlayer[player] = ErrorStates.NONE;
         this.undoByPlayer[player] = {};
-        this.undoByPlayer[player][UndoParams.BUTTON] = false;
+        this.undoByPlayer[player][UndoParams.BUTTON] = UndoStates.NONE;
         this.undoByPlayer[player][UndoParams.MODAL] = UndoStates.NONE;
         this.undoByPlayer[player][UndoParams.ROLE] = UndoRoles.NONE;
       }
+      var deckComplete = this.randomizedDeck();
+      this.deck = deckComplete.drawingCards;
+      this.di = deckComplete.di;
+      this.diOriginal = this.di;
     }
 
     for (var i = 0; i < DeckComplete.length; i++) {
@@ -675,6 +702,14 @@ export class Game {
     this.status = GameStatuses.STARTED;
   }
 
+  randomizedDeck() {
+    var randDeck = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
+    return ({
+      di: randDeck.splice(0, DiLength),
+      drawingCards: randDeck
+    });
+  }
+
   arrangeSeating() {
     //place partners across from each other
     var player1Name = this.players[0].username;
@@ -690,23 +725,6 @@ export class Game {
       }
       this.players[2] = this.players[partnerIdx];
       this.players[partnerIdx] = player3;
-    }
-  }
-
-  userLeave(user) {
-    if (this.status !== GameStatuses.WAITING) {
-      throw "cannot leave at current state";
-    }
-    if (this.userIdToIndex(user._id) === null) {
-      throw "user not in game";
-    }
-    this.players = _.reject(this.players, (player) => {
-      return player.userId === user._id;
-    });
-
-    // game is considered abandoned when all players left
-    if (this.players.length === 0) {
-      this.status = GameStatuses.ABANDONED;
     }
   }
 
@@ -1184,6 +1202,20 @@ export class Game {
     this.userCollectPointsDi(user);
     //pause
     console.log("Wrapped up");
+  }
+
+  userRestartGame() {
+    var fields = this.persistentFields();
+    for (var i = 0; i < fields.length; i++) {
+      if (fields[i] != 'copy') {
+        this[fields[i]] = this.copy[fields[i]];
+      }
+    }
+
+    this.setUpGame();
+    //this.userSetModalForAllHelper(ModalStates.RESTART_GAME_NOTICE);
+
+    console.log("restarted game");
   }
 
   userEndGame() {

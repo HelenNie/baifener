@@ -86,6 +86,12 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
+  userRestartGameGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userRestartGame();
+    Games.saveGame(game);
+  },
+
   userEndGameGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userEndGame();

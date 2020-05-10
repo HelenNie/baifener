@@ -7,7 +7,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -61,6 +61,7 @@ export const Langs = {
       buttons: {
         back: '回去',
         endGame: '结束游戏',
+        restartGame: '新游戏',
         undo: '撤回'
       },
       banners: {
@@ -78,6 +79,8 @@ export const Langs = {
         drawFirstWaiting: "等对手先摸...",
         endGame: "是否确定要结束游戏?",
         endGameNotice: "游戏已结束",
+        restartGame: "是否确定要开始游戏?",
+        restartGameNotice: "已开始新的游戏",
         yes: "是",
         no: "取消",
         ok: "知道了"
@@ -147,6 +150,7 @@ export const Langs = {
       buttons: {
         back: 'Back',
         endGame: 'End Game',
+        restartGame: 'Restart Game',
         undo: 'Undo'
       },
       banners: {
@@ -162,6 +166,8 @@ export const Langs = {
         drawFirst: "Who will draw first?",
         drawFirstButton: "Click here to draw first",
         drawFirstWaiting: "Waiting for opponents to draw first...",
+        restartGame: "Are you sure you want to restart the game?",
+        restartGameNotice: "A new game has started",
         endGame: "Are you sure you want to end the game?",
         endGameNotice: "The game has ended",
         yes: "Yes",
@@ -314,6 +320,11 @@ export default class GameBoard extends Component {
     userUndoGame.call({gameId: game._id});
   }
 
+  handleRestartGame() {
+    let game = this.props.game;
+    userRestartGameGame.call({gameId: game._id});
+  }
+
   handleEndGame() {
     let game = this.props.game;
     userEndGameGame.call({gameId: game._id});
@@ -380,7 +391,9 @@ export default class GameBoard extends Component {
       case ModalStates.SET_ROLE_WAITING:
         banner = CurrLang.gameBoard.modals.selectTeam;
         content =
-          <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p>
+          <div className="modalContent">
+            <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p>
+          </div>;
         break;
       case ModalStates.SET_ROLE_AGAIN:
         banner = CurrLang.gameBoard.modals.selectTeam;
@@ -397,12 +410,16 @@ export default class GameBoard extends Component {
       case ModalStates.SET_ROLE_AGAIN_WAITING:
         banner = CurrLang.gameBoard.modals.selectTeam;
         content = 
-          <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p> 
+          <div className="modalContent">
+            <p className="modalWaitText">{CurrLang.gameBoard.modals.setRoleWaiting}</p> 
+          </div>;
         break;
       case ModalStates.SET_DRAW_FIRST_DEFENDER:
         banner = CurrLang.gameBoard.modals.drawFirst;
         content = 
-          <p className="modalWaitText">{CurrLang.gameBoard.modals.drawFirstWaiting}</p>
+          <div className="modalContent">
+            <p className="modalWaitText">{CurrLang.gameBoard.modals.drawFirstWaiting}</p>
+          </div>;
         break;
       case ModalStates.SET_DRAW_FIRST_ATTACKER:
         banner = CurrLang.gameBoard.modals.drawFirst;
@@ -411,6 +428,22 @@ export default class GameBoard extends Component {
             <button className="ui red button" onClick={this.handleSetFirstDrawer.bind(this)}>{CurrLang.gameBoard.modals.drawFirstButton}</button>
           </div>;
         break;
+      case ModalStates.RESTART_GAME:
+        banner = CurrLang.gameBoard.modals.restartGame;
+        content = 
+          <div className="modalContent">
+            <button className="ui red button" onClick={this.handleRestartGame.bind(this)}>{ CurrLang.gameBoard.modals.yes }</button>
+            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.no }</button>
+          </div>;
+        break;
+      case ModalStates.RESTART_GAME_NOTICE:
+        banner = CurrLang.gameBoard.modals.restartGameNotice;
+        content = 
+          <div className="modalContent">
+            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.ok }</button>
+          </div>;
+        break;
+
       case ModalStates.END_GAME:
         banner = CurrLang.gameBoard.modals.endGame;
         content = 
@@ -678,15 +711,17 @@ export default class GameBoard extends Component {
       items.push(<button className="ui button red topButton" key='2' disabled>{CurrLang.gameBoard.buttons.endGame}</button>);
     }
 
+    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)}>{CurrLang.gameBoard.buttons.restartGame}</button>)
+
     if (game.undoByPlayer[user.username][UndoParams.BUTTON] != UndoStates.NONE) {
       var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
-      items.push(<button className="ui button orange topButton" key = '3' onClick={this.handleUndoShow.bind(this)}>{CurrLang.gameBoard.buttons.undo}:&nbsp;{CurrLang.gameBoard.undo[undoType]}</button>);
+      items.push(<button className="ui button orange topButton" key = '4' onClick={this.handleUndoShow.bind(this)}>{CurrLang.gameBoard.buttons.undo}:&nbsp;{CurrLang.gameBoard.undo[undoType]}</button>);
     } else {
-      items.push(<button className="ui button orange topButton" key = '3' disabled>{CurrLang.gameBoard.buttons.undo}</button>);
+      items.push(<button className="ui button orange topButton" key = '4' disabled>{CurrLang.gameBoard.buttons.undo}</button>);
     }
 
     items.push(
-      <div className="messageArea" key = '4'>
+      <div className="messageArea" key = '5'>
         {this.renderMsgAreaItems(game, user)}
       </div>
     );    
