@@ -205,3 +205,54 @@ export const userErrorAwayGame = new ValidatedMethod({
     GamesController.userErrorAwayGame(gameId, Meteor.user());
   }
 });
+
+export const userModalShowGame = new ValidatedMethod({
+  name: 'games.userModalShowGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+    modal: {type: String}
+  }).validator(),
+  run({gameId, modal}) {
+    GamesController.userModalShowGame(gameId, Meteor.user(), modal);
+  }
+});
+
+export const userModalAwayGame = new ValidatedMethod({
+  name: 'games.userModalAwayGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userModalAwayGame(gameId, Meteor.user());
+  }
+});
+
+export const userUndoShowGame = new ValidatedMethod({
+  name: 'games.userUndoShowGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userUndoShowGame(gameId, Meteor.user());
+  }
+});
+
+export const userUndoAwayGame = new ValidatedMethod({
+  name: 'games.userUndoAwayGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userUndoAwayGame(gameId, Meteor.user());
+  }
+});
+
+export const userUndoGame = new ValidatedMethod({
+  name: 'games.userUndoGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userUndoGame(gameId, Meteor.user());
+  }
+});

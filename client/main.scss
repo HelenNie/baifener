@@ -60,10 +60,8 @@ body {
 }
 
 .messageArea {
-    width: 87.65%;
     height: 36px;
-    position: relative;
-    float: left;
+    overflow: hidden;
     color: #F4F1DE;
     background-color: white;
     background-color: rgba(0, 0, 0, 0.3);
@@ -94,7 +92,6 @@ body {
     position: relative;
     float: left;
     color: white;
-    margin-left: 4px;
 }
 
 #zhuImage {
@@ -102,7 +99,7 @@ body {
     float: left;
     width: 20px;
     height: 20px;
-    margin-left: 10px;
+    margin-left: 5px;
 }
 
 /* Columns */
@@ -297,9 +294,6 @@ body {
     height: 40px;
     border: none;
 }
-.roundCornerButton:focus {
-    outline: none;
-}
 
 #roundCornerButtonDraw {
     background: url("/images/button_draw.png") no-repeat;
@@ -356,13 +350,26 @@ body {
     background-size: 100% 100%;
 }
 
+/* Shadow */
+
+#finishedShadow{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width:  100%;
+    height: 100%;
+    border-radius: 5px;
+    background-color: black;
+    opacity: 65%;
+    z-index: 10000;
+}
+
 /* Modal */
 
 .modal {
     position: absolute;
     width: 500px;
     height: 250px;
-    padding: 2%;
     top: 57%;
     left: 50%;
     margin-left: -250px;
@@ -376,6 +383,10 @@ body {
 
 .modal.error {
     background-color: #F3B3A6;
+}
+
+.modal.undo {
+    background-color: #8CBCB9;
 }
 
 .modal:focus {
@@ -392,12 +403,30 @@ body {
     z-index: 10000;
 }
 
-.modalBanner {
-    height: 20px;
+.modalBannerDiv {
+    height: 50px;
     position: relative;
+    padding-top: 10px;
+    border-radius: 15px 15px 0px 0px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.modalBanner {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
+}
+
+.modalContent {
+    width: 100%;
+    height: 200px;
+    padding-top: 25px;
+    border-radius: 0px 0px 15px 15px;
+    border-top: 3px solid white;
+}
+
+.modalContent p {
+    font-size: 16px;
 }
 
 .modalWaitText {

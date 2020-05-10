@@ -120,5 +120,35 @@ export let GamesController = {
     let game = Games.findOne(gameId);
     game.userErrorAway(user);
     Games.saveGame(game);
+  },
+
+  userModalShowGame(gameId, user, modal) {
+    let game = Games.findOne(gameId);
+    game.userModalShow(user, modal);
+    Games.saveGame(game);
+  },
+
+  userModalAwayGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userModalAway(user);
+    Games.saveGame(game);
+  },
+
+  userUndoShowGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userUndoShow(user);
+    Games.saveGame(game);
+  },
+
+  userUndoAwayGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userUndoAway(user);
+    Games.saveGame(game);
+  },
+
+  userUndoGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userUndo(user);
+    Games.saveGame(game);
   }
 }

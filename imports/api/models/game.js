@@ -26,6 +26,8 @@ export const ModalStates = {
   SET_ROLE_AGAIN_WAITING: 'SET_ROLE_AGAIN_WAITING',
   SET_DRAW_FIRST_DEFENDER: 'SET_DRAW_FIRST_DEFENDER',
   SET_DRAW_FIRST_ATTACKER: 'SET_DRAW_FIRST_ATTACKER',
+  END_GAME: 'END_GAME',
+  END_GAME_NOTICE: 'END_GAME_NOTICE'
 };
 
 export const ErrorStates = {
@@ -34,6 +36,27 @@ export const ErrorStates = {
   ALREADY_SHOWN_THREE: 'ALREADY_SHOWN_THREE',
   NOT_YOUR_TURN: 'NOT_YOUR_TURN',
   CLEAR_TABLE_FIRST: 'CLEAR_TABLE_FIRST',
+};
+
+export const UndoParams = {
+  BUTTON: 'BUTTON',
+  MODAL: 'MODAL',
+  ROLE: 'ROLE'
+};
+
+export const UndoStates = {
+  NONE: 'NONE',
+  SHOW_THREE: 'SHOW_THREE',
+  OPEN_DI: 'OPEN_DI',
+  START_GAME: 'START_GAME',
+  PLAY_CARDS: 'PLAY_CARDS',
+  CLEAR_TABLE: 'CLEAR_TABLE'
+};
+
+export const UndoRoles = {
+  NONE: 'NONE',
+  UNDOER: 'UNDOER',
+  NOTICEE: 'NOTICEE',
 }
 
 export const ThreeStates = {
@@ -84,6 +107,7 @@ export const TestStates = {
     tableState: TableStates.NONE,
     modalByPlayer: {},
     errorByPlayer: {},
+    undoByPlayer: {},
     currentPlayerIndex: -1,
     firstDrawer: '',
     deck: DeckNoDi,
@@ -117,6 +141,28 @@ export const TestStates = {
       'two': ErrorStates.NONE,
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
+    },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
     },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
@@ -156,6 +202,28 @@ export const TestStates = {
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
     },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -193,6 +261,28 @@ export const TestStates = {
       'two': ErrorStates.NONE,
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
+    },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
@@ -232,6 +322,28 @@ export const TestStates = {
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
     },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+    },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -269,6 +381,28 @@ export const TestStates = {
       'two': ErrorStates.NONE,
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
+    },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
     },
     currentPlayerIndex: -1,
     firstDrawer: 'two',
@@ -308,6 +442,28 @@ export const TestStates = {
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
     },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.START_GAME,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.NONE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+    },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
     deck: DeckNoDi,
@@ -345,6 +501,28 @@ export const TestStates = {
       'two': ErrorStates.NONE,
       'three': ErrorStates.NONE,
       'four': ErrorStates.NONE
+    },
+    undoByPlayer: {
+      'one': {
+        'BUTTON': UndoStates.CLEAR_TABLE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'two': {
+        'BUTTON': UndoStates.CLEAR_TABLE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'three': {
+        'BUTTON': UndoStates.CLEAR_TABLE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
+      'four': {
+        'BUTTON': UndoStates.CLEAR_TABLE,
+        'MODAL': UndoStates.NONE,
+        'role:': UndoRoles.NONE
+      },
     },
     currentPlayerIndex: 0,
     firstDrawer: 'two',
@@ -392,6 +570,7 @@ export class Game {
       this.players = [];
       this.modalByPlayer = CurrTestState.modalByPlayer; //merge into player objects
       this.errorByPlayer = CurrTestState.errorByPlayer; //merge into player objects
+      this.undoByPlayer = CurrTestState.undoByPlayer; //merge into player objects
       this.status = CurrTestState.status;
       this.stage = CurrTestState.stage;
       this.threeState = CurrTestState.threeState;
@@ -425,7 +604,11 @@ export class Game {
       this.highestZIndex = ZIndexBase;
       this.currCycleNumCards = 0; //label as counter
       this.currTurnNumCards = 0; //label as counter
-      this.diOriginal = this.di;
+      this.diOriginal = this.di; //combine di things
+      this.diPreWrap = []; //combine di things
+      this.undoer = '';
+      this.setRolesBasedOnThree = false;
+      this.prevPlayerIndex = -1;
     }
   }
 
@@ -435,7 +618,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex'];
   }
 
 
@@ -462,10 +645,16 @@ export class Game {
     this.arrangeSeating();
 
     if (CurrTestState == TestStates.REAL) {
+      var player;
       for (var i = 0; i < this.players.length; i++) {
+        player = this.players[i].username;
         this.hands[this.players[i].username] = [];
-        this.modalByPlayer[this.players[i].username] = ModalStates.SET_ROLE;
-        this.errorByPlayer[this.players[i].username] = ErrorStates.NONE;
+        this.modalByPlayer[player] = ModalStates.SET_ROLE;
+        this.errorByPlayer[player] = ErrorStates.NONE;
+        this.undoByPlayer[player] = {};
+        this.undoByPlayer[player][UndoParams.BUTTON] = false;
+        this.undoByPlayer[player][UndoParams.MODAL] = UndoStates.NONE;
+        this.undoByPlayer[player][UndoParams.ROLE] = UndoRoles.NONE;
       }
     }
 
@@ -518,12 +707,6 @@ export class Game {
     // game is considered abandoned when all players left
     if (this.players.length === 0) {
       this.status = GameStatuses.ABANDONED;
-    }
-  }
-
-  userSetModalForAllHelper(modal) {
-    for (var i = 0; i < this.players.length; i++) {
-      this.modalByPlayer[this.players[i].username] = modal;
     }
   }
 
@@ -634,7 +817,36 @@ export class Game {
     if (this.playerRoles[user.username] == Roles.TBD) {
       this.setPlayerRoles();
     }
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.SHOW_THREE;
+
     console.log(user.username + " liang " + card);
+  }
+
+  undoShowThree(user, undoType) {
+    //Reset player roles if were set based on showing three
+    if (this.setRolesBasedOnThree) {
+      for (var player in this.playerRoles) {
+        this.playerRoles[player] = Roles.TBD;
+      }
+    }
+
+    //Retrieve three if on table
+    if (this.threeState == ThreeStates.SHOWN) {
+      var three = RanksMap.three + this.zhu;
+      this.prepCardForHand(user, three);
+      this.hands[user.username].push(three);
+      delete this.currTableCards[three];
+    }
+
+    this.zhu = '';
+    this.threeShower = ''
+    this.threeState = ThreeStates.NOT_SHOWN;
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    this.undoPostFollowUps(user, undoType);
+
+    console.log("undid show three");
   }
 
   prepCardForLeavingHand(user, card) {
@@ -661,6 +873,7 @@ export class Game {
         this.playerRoles[player.username] = Roles.ATTACKER;
       }
     }
+    this.setRolesBasedOnThree = true;
   }
 
   userRetrieveThree(user, three) {
@@ -727,6 +940,26 @@ export class Game {
       var three = RanksMap.three + this.zhu;
       this.retrieveThreeHelper(user, three);
     }
+
+    if(this.threeShower != '') {
+      this.undoByPlayer[this.threeShower][UndoParams.BUTTON] = UndoStates.NONE;
+    }
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.OPEN_DI;
+  }
+
+  undoOpenDi(user, undoType) {
+    this.diOpener = '';
+    this.currentPlayerIndex = -1;
+    if(this.threeShower == '') {
+      this.stage = GameStages.FIND_THREE_IN_DI;
+    } else {
+      this.stage = GameStages.DONE_DRAWING;
+    }
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    this.undoPostFollowUps(user, undoType);
+
+    console.log("undid show three");
   }
 
   userTakeCardfromDi(user, card) {
@@ -734,6 +967,8 @@ export class Game {
     this.prepCardForHand(user, card);
     this.hands[user.username].push(card);
     this.di.splice(index, 1);
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
   }
 
   userPutCardInDi(user, card) {
@@ -743,11 +978,22 @@ export class Game {
     }
     this.prepCardForLeavingHand(user, card);
     this.di.push(card);
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
   }
 
   userStartGame(user) {
     this.stage = GameStages.PLAY;
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.START_GAME;
     console.log("Game started");
+  }
+
+  undoStartGame(user, undoType) {
+    this.stage = GameStages.DI;
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    this.undoPostFollowUps(user, undoType);
+
+    console.log("undid start game");
   }
 
   userPlayCard(user, card) {
@@ -765,6 +1011,11 @@ export class Game {
     this.prepCardForLeavingHand(user, card);
     this.currTableCards[card] = user.username;
     this.currTurnNumCards++;
+    this.prevPlayerIndex = this.currentPlayerIndex;
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    var lastPlayer = this.players[(this.currentPlayerIndex - 1 + NumPlayers) % NumPlayers].username;
+    this.undoByPlayer[lastPlayer][UndoParams.BUTTON] = UndoStates.NONE;
     console.log(user.username, " played card");
   }
 
@@ -800,10 +1051,24 @@ export class Game {
       this.prevTableCards = this.currTableCards;
       this.tableState = TableStates.CLEAR_TABLE;
     }
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.PLAY_CARDS;
     console.log("End turn");
   }
 
-  //combine these two helper methods once currTable and di are both arrays of card objects
+  undoEndTurn(user, undoType) {
+    this.currTurnNumCards = this.currCycleNumCards;
+    this.currentPlayerIndex = this.prevPlayerIndex;
+    this.turnCycleCount = this.turnCycleCount - 1;
+    this.tableState = TableStates.NONE;
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    this.undoPostFollowUps(user, undoType);
+
+    console.log("undid end turn");
+  }
+
+  //combine this with userCollecPointsDi once currTable and di are both arrays of card objects
   userCollectPointsTable(user) {
     if (this.playerRoles[user.username] == Roles.DEFENDER) {
       return;
@@ -817,6 +1082,23 @@ export class Game {
     }
   }
 
+  undoCollectPointsTable(user) {
+    if (this.playerRoles[user.username] == Roles.DEFENDER) {
+      return;
+    }
+
+    var numPointCards = 0;
+    for (var card in this.prevTableCards) {
+      if (Object.keys(PointsMap).indexOf(card.slice(0, 1)) >= 0) {
+        numPointCards++;
+      }
+    }
+    for (var i = 0; i < numPointCards; i++) {
+      this.taiXiaPoints.pop();
+    }
+    console.log("undid collect points from table");
+  }
+
   userCollectPointsDi(user) {
     if (this.playerRoles[user.username] == Roles.DEFENDER) {
       return;
@@ -828,6 +1110,22 @@ export class Game {
         console.log("Collected: ", this.di[i]);
       }
     }
+  }
+
+  undoCollectPointsDi(user) {
+    if (this.playerRoles[user.username] == Roles.DEFENDER) {
+      return;
+    }
+    var numPointCards = 0;
+    for (let i = this.diPreWrap.length - 1; i > -1; i--) {
+      if (Object.keys(PointsMap).indexOf(this.diPreWrap[i].slice(0, 1)) >= 0) {
+        numPointCards++;
+      }
+    }
+    for (var i = 0; i < numPointCards; i++) {
+      this.taiXiaPoints.pop();
+    }
+    console.log("undid collect points from di");
   }
 
   userClearTable(user) {
@@ -845,6 +1143,29 @@ export class Game {
       this.stage = GameStages.WRAP_UP;
       this.userWrapUp(user);
     }
+
+    for (var player in this.undoByPlayer) {
+      this.undoByPlayer[player][UndoParams.BUTTON] = UndoStates.NONE;
+    }
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.CLEAR_TABLE;
+  }
+
+  undoClearTable(user, undoType) {
+    this.undoCollectPointsTable(user);
+    this.currTableCards = this.prevTableCards;
+    this.currentPlayerIndex = -1;
+    this.tableState = TableStates.CLEAR_TABLE;
+
+    if (this.stage == GameStages.WRAP_UP) {
+      this.stage = GameStages.PLAY;
+      this.undoCollectPointsDi(user);
+      this.di = this.diPreWrap.slice(0, 6);
+    }
+
+    this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
+    this.undoPostFollowUps(user, undoType);
+
+    console.log("undid clear table");
   }
 
   userClearPrevTable(user) {
@@ -859,10 +1180,10 @@ export class Game {
 
   userWrapUp(user) {
     //Pause
+    this.diPreWrap = this.di.slice(0, 6);
     this.userCollectPointsDi(user);
     //pause
     console.log("Wrapped up");
-    this.userEndGame();
   }
 
   userEndGame() {
@@ -884,10 +1205,75 @@ export class Game {
 
     this.stage = GameStages.FINISHED;
     this.status = GameStatuses.FINISHED;
+
+    this.userSetModalForAllHelper(ModalStates.END_GAME_NOTICE);
+  }
+
+  //Modal methods (including regular modals, error modals, and undo modals)
+  userSetModalForAllHelper(modal) {
+    for (var i = 0; i < this.players.length; i++) {
+      this.modalByPlayer[this.players[i].username] = modal;
+    }
+  }
+
+  userModalShow(user, modal) {
+    this.modalByPlayer[user.username] = ModalStates[modal];
+  }
+
+  userModalAway(user) {
+    this.modalByPlayer[user.username] = ModalStates.NONE;
   }
 
   userErrorAway(user) {
     this.errorByPlayer[user.username] = ErrorStates.NONE;
+  }
+
+  userUndo(user) {
+    var undoType = this.undoByPlayer[user.username][UndoParams.MODAL];
+
+    switch(undoType) {
+      case UndoStates.SHOW_THREE:
+        this.undoShowThree(user, undoType);
+        break;
+      case UndoStates.OPEN_DI:
+        this.undoOpenDi(user, undoType);
+        break;
+      case UndoStates.START_GAME:
+        this.undoStartGame(user, undoType);
+        break;
+      case UndoStates.PLAY_CARDS:
+        this.undoEndTurn(user, undoType);
+        break;
+      case UndoStates.CLEAR_TABLE:
+        this.undoClearTable(user, undoType);
+        break;
+    }
+  }
+
+  undoPostFollowUps(user, undoType) {
+    this.undoer = user.username;
+    this.userUndoAway(user);
+    this.undoNoticeOtherPlayersHelper(user, undoType);
+  }
+
+  undoNoticeOtherPlayersHelper(user, undoType) {
+    for (var player in this.undoByPlayer) {
+      if (player != user.username) {
+        this.undoByPlayer[player][UndoParams.MODAL] = undoType;
+        this.undoByPlayer[player][UndoParams.ROLE] = UndoRoles.NOTICEE;
+      }
+    }
+  }
+
+  userUndoShow(user) {
+    var undoState = this.undoByPlayer[user.username][UndoParams.BUTTON];
+    this.undoByPlayer[user.username][UndoParams.MODAL] = undoState;
+    this.undoByPlayer[user.username][UndoParams.ROLE] = UndoRoles.UNDOER;
+  }
+
+  userUndoAway(user) {
+    this.undoByPlayer[user.username][UndoParams.MODAL] = UndoStates.NONE;
+    this.undoByPlayer[user.username][UndoParams.ROLE] = UndoRoles.NONE;
   }
 
   userSetCardLoc(user, card, x, y, simple) {
