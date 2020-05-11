@@ -221,7 +221,7 @@ export const Langs = {
   }
 }
 
-export const CurrLang = Langs.CHINESE;
+export const CurrLang = Langs.ENGLISH;
 
 
 export default class GameBoard extends Component {
