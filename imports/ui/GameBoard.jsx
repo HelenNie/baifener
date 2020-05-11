@@ -124,6 +124,12 @@ export const Langs = {
         DEFENDER: "台上",
         ATTACKER: "台下",
         TBD: "未知"
+      },
+      suits: {
+        heart: "红桃",
+        diamond: "方片",
+        spade: "黑桃",
+        club: "梅花"
       }
     }    
   },
@@ -216,6 +222,12 @@ export const Langs = {
         DEFENDER: "Defender",
         ATTACKER: "Attacker",
         TBD: "TBD"
+      },
+      suits: {
+        heart: "Heart",
+        diamond: "Diamond",
+        spade: "Spade",
+        club: "Club"
       }
     }
   }
@@ -550,41 +562,15 @@ export default class GameBoard extends Component {
       );
   }   
 
-  renderMsgAreaItems(game, user) {
-    var items = [];
-
-    if (game.stage != GameStages.SET_UP) {
-      items.push(<p id="playerRole" key="1">{CurrLang.gameBoard.msgArea.role}:&nbsp;{CurrLang.gameBoard.roles[game.playerRoles[user.username]]}</p>);
-    }
-    if (game.stage != GameStages.SET_UP) {
-      items.push(<p className="msgAreaBuffer" key="2">||</p>);
-      items.push(<p id="zhuImageLabel" key="3">{CurrLang.gameBoard.msgArea.zhu}:&nbsp;</p>);
-      if (game.threeState != ThreeStates.NOT_SHOWN) {
-        items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuImage" key="5"></img>);
-      } else {
-        items.push(<p id="zhuImageTBD" key="4">{CurrLang.gameBoard.roles.TBD}</p>);
-      }
-    }
-
-    return items;
-  }
-
   renderHandAreaItems(game, user) {
     var items = [];
     var item1;
     var item2;
 
     if (game.stage == GameStages.DRAW) {
-      item1 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="2" onClick={this.handleDrawCard.bind(this)}></button>
-      item2 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="2" onClick={this.handleDrawCard.bind(this)} disabled></button>
+      item1 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)}></button>
+      item2 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)} disabled></button>
       items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
-    }
-    if (game.stage == GameStages.PLAY) {
-      if (user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()) {
-        items.push(item1 = <button className="roundCornerButton" id="roundCornerButtonEndTurn" key="2" onClick={this.handleEndTurn.bind(this)}></button>);
-      } else {
-        items.push(item2 = <button className="roundCornerButton" id="roundCornerButtonEndTurn" key="2" onClick={this.handleEndTurn.bind(this)} disabled></button>);
-      }
     }
 
     return items;
@@ -592,6 +578,15 @@ export default class GameBoard extends Component {
 
   renderTableAreaItems(game, user) {
     var items = [];
+
+    if (game.stage == GameStages.PLAY) {
+      if (user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()) {
+        items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" key="1" onClick={this.handleEndTurn.bind(this)}></button>);
+      } else {
+        items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" key="1" onClick={this.handleEndTurn.bind(this)} disabled></button>);
+      }
+    }
+
 
     if (game.tableState == TableStates.SEE_PREV_TABLE) {
       items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
@@ -727,7 +722,7 @@ export default class GameBoard extends Component {
 
     items.push(
       <div className="messageArea" key = '5'>
-        {this.renderMsgAreaItems(game, user)}
+        {this.renderMessageArea(game, user)}
       </div>
     );    
         
@@ -736,6 +731,22 @@ export default class GameBoard extends Component {
         {items}
       </div>
       );
+  }
+
+  renderMessageArea(game, user) {
+    var items = [];
+
+    if (game.stage != GameStages.SET_UP) {
+      var role = game.playerRoles[user.username];
+      if (role != Roles.TBD) {
+        items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" key="1" title={CurrLang.gameBoard.roles[role]}></img>);
+      }
+      if (game.zhu != '') {
+        items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" key="2" title={CurrLang.gameBoard.suits[SuitsMap[game.zhu]]}></img>);
+      }
+    }
+
+    return items;
   }
 
   renderByRole(game, userAttr, role, item1, item2) {

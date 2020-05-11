@@ -72,41 +72,19 @@ body {
     color: #F4F1DE;
     background-color: white;
     background-color: rgba(0, 0, 0, 0.3);
-    padding: 0.6%;
+    padding: 5px;
 }
 
-#playerRole {
+#playerRoleIcon {
     position: relative;
-    float: left;
-    color: white;
+    height: 25px;
 }
 
-.msgAreaBuffer {
+#zhuIcon {
     position: relative;
-    float: left;
-    color: orange;
-    margin-left: 25px;
-}
-
-#zhuImageLabel {
-    position: relative;
-    float: left;
-    color: white;
-    margin-left: 25px;
-}
-
-#zhuImageTBD {
-    position: relative;
-    float: left;
-    color: white;
-}
-
-#zhuImage {
-    position: relative;
-    float: left;
-    width: 20px;
-    height: 20px;
-    margin-left: 5px;
+    width: 26px;
+    height: 26px;
+    left: 5px;
 }
 
 /* Columns */
@@ -300,6 +278,10 @@ body {
     width: 40px;
     height: 40px;
     border: none;
+}
+
+#roundCornerButtonEndTurn {
+    right: 60px;
 }
 
 #roundCornerButtonDraw {
