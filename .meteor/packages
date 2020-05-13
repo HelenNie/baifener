@@ -27,5 +27,5 @@ semantic:ui
 semantic:ui-css
 fourseven:scss
 less
-juliancwirko:postcss
+juliancwirko:postcss@=1.2.0
 insecure

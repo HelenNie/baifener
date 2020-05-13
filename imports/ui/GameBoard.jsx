@@ -2,6 +2,7 @@ import React, { Component, componentDidMount } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import ReactModal from 'react-modal';
+import { CSSTransition } from 'react-transition-group'
 import MyDrag from './MyDrag.jsx';
 
 
@@ -10,6 +11,18 @@ import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, Un
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
+
+export const Anim = {
+  fadeInOut: {
+    class: 'fadeInOut',
+    timeout: 500
+  },
+  slideIn: {
+    class: 'slideIn',
+    timeout: 500,
+    delay: 1000
+  }
+}
 
 export const CssValues = {
   tableArea: {
@@ -600,39 +613,67 @@ export default class GameBoard extends Component {
   }
 
   renderTableCol(game, user) {
-    let diCards = game.di; 
-    let tableCards = game.currTableCards;
-    let tablePlayers = this.renderTablePlayersStyle(game, user);
+    var items = [];
+    var item;
+    var bool;
+    var totalTime;
 
     var bannerText;
     var content;
 
+    let diCards = game.di;
+    let tableCards = game.currTableCards;
+    let tablePlayers = this.renderTablePlayersStyle(game, user);
+
     if (game.stage == GameStages.FIND_THREE_IN_DI) {
       // Di to find three view
+
+      bool = game.stage == GameStages.FIND_THREE_IN_DI;
+
+      for (var i = 0; i < game.threeFromDiCount; i++) {
+        item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
+        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * i;
+        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+i, totalTime));
+      }
+
       bannerText = CurrLang.gameBoard.banners.findThreeInDi;
       content = 
         <div className="area" id="diArea">
-          {diCards.slice(0, game.threeFromDiCount).map((diCard, index) => (
-            <img src={"/images/" + diCard + ".png"} draggable="false" key={diCard}></img>
-          ))}
+          {items}
         </div>
     } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
       //Open di view
+
+      bool = game.stage == GameStages.DI && game.diOpener == user.username;
+
+      for (var i = 0; i < game.di.length; i++) {
+        item = <img src={"/images/" + game.di[i] + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration.bind(this, game.di[i])} ></img>
+        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * (i - game.threeFromDiCount);
+        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+(i-game.threeFromDiCount), totalTime));
+        console.log(i-game.threeFromDiCount);
+        console.log(totalTime);
+      }
+
       bannerText = CurrLang.gameBoard.banners.openDi;
       content = 
         <div className="area" id="diArea">
-          {diCards.map((diCard, index) => (
-            <img src={"/images/" + diCard + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, diCard)} draggable="false" key={diCard}></img>
-          ))}
+          {items}
         </div>
     } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
       //Di during WRAPUP and FINISHED view
+
+      bool = game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
+
+      for (var i = 0; i < game.di.length; i++) {
+        item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
+        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * i;
+        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+i, totalTime));
+      }
+
       bannerText = CurrLang.gameBoard.banners.diWrap;
       content = 
         <div className="area" id="diArea">
-            {diCards.map((diCard, index) => (
-              <img src={"/images/" + diCard + ".png"} draggable="false" key={diCard}></img>
-            ))}
+          {items}
         </div>
     } else {
       //Playing view
@@ -667,37 +708,55 @@ export default class GameBoard extends Component {
 
   renderNextArea(game, user) {
     let items = [];
+    let bools = [];
     var item1;
     var item2;
 
-    if (game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN) {
-      //Find three in di button
-      item1 = <button className="ui button orange" key="1" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDiForThree}&rarr;</button>;
-      item2 = <p className="nextAreaWaitText" key="1">{CurrLang.gameBoard.nextArea.findThreeWaiting}</p>;
-      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
-    } else if ((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) {
-      //Open di button
-      item1 = <button className="ui button orange" key="2" onClick={this.handleOpenDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDi}</button>;
-      item2 = <p className="nextAreaWaitText" key="2">{CurrLang.gameBoard.nextArea.openKittyWaiting}</p>;
-      items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
-    } else if (game.stage == GameStages.DI) {
-      //Start playing button
-      if (game.di.length == DiLength) {
-        item1 = <button className="ui button orange" key="3" onClick={this.handleStartGame.bind(this)}>{CurrLang.gameBoard.nextArea.startPlaying}</button>;
-      } else {
-        item1 = <button className="ui button orange" key="3" onClick={this.handleStartGame.bind(this)} disabled>{CurrLang.gameBoard.nextArea.startPlaying}</button>;
-      }
-      item2 = <p className="nextAreaWaitText" key="3">{CurrLang.gameBoard.nextArea.startGameWaiting}</p>;
-      items.push(this.renderByRole(game, user.username, game.diOpener, item1, item2));
-    } else if (game.tableState == TableStates.CLEAR_TABLE) {
-      //Won round button
-      items.push(<button className="ui button orange" key="4" onClick={this.handleClearTable.bind(this)}>{CurrLang.gameBoard.nextArea.wonRoundButton}</button>);
-    } else {
-      //Default
-      items.push(<img id="nextAreaPlaceholder" key="5" src={"/images/nextAreaPlaceholder.png"}></img>);
+    //Find three in di button
+    item1 = <button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDiForThree}&rarr;</button>;
+    item2 = <p className="nextAreaItem waitText">{CurrLang.gameBoard.nextArea.findThreeWaiting}</p>;
+    items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN);
+
+    //Open di button
+    item1 = <button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDi}</button>;
+    item2 = <p className="nextAreaItem waitText" >{CurrLang.gameBoard.nextArea.openKittyWaiting}</p>;
+    items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
+    bools.push((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI));
+
+    //Start playing button
+    item1 = <button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{CurrLang.gameBoard.nextArea.startPlaying}</button>;
+    item2 = <p className="nextAreaItem waitText" >{CurrLang.gameBoard.nextArea.startGameWaiting}</p>;
+    items.push(this.renderByRole(game, user.username, game.diOpener, item1, item2)),
+    bools.push(game.stage == GameStages.DI);
+
+    //Won round button
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleClearTable.bind(this)}>{CurrLang.gameBoard.nextArea.wonRoundButton}</button>);
+    bools.push(game.tableState == TableStates.CLEAR_TABLE);
+
+    //Default
+    items.push(<img className="nextAreaItem" id="placeholder" src={"/images/nextAreaPlaceholder.png"}></img>);
+    bools.push(bools.every(v => v === false));
+
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], bools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout);
     }
 
     return items;
+  }
+
+  animate(key, item, bool, className, timeout) {
+    return (
+      <CSSTransition
+        key={key}
+        in={bool}
+        timeout={timeout}
+        classNames={className}
+        appear
+        unmountOnExit>
+        {item}
+      </CSSTransition>
+      );
   }
 
   renderTopRow(game, user) {
@@ -813,7 +872,6 @@ export default class GameBoard extends Component {
             { this.renderTableCol(game, user).banner }
             { this.renderTableCol(game, user).content }
             <div id="nextArea">
-              <br></br>
               { this.renderNextArea(game, user) }
             </div>
           </div>

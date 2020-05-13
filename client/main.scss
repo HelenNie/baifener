@@ -212,18 +212,27 @@ body {
 /* Next area */
 
 #nextArea {
-    height: 24%;
     position: relative;
-    text-align: center;
+    height: 20%;
 }
 
-.nextAreaWaitText {
+.nextAreaItem {
+    height: 30px;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}  
+
+.waitText {
     color: orange;
     font-style: italic;
     font-size: 15px;
 }
 
-#nextAreaPlaceholder {
+.myButton {
+}
+
+#placeholder {
     width: 50px;
     height: 50px;
 }
@@ -446,4 +455,115 @@ body {
     border: 3px solid orange;
     border-radius: 3px;
     filter: brightness(90%);
+}
+
+/* Animations */
+
+/* NextArea */
+
+.fadeInOut-appear,
+.fadeInOut-enter {
+  opacity: 0;
+  transform: translateX(-300%);
+}
+
+.fadeInOut-appear-active,
+.fadeInOut-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.fadeInOut-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.fadeInOut-exit-active {
+  opacity: 0;
+  transform: translateX(300%);
+}
+
+.fadeInOut-appear-active,
+.fadeInOut-enter-active,
+.fadeInOut-exit-active {
+  transition: opacity 500ms, transform 500ms;
+}
+
+/* Di cards */
+
+.slideIn-0-appear,
+.slideIn-0-enter,
+.slideIn-1-appear,
+.slideIn-1-enter,
+.slideIn-2-appear,
+.slideIn-2-enter,
+.slideIn-3-appear,
+.slideIn-3-enter,
+.slideIn-4-appear,
+.slideIn-4-enter,
+.slideIn-5-appear,
+.slideIn-5-enter {
+  transform: translateX(750%);
+  opacity: 0;
+}
+
+.slideIn-0-appear-active,
+.slideIn-0-enter-active,
+.slideIn-1-appear-active,
+.slideIn-1-enter-active,
+.slideIn-2-appear-active,
+.slideIn-2-enter-active,
+.slideIn-3-appear-active,
+.slideIn-3-enter-active,
+.slideIn-4-appear-active,
+.slideIn-4-enter-active,
+.slideIn-5-appear-active,
+.slideIn-5-enter-active {
+  transform: translateX(0%);
+  opacity: 1;
+}
+
+.slideIn-0-appear-active,
+.slideIn-0-enter-active,
+.slideIn-1-appear-active,
+.slideIn-1-enter-active,
+.slideIn-2-appear-active,
+.slideIn-2-enter-active,
+.slideIn-3-appear-active,
+.slideIn-3-enter-active,
+.slideIn-4-appear-active,
+.slideIn-4-enter-active,
+.slideIn-5-appear-active,
+.slideIn-5-enter-active {
+  transition: opacity 500ms, transform 500ms;
+}
+
+.slideIn-0-appear-active,
+.slideIn-0-enter-active {
+    transition-delay: 0s;
+}
+
+.slideIn-1-appear-active,
+.slideIn-1-enter-active {
+    transition-delay: 1s;
+}
+
+.slideIn-2-appear-active,
+.slideIn-2-enter-active {
+    transition-delay: 2s;
+}
+
+.slideIn-3-appear-active,
+.slideIn-3-enter-active {
+    transition-delay: 3s;
+}
+
+.slideIn-4-appear-active,
+.slideIn-4-enter-active {
+    transition-delay: 4s;
+}
+
+.slideIn-5-appear-active,
+.slideIn-5-enter-active {
+    transition-delay: 5s;
 }
