@@ -141,6 +141,11 @@ body {
     border-radius: 5px;
 }
 
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+
 #handArea {
     /* 11px offset at the bottom for shelf shadow */
     padding-top: 13px;
@@ -152,10 +157,10 @@ body {
     background-color: #9B6A6C;
 }
 
-#diArea {
+#tableArea {
     height: 72%;
     background-color: peachpuff;
-    text-align: center;
+    padding: 0px;
 }
 
 #pointsArea {
@@ -174,16 +179,19 @@ body {
     text-align: center;
 }
 
-/* Table area */
+/* Di area */
 
-#tableArea {
-    height: 72%;
+#diAreaWrapper {
+    padding-top: 100px;
+    padding-left: 185px;
 }
+
+/* Table area */
 
 .playerArea {
     float: left;
     width: 50%;
-    height: 48%;
+    height: 50%;
     position: relative;
     padding: 2%;
     text-align: center;
@@ -221,15 +229,32 @@ body {
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
+    text-align: center;
 }  
 
 .waitText {
+    position: absolute;
+    top: 30px;
     color: orange;
     font-style: italic;
     font-size: 15px;
 }
 
 .myButton {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    text-decoration: none;
+    color: #FFF;
+    background: #fd9535;/*button color*/
+    border-bottom: solid 2px #d27d00;/*daker color*/
+    border-radius: 4px;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+}
+
+.myButton:active {
+    border-bottom: solid 2px #fd9535;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
 }
 
 #placeholder {
@@ -461,13 +486,11 @@ body {
 
 /* NextArea */
 
-.fadeInOut-appear,
 .fadeInOut-enter {
   opacity: 0;
-  transform: translateX(-300%);
+  transform: translateX(-100%);
 }
 
-.fadeInOut-appear-active,
 .fadeInOut-enter-active {
   opacity: 1;
   transform: translateX(0%);
@@ -480,90 +503,153 @@ body {
 
 .fadeInOut-exit-active {
   opacity: 0;
-  transform: translateX(300%);
+  transform: translateX(100%);
 }
 
-.fadeInOut-appear-active,
 .fadeInOut-enter-active,
 .fadeInOut-exit-active {
-  transition: opacity 500ms, transform 500ms;
+  transition: opacity 1000ms, transform 1000ms;
 }
 
 /* Di cards */
 
-.slideIn-0-appear,
 .slideIn-0-enter,
-.slideIn-1-appear,
 .slideIn-1-enter,
-.slideIn-2-appear,
 .slideIn-2-enter,
-.slideIn-3-appear,
 .slideIn-3-enter,
-.slideIn-4-appear,
 .slideIn-4-enter,
-.slideIn-5-appear,
-.slideIn-5-enter {
-  transform: translateX(750%);
+.slideIn-5-enter,
+.slideInQuick-0-enter,
+.slideInQuick-1-enter,
+.slideInQuick-2-enter,
+.slideInQuick-3-enter,
+.slideInQuick-4-enter,
+.slideInQuick-5-enter {
+  transform: translateX(500%);
   opacity: 0;
 }
 
-.slideIn-0-appear-active,
 .slideIn-0-enter-active,
-.slideIn-1-appear-active,
 .slideIn-1-enter-active,
-.slideIn-2-appear-active,
 .slideIn-2-enter-active,
-.slideIn-3-appear-active,
 .slideIn-3-enter-active,
-.slideIn-4-appear-active,
 .slideIn-4-enter-active,
-.slideIn-5-appear-active,
-.slideIn-5-enter-active {
+.slideIn-5-enter-active,
+.slideInQuick-0-enter-active,
+.slideInQuick-1-enter-active,
+.slideInQuick-2-enter-active,
+.slideInQuick-3-enter-active,
+.slideInQuick-4-enter-active,
+.slideInQuick-5-enter-active {
   transform: translateX(0%);
   opacity: 1;
 }
 
-.slideIn-0-appear-active,
+.slideIn-0-exit,
+.slideIn-1-exit,
+.slideIn-2-exit,
+.slideIn-3-exit,
+.slideIn-4-exit,
+.slideIn-5-exit,
+.slideInQuick-0-exit,
+.slideInQuick-1-exit,
+.slideInQuick-2-exit,
+.slideInQuick-3-exit,
+.slideInQuick-4-exit,
+.slideInQuick-5-exit {
+  opacity: 1;
+}
+
+.slideIn-0-exit-active,
+.slideIn-1-exit-active,
+.slideIn-2-exit-active,
+.slideIn-3-exit-active,
+.slideIn-4-exit-active,
+.slideIn-5-exit-active,
+.slideInQuick-0-exit-active,
+.slideInQuick-1-exit-active,
+.slideInQuick-2-exit-active,
+.slideInQuick-3-exit-active,
+.slideInQuick-4-exit-active,
+.slideInQuick-5-exit-active {
+  opacity: 0;
+}
+
 .slideIn-0-enter-active,
-.slideIn-1-appear-active,
 .slideIn-1-enter-active,
-.slideIn-2-appear-active,
 .slideIn-2-enter-active,
-.slideIn-3-appear-active,
 .slideIn-3-enter-active,
-.slideIn-4-appear-active,
 .slideIn-4-enter-active,
-.slideIn-5-appear-active,
-.slideIn-5-enter-active {
+.slideIn-5-enter-active,
+.slideInQuick-0-enter-active,
+.slideInQuick-1-enter-active,
+.slideInQuick-2-enter-active,
+.slideInQuick-3-enter-active,
+.slideInQuick-4-enter-active,
+.slideInQuick-5-enter-active {
   transition: opacity 500ms, transform 500ms;
 }
 
-.slideIn-0-appear-active,
+.slideIn-0-exit-active,
+.slideIn-1-exit-active,
+.slideIn-2-exit-active,
+.slideIn-3-exit-active,
+.slideIn-4-exit-active,
+.slideIn-5-exit-active,
+.slideInQuick-0-exit-active,
+.slideInQuick-1-exit-active,
+.slideInQuick-2-exit-active,
+.slideInQuick-3-exit-active,
+.slideInQuick-4-exit-active,
+.slideInQuick-5-exit-active {
+  transition: opacity 0ms, transform 0ms;
+  transition-delay: 0s;
+}
+
 .slideIn-0-enter-active {
     transition-delay: 0s;
 }
 
-.slideIn-1-appear-active,
 .slideIn-1-enter-active {
     transition-delay: 1s;
 }
 
-.slideIn-2-appear-active,
 .slideIn-2-enter-active {
     transition-delay: 2s;
 }
 
-.slideIn-3-appear-active,
 .slideIn-3-enter-active {
     transition-delay: 3s;
 }
 
-.slideIn-4-appear-active,
 .slideIn-4-enter-active {
     transition-delay: 4s;
 }
 
-.slideIn-5-appear-active,
 .slideIn-5-enter-active {
     transition-delay: 5s;
+}
+
+.slideInQuick-0-enter-active {
+    transition-delay: 0s;
+}
+
+.slideInQuick-1-enter-active {
+    transition-delay: 0.25s;
+}
+
+.slideInQuick-2-enter-active {
+    transition-delay: 0.5s;
+}
+
+.slideInQuick-3-enter-active {
+    transition-delay: 0.75s;
+}
+
+.slideInQuick-4-enter-active {
+    transition-delay: 1.0s;
+}
+
+.slideInQuick-5-enter-active {
+    transition-delay: 1.25s;
 }

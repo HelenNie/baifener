@@ -15,12 +15,17 @@ export const TableOrder = [0, 1, 3, 2];
 export const Anim = {
   fadeInOut: {
     class: 'fadeInOut',
-    timeout: 500
+    timeout: 1000
   },
   slideIn: {
     class: 'slideIn',
     timeout: 500,
     delay: 1000
+  },
+  slideInQuick: {
+    class: 'slideInQuick',
+    timeout: 500,
+    delay: 250
   }
 }
 
@@ -612,98 +617,104 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  renderTableCol(game, user) {
-    var items = [];
+  renderTableColBanner(game, user) {
+    var banner;
+
+      if (game.stage == GameStages.FIND_THREE_IN_DI) {
+        // Di to find three view
+        banner = CurrLang.gameBoard.banners.findThreeInDi;
+      } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
+        //Open di view
+        banner = CurrLang.gameBoard.banners.openDi;
+      } else if (game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
+        //Di during WRAPUP and FINISHED view
+        banner = CurrLang.gameBoard.banners.diWrap;
+      } else {
+        //Playing view
+        banner = CurrLang.gameBoard.banners.tableArea;
+      }
+
+    return (<p className="banner"><b>{ banner }</b></p>);
+  }
+
+  renderTableColDiAreaView(game, user) {
+    var items = {findThreeOpenDi:[], wrapup:[]};
     var item;
-    var bool;
+    var inBool;
+    var animClass;
     var totalTime;
 
-    var bannerText;
-    var content;
+    // Di to find three and Di Open views
 
-    let diCards = game.di;
+    var openDiShow = game.stage == GameStages.DI && game.diOpener == user.username;
+    var findThreeOpenDiShow = (game.stage == GameStages.FIND_THREE_IN_DI) || openDiShow;
+    var delayMult;
+
+    for (var i = 0; i < game.di.length; i++) {
+      item = <img src={"/images/" + game.di[i] + ".png"} draggable="false" className={ openDiShow ? "handle" : '' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, game.di[i]) : ()=> {}}></img>
+      delayMult = (i < game.threeFromDiCount) ? i : (i - game.threeFromDiCount)
+      inBool = (i < game.threeFromDiCount) ? findThreeOpenDiShow : openDiShow;
+      animClass = (game.undidStartGame) ? 
+        '' :
+        ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
+      totalTime = (game.undidStartGame) ? 
+        0 : 
+        ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
+      items.findThreeOpenDi.push(this.animate(i, item, inBool, animClass, totalTime));
+    }
+
+    //Di during WRAPUP and FINISHED view
+
+    var wrapup = game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
+
+    for (var i = 0; i < game.di.length; i++) {
+      item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
+      totalTime = Anim.slideInQuick.timeout + Anim.slideInQuick.delay * i;
+      items.wrapup.push(this.animate(i, item, wrapup, Anim.slideInQuick.class+'-'+i, totalTime));
+    } 
+
+    return (
+      <div className="wrapper" id="diAreaWrapper">
+        { items.findThreeOpenDi }
+        { items.wrapup }
+      </div>
+      );
+  }
+
+  renderTableColPlayingView(game, user) {  
+    var playingViewShow = game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || (game.stage == GameStages.DI && game.diOpener != user.username) || game.stage == GameStages.PLAY;
+
+    if (!playingViewShow) {
+      return '';
+    }
+
     let tableCards = game.currTableCards;
     let tablePlayers = this.renderTablePlayersStyle(game, user);
 
-    if (game.stage == GameStages.FIND_THREE_IN_DI) {
-      // Di to find three view
+    var playingView = 
+      <div className="wrapper" id="playerAreaWrapper">
+        {Object.keys(tablePlayers).map((player, index) => (
+          <div className="playerArea" key={index} style={tablePlayers[player]}>
+            <p className="tableBanner"><b>{player}</b></p>
+            {Object.keys(tableCards).map((card, index) => (
+              (tableCards[card] == player)? (
+                //Make card clickable if is user's turn during PLAY or is user's three
+                ((player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY))? (
+                  <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                ): (
+                  <img src={"/images/" + card + ".png"} onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
+                )
+              ):null
+            ))}
+          </div>
+        ))}  
 
-      bool = game.stage == GameStages.FIND_THREE_IN_DI;
+        {(game.disableTableArea(user)) ? (
+          <div id="tableAreaShadow"></div>
+        ): null}
+      </div>;
 
-      for (var i = 0; i < game.threeFromDiCount; i++) {
-        item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
-        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * i;
-        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+i, totalTime));
-      }
-
-      bannerText = CurrLang.gameBoard.banners.findThreeInDi;
-      content = 
-        <div className="area" id="diArea">
-          {items}
-        </div>
-    } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
-      //Open di view
-
-      bool = game.stage == GameStages.DI && game.diOpener == user.username;
-
-      for (var i = 0; i < game.di.length; i++) {
-        item = <img src={"/images/" + game.di[i] + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration.bind(this, game.di[i])} ></img>
-        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * (i - game.threeFromDiCount);
-        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+(i-game.threeFromDiCount), totalTime));
-        console.log(i-game.threeFromDiCount);
-        console.log(totalTime);
-      }
-
-      bannerText = CurrLang.gameBoard.banners.openDi;
-      content = 
-        <div className="area" id="diArea">
-          {items}
-        </div>
-    } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
-      //Di during WRAPUP and FINISHED view
-
-      bool = game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
-
-      for (var i = 0; i < game.di.length; i++) {
-        item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
-        totalTime = Anim.slideIn.timeout + Anim.slideIn.delay * i;
-        items.push(this.animate(i, item, bool, Anim.slideIn.class+'-'+i, totalTime));
-      }
-
-      bannerText = CurrLang.gameBoard.banners.diWrap;
-      content = 
-        <div className="area" id="diArea">
-          {items}
-        </div>
-    } else {
-      //Playing view
-      bannerText = CurrLang.gameBoard.banners.tableArea;
-      content = 
-        <div id="tableArea">
-          {this.renderTableAreaItems(game, user)}
-          {Object.keys(tablePlayers).map((player, index) => (
-            <div className="playerArea" key={index} style={tablePlayers[player]}>
-              <p className="tableBanner"><b>{player}</b></p>
-              {Object.keys(tableCards).map((card, index) => (
-                (tableCards[card] == player)? (
-                  //Make card clickable if is user's turn during PLAY or is user's three
-                  ((player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY))? (
-                    <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                  ): (
-                    <img src={"/images/" + card + ".png"} onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                  )
-                ):null
-              ))}
-            </div>
-          ))}  
-
-          {(game.disableTableArea(user)) ? (
-            <div id="tableAreaShadow"></div>
-          ): null}
-        </div>;
-    }
-
-    return ({banner: <p className="banner"><b>{ bannerText }</b></p>, content: content});
+    return playingView;
   }
 
   renderNextArea(game, user) {
@@ -752,7 +763,6 @@ export default class GameBoard extends Component {
         in={bool}
         timeout={timeout}
         classNames={className}
-        appear
         unmountOnExit>
         {item}
       </CSSTransition>
@@ -869,8 +879,16 @@ export default class GameBoard extends Component {
 
           {/* Table and di areas */}
           <div className="column smart" id="tableColumn">
-            { this.renderTableCol(game, user).banner }
-            { this.renderTableCol(game, user).content }
+
+            { this.renderTableColBanner(game, user) }
+            { this.renderTableAreaItems(game, user) }
+
+            <div className="area" id="tableArea">
+              { this.renderTableColPlayingView(game, user) }
+              { this.renderTableColDiAreaView(game, user) }
+            </div>
+            
+            
             <div id="nextArea">
               { this.renderNextArea(game, user) }
             </div>
