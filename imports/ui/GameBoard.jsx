@@ -7,14 +7,14 @@ import MyDrag from './MyDrag.jsx';
 
 
 import GameHeader from './GameHeader.jsx';
-import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
+import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete} from '../api/models/game.js';
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
 export const Anim = {
-  fadeInOut: {
-    class: 'fadeInOut',
+  fadeSlideInOut: {
+    class: 'fadeSlideInOut',
     timeout: 1000
   },
   slideIn: {
@@ -26,6 +26,11 @@ export const Anim = {
     class: 'slideInQuick',
     timeout: 500,
     delay: 250
+  },
+  fadeInOut: {
+    class: 'fadeInOut',
+    timeout: 250,
+    delay: 1500
   }
 }
 
@@ -606,7 +611,7 @@ export default class GameBoard extends Component {
     }
 
 
-    if (game.tableState == TableStates.SEE_PREV_TABLE) {
+    if (game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
       items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
     } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
       items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
@@ -665,12 +670,17 @@ export default class GameBoard extends Component {
 
     //Di during WRAPUP and FINISHED view
 
-    var wrapup = game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
+    var wrapup = (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
+    var card;
+    var delayPoint;
 
     for (var i = 0; i < game.di.length; i++) {
-      item = <img src={"/images/" + game.di[i] + ".png"} draggable="false"></img>
-      totalTime = Anim.slideInQuick.timeout + Anim.slideInQuick.delay * i;
-      items.wrapup.push(this.animate(i, item, wrapup, Anim.slideInQuick.class+'-'+i, totalTime));
+      card = game.di[i];
+      item = <img src={"/images/" + card + ".png"} draggable="false"></img>
+      delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
+      animClass = delayPoint ? Anim.fadeInOut.class + 'Delay' : Anim.fadeInOut.class;
+      totalTime = delayPoint ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
+      items.wrapup.push(this.animate(card, item, wrapup, animClass, totalTime));
     } 
 
     return (
@@ -691,30 +701,48 @@ export default class GameBoard extends Component {
     let tableCards = game.currTableCards;
     let tablePlayers = this.renderTablePlayersStyle(game, user);
 
-    var playingView = 
+    var playerAreas = [];
+    var item;
+    var card;
+    var active;
+    var delayPoint;
+    var inBool;
+    var animClass;
+    var totalTime;
+
+    for (var player in tablePlayers) {
+      var items = [];
+      for (var i = 0; i < game.copy.hands[player].length; i++) {
+        card = game.copy.hands[player][i];
+        inBool = card in tableCards;
+        //Make card clickable if is user's turn during PLAY or is user's three
+        active = (player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY);
+        item = <img src={"/images/" + card + ".png"} draggable="false" className={active ? "handle" : ''} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;
+        //Delay point cards fading out if during collect points
+        delayPoint = game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP);
+        animClass = delayPoint ? Anim.fadeInOut.class + 'Delay' : Anim.fadeInOut.class;
+        totalTime = delayPoint ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
+        items.push(this.animate(card, item, inBool, animClass, totalTime));
+      }
+      playerAreas.push(
+        <div className="playerArea" key={ player } style={tablePlayers[player]}>
+          <p className="tableBanner"><b>{ player }</b></p>
+          { items }
+        </div>
+      );
+    }
+
+    item = <div id="tableAreaShadow"></div>
+    inBool = game.disableTableArea(user);
+    var disabledTableArea = this.animate('tableShadow', item, inBool, Anim.fadeInOut.class, Anim.fadeInOut.timeout);
+
+
+    return (
       <div className="wrapper" id="playerAreaWrapper">
-        {Object.keys(tablePlayers).map((player, index) => (
-          <div className="playerArea" key={index} style={tablePlayers[player]}>
-            <p className="tableBanner"><b>{player}</b></p>
-            {Object.keys(tableCards).map((card, index) => (
-              (tableCards[card] == player)? (
-                //Make card clickable if is user's turn during PLAY or is user's three
-                ((player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY))? (
-                  <img src={"/images/" + card + ".png"} className="handle" onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                ): (
-                  <img src={"/images/" + card + ".png"} onDoubleClick={this.handleCardMigration.bind(this, card)} draggable="false" key={card}></img>
-                )
-              ):null
-            ))}
-          </div>
-        ))}  
-
-        {(game.disableTableArea(user)) ? (
-          <div id="tableAreaShadow"></div>
-        ): null}
-      </div>;
-
-    return playingView;
+        { playerAreas }
+        { disabledTableArea }
+      </div>
+      );
   }
 
   renderNextArea(game, user) {
@@ -750,10 +778,43 @@ export default class GameBoard extends Component {
     bools.push(bools.every(v => v === false));
 
     for (var i = 0; i < items.length; i++) {
-      items[i] = this.animate(i, items[i], bools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout);
+      items[i] = this.animate(i, items[i], bools[i], Anim.fadeSlideInOut.class, Anim.fadeSlideInOut.timeout);
     }
 
     return items;
+  }
+
+  renderPointsArea(game, user) {
+    let pointCards = game.taiXiaPoints;
+    var items = [];
+    var item;
+    var card;
+    var inBool;
+    var animClass;
+    var totalTime;
+    var ifDelay;
+
+    for (var i = 0; i < DeckComplete.length; i++) {
+      card = DeckComplete[i];
+      inBool = game.taiXiaPoints.indexOf(card) > -1;
+      item = <img src={"/images/" + card + ".png"} draggable="false" key={card}></img>
+      ifDelay = game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP;
+      animClass = ifDelay ? Anim.fadeInOut.class+'Delay' : Anim.fadeInOut.class;
+      totalTime = ifDelay ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
+      items.push(this.animate(card, item, inBool, animClass, totalTime));
+    }
+
+    return (
+      <div className="area" id="pointsArea">
+          { items }
+      </div>
+      );
+  }
+
+  renderEndGameShadow(game, user) {
+    var item = <div id="finishedShadow"></div>;
+    var inBool = game.stage == GameStages.FINISHED;
+    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOut.class+'Delay', Anim.fadeInOut.timeout + Anim.fadeInOut.delay));
   }
 
   animate(key, item, bool, className, timeout) {
@@ -831,7 +892,6 @@ export default class GameBoard extends Component {
     let user = this.props.user;
     
     let userCards = game.hands[user.username];
-    let pointCards = game.taiXiaPoints;
 
     let handAreaStyle = this.renderHandAreaStyle(game, user);
 
@@ -884,8 +944,8 @@ export default class GameBoard extends Component {
             { this.renderTableAreaItems(game, user) }
 
             <div className="area" id="tableArea">
-              { this.renderTableColPlayingView(game, user) }
               { this.renderTableColDiAreaView(game, user) }
+              { this.renderTableColPlayingView(game, user) }
             </div>
             
             
@@ -899,15 +959,11 @@ export default class GameBoard extends Component {
           {/* Points area */}
           <div className="column smart" id="pointsColumn">
             <p className="banner"><b>{CurrLang.gameBoard.banners.pointsArea}</b></p>
-            <div className="area" id="pointsArea">
-                {pointCards.map((pointCard, index) => (
-                  <img src={"/images/" + pointCard + ".png"} draggable="false" key={pointCard}></img>
-                ))}
-            </div>
+            { this.renderPointsArea(game, user) }
           </div>
-          {(game.stage == GameStages.FINISHED) ? (
-            <div id="finishedShadow"></div>
-          ): null}
+
+          { this.renderEndGameShadow(game, user) }
+
         </div> 
       </div>
     )

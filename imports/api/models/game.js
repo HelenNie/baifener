@@ -71,6 +71,7 @@ export const ThreeStates = {
 export const TableStates = {
   NONE: 'NONE',
   CLEAR_TABLE: 'CLEAR_TABLE',
+  SEE_PREV_TABLE_FIRST: 'SEE_PREV_TABLE_FIRST',
   SEE_PREV_TABLE: 'SEE_PREV_TABLE',
   CLEAR_PREV_TABLE: 'CLEAR_PREV_TABLE'
 };
@@ -547,7 +548,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_WRAPUP;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -1153,7 +1154,7 @@ export class Game {
     //Pause
     this.currTableCards = {};
     this.currentPlayerIndex = this.usernameToIndex(user.username);
-    this.tableState = TableStates.SEE_PREV_TABLE;
+    this.tableState = TableStates.SEE_PREV_TABLE_FIRST;
     console.log("Table cleared");
 
     if (this.hands[user.username].length == 0) {
