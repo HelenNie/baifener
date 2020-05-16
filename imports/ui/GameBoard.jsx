@@ -61,6 +61,15 @@ export const Anim = {
     timeout: 250,
     delay: 4000
   },
+  fadeInOut65: {
+    class: 'fadeInOut65',
+    timeout: 250,
+  },
+  fadeInOut65Extra3Delay: {
+    class: 'fadeInOut65Extra3Delay',
+    timeout: 250,
+    delay: 4000
+  },
 }
 
 export const CssValues = {
@@ -540,7 +549,8 @@ export default class GameBoard extends Component {
           isOpen = { game.modalByPlayer[user.username] != ModalStates.NONE }
           className = "modal"
           overlayClassName = "modalOverlay"
-          ariaHideApp={false}>
+          closeTimeoutMS ={500}
+          ariaHideApp = {false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
           </div>
@@ -566,6 +576,7 @@ export default class GameBoard extends Component {
           isOpen = { error != ErrorStates.NONE }
           className = "modal error"
           overlayClassName = "modalOverlay"
+          closeTimeoutMS ={500}
           ariaHideApp={false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
@@ -610,6 +621,7 @@ export default class GameBoard extends Component {
           isOpen = { undoType != UndoStates.NONE }
           className = "modal"
           overlayClassName = "modalOverlay"
+          closeTimeoutMS ={500}
           ariaHideApp={false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
@@ -727,7 +739,6 @@ export default class GameBoard extends Component {
   }
 
   onWrapupDiEnter(card) {
-    console.log("ENTERED callback");
     var game = this.props.game;
     var user = this.props.user;
     if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
@@ -779,7 +790,7 @@ export default class GameBoard extends Component {
 
     item = <div id="tableAreaShadow"></div>
     inBool = game.disableTableArea(user);
-    var disabledTableArea = this.animate('tableShadow', item, inBool, Anim.fadeInOut.class, Anim.fadeInOut.timeout);
+    var disabledTableArea = this.animate('tableShadow', item, inBool, Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
 
 
     return (
@@ -858,7 +869,7 @@ export default class GameBoard extends Component {
   renderEndGameShadow(game, user) {
     var item = <div id="finishedShadow"></div>;
     var inBool = game.stage == GameStages.FINISHED;
-    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOutDelayOut.class, Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay));
+    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOut65Extra3Delay.class, Anim.fadeInOut65Extra3Delay.timeout + Anim.fadeInOut65Extra3Delay.delay));
   }
 
   animate(key, item, bool, className, timeout, onEnter) {

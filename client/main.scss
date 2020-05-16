@@ -155,6 +155,7 @@ body {
     height: 512px;
     width: 676px;
     background-color: #9B6A6C;
+    transition: background-color 0.5s ease-in-out;
 }
 
 #tableArea {
@@ -165,7 +166,6 @@ body {
 
 #pointsArea {
     height: 90px;
-    text-align: center;
     background-color: floralwhite;
     border: 1px dashed gray;
 }
@@ -200,8 +200,8 @@ body {
     position: relative;
     padding: 2%;
     border-radius: 5px;
-    text-align: center;
     overflow-y: scroll;
+    transition: border 0.5s ease-in-out;
 }
 
 #tableAreaShadow{
@@ -212,7 +212,6 @@ body {
     left: 0px;
     border-radius: 5px;
     background-color: black;
-    opacity: 0.65;
 }
 
 .tableBanner {
@@ -389,7 +388,6 @@ body {
     height: 100%;
     border-radius: 5px;
     background-color: black;
-    opacity: 0.65;
     z-index: 10000;
 }
 
@@ -463,7 +461,7 @@ body {
     font-style: italic;
 }
 
-/* Card */
+/* button */
 
 .ui.button:disabled {
     opacity: 0.6 !important;
@@ -660,7 +658,7 @@ body {
     transition-delay: 1.25s;
 }
 
-/* Playing cards */
+/* Playing */
 
 .fadeInOutDelayIn-enter,
 .fadeInOutExtra3DelayIn-enter,
@@ -738,4 +736,56 @@ body {
 
 .fadeInOutExtra3DelayIn-enter-active {
     transition-delay: 4s;
+}
+
+/* Modals */
+
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: all 500ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+
+/* Shadow */
+
+.fadeInOut65Extra3Delay-enter, 
+.fadeInOut65-enter {
+  opacity: 0;
+}
+
+.fadeInOut65Extra3Delay-enter-active, 
+.fadeInOut65-enter-active {
+  opacity: 0.65;
+}
+
+.fadeInOut65Extra3Delay-enter-done, 
+.fadeInOut65-enter-done {
+  opacity: 0.65;
+}
+
+.fadeInOut65Extra3Delay-exit, 
+.fadeInOut65-exit {
+  opacity: 0.65;
+}
+
+.fadeInOut65Extra3Delay-exit-active, 
+.fadeInOut65-exit-active {
+  opacity: 0;
+}
+
+.fadeInOut65Extra3Delay-enter-active,
+.fadeInOut65-enter-active {
+  transition: opacity 250ms;
+}
+
+.fadeInOut65Extra3Delay-enter-active {
+  transition-delay: 4s;
 }

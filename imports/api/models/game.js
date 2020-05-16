@@ -1426,7 +1426,7 @@ export class Game {
   }
 
   getFirstPlayerShown() {
-    if (this.stage == GameStages.PLAY) {
+    if (this.stage == GameStages.PLAY || this.stage == GameStages.WRAP_UP || this.stage == GameStages.FINISHED) {
       return this.usernameToIndex(this.diOpener);
     } else if (this.firstDrawer != '') {
       return this.usernameToIndex(this.firstDrawer);
