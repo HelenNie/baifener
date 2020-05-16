@@ -612,6 +612,7 @@ export class Game {
       this.prevPlayerIndex = -1;
       this.copy = {};
       this.undidStartGame = false;
+      this.wrapUpWinner = '';
     }
   }
 
@@ -621,7 +622,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'wrapUpWinner'];
   }
 
   copyGame() {
@@ -684,8 +685,9 @@ export class Game {
       var deckComplete = this.randomizedDeck();
       this.deck = deckComplete.drawingCards;
       this.di = deckComplete.di;
-      this.diOriginal = this.di;
     }
+
+    this.diOriginal = this.di;
 
     for (var i = 0; i < DeckComplete.length; i++) {
       this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
@@ -1121,7 +1123,7 @@ export class Game {
   }
 
   userCollectPointsDi(user) {
-    if (this.playerRoles[user.username] == Roles.DEFENDER) {
+    if (this.playerRoles[this.wrapUpWinner] == Roles.DEFENDER) {
       return;
     }
     for (let i = this.di.length - 1; i > -1; i--) {
@@ -1133,8 +1135,8 @@ export class Game {
     }
   }
 
-  undoCollectPointsDi(user) {
-    if (this.playerRoles[user.username] == Roles.DEFENDER) {
+  undoCollectPointsDi() {
+    if (this.playerRoles[this.wrapUpWinner] == Roles.DEFENDER) {
       return;
     }
     var numPointCards = 0;
@@ -1151,18 +1153,16 @@ export class Game {
 
   userClearTable(user) {
     this.userCollectPointsTable(user);
-    //Pause
     this.currTableCards = {};
     this.currentPlayerIndex = this.usernameToIndex(user.username);
     this.tableState = TableStates.SEE_PREV_TABLE_FIRST;
     console.log("Table cleared");
 
     if (this.hands[user.username].length == 0) {
-      //Pause
       this.currentPlayerIndex = -1;
       this.tableState = TableStates.NONE;
       this.stage = GameStages.WRAP_UP;
-      this.userWrapUp(user);
+      this.wrapUpWinner = user.username;
     }
 
     for (var player in this.undoByPlayer) {
@@ -1199,11 +1199,9 @@ export class Game {
     this.tableState = TableStates.CLEAR_PREV_TABLE;
   }
 
-  userWrapUp(user) {
-    //Pause
+  userWrapUp() {
     this.diPreWrap = this.di.slice(0, 6);
-    this.userCollectPointsDi(user);
-    //pause
+    this.userCollectPointsDi();
     console.log("Wrapped up");
   }
 

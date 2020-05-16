@@ -266,3 +266,13 @@ export const userUndoGame = new ValidatedMethod({
     GamesController.userUndoGame(gameId, Meteor.user());
   }
 });
+
+export const userWrapUpGame = new ValidatedMethod({
+  name: 'games.userWrapUpGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userWrapUpGame(gameId, Meteor.user());
+  }
+});

@@ -156,5 +156,11 @@ export let GamesController = {
     let game = Games.findOne(gameId);
     game.userUndo(user);
     Games.saveGame(game);
-  }
+  },
+
+  userWrapUpGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userWrapUp(user);
+    Games.saveGame(game);
+  },
 }

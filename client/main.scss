@@ -662,34 +662,80 @@ body {
 
 /* Playing cards */
 
-.fadeInOutDelay-enter,
+.fadeInOutDelayIn-enter,
+.fadeInOutExtra3DelayIn-enter,
+.fadeInOutExtra3DelayOut-enter,
+.fadeInOutExtra2DelayOut-enter,
+.fadeInOutExtraDelayOut-enter,
+.fadeInOutDelayOut-enter,
 .fadeInOut-enter {
     opacity: 0;
 }
 
-.fadeInOutDelay-enter-active,
+.fadeInOutDelayIn-enter-active,
+.fadeInOutExtra3DelayIn-enter-active,
+.fadeInOutExtra3DelayOut-enter-active,
+.fadeInOutExtra2DelayOut-enter-active,
+.fadeInOutExtraDelayOut-enter-active,
+.fadeInOutDelayOut-enter-active,
 .fadeInOut-enter-active {
     opacity: 1;
 }
 
-.fadeInOutDelay-exit,
+.fadeInOutDelayIn-exit,
+.fadeInOutExtra3DelayIn-exit,
+.fadeInOutExtra3DelayOut-exit,
+.fadeInOutExtra2DelayOut-exit,
+.fadeInOutExtraDelayOut-exit,
+.fadeInOutDelayOut-exit,
 .fadeInOut-exit {
     opacity: 1;
 }
 
-.fadeInOutDelay-exit-active,
+.fadeInOutDelayIn-exit-active,
+.fadeInOutExtra3DelayIn-exit-active,
+.fadeInOutExtra3DelayOut-exit-active,
+.fadeInOutExtra2DelayOut-exit-active,
+.fadeInOutExtraDelayOut-exit-active,
+.fadeInOutDelayOut-exit-active,
 .fadeInOut-exit-active {
     opacity: 0;
 }
 
-.fadeInOutDelay-enter-active,
-.fadeInOutDelay-exit-active,
+.fadeInOutDelayIn-enter-active,
+.fadeInOutDelayIn-exit-active,
+.fadeInOutExtra3DelayIn-enter-active,
+.fadeInOutExtra3DelayIn-exit-active,
+.fadeInOutExtra3DelayOut-enter-active,
+.fadeInOutExtra3DelayOut-exit-active,
+.fadeInOutExtra2DelayOut-enter-active,
+.fadeInOutExtra2DelayOut-exit-active,
+.fadeInOutExtraDelayOut-enter-active,
+.fadeInOutExtraDelayOut-exit-active,
+.fadeInOutDelayOut-enter-active,
+.fadeInOutDelayOut-exit-active,
 .fadeInOut-enter-active,
 .fadeInOut-exit-active {
     transition: opacity 250ms;
 }
 
-.fadeInOutDelay-enter-active,
-.fadeInOutDelay-exit-active {
+.fadeInOutDelayIn-enter-active,
+.fadeInOutDelayOut-exit-active {
     transition-delay: 1.5s;
+}
+
+.fadeInOutExtraDelayOut-exit-active {
+    transition-delay: 2s;
+}
+
+.fadeInOutExtra2DelayOut-exit-active {
+    transition-delay: 3s;
+}
+
+.fadeInOutExtra3DelayOut-exit-active {
+    transition-delay: 4s;
+}
+
+.fadeInOutExtra3DelayIn-enter-active {
+    transition-delay: 4s;
 }

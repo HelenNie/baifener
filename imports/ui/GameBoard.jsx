@@ -8,7 +8,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -29,9 +29,38 @@ export const Anim = {
   },
   fadeInOut: {
     class: 'fadeInOut',
+    timeout: 250
+  },
+  fadeInOutDelayOut: {
+    class: 'fadeInOutDelayOut',
     timeout: 250,
     delay: 1500
-  }
+  },
+  fadeInOutDelayIn: {
+    class: 'fadeInOutDelayIn',
+    timeout: 250,
+    delay: 1500
+  },
+  fadeInOutExtraDelayOut: {
+    class: 'fadeInOutExtraDelayOut',
+    timeout: 250,
+    delay: 2000
+  },
+  fadeInOutExtra2DelayOut: {
+    class: 'fadeInOutExtra2DelayOut',
+    timeout: 250,
+    delay: 3000
+  },
+  fadeInOutExtra3DelayOut: {
+    class: 'fadeInOutExtra3DelayOut',
+    timeout: 250,
+    delay: 4000
+  },
+  fadeInOutExtra3DelayIn: {
+    class: 'fadeInOutExtra3DelayIn',
+    timeout: 250,
+    delay: 4000
+  },
 }
 
 export const CssValues = {
@@ -360,6 +389,11 @@ export default class GameBoard extends Component {
     userUndoGame.call({gameId: game._id});
   }
 
+  handleWrapUp() {
+    let game = this.props.game;
+    userWrapUpGame.call({gameId: game._id});
+  }
+
   handleRestartGame() {
     let game = this.props.game;
     userRestartGameGame.call({gameId: game._id});
@@ -670,17 +704,18 @@ export default class GameBoard extends Component {
 
     //Di during WRAPUP and FINISHED view
 
-    var wrapup = (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED);
+    var inBool;
     var card;
     var delayPoint;
 
-    for (var i = 0; i < game.di.length; i++) {
-      card = game.di[i];
+    for (var i = 0; i < game.diOriginal.length; i++) {
+      card = game.diOriginal[i];
       item = <img src={"/images/" + card + ".png"} draggable="false"></img>
+      inBool = (game.stage == GameStages.WRAP_UP || game.stage == GameStages.FINISHED) && game.di.indexOf(card) > -1;
       delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
-      animClass = delayPoint ? Anim.fadeInOut.class + 'Delay' : Anim.fadeInOut.class;
-      totalTime = delayPoint ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
-      items.wrapup.push(this.animate(card, item, wrapup, animClass, totalTime));
+      animClass = delayPoint ? Anim.fadeInOutExtra3DelayOut.class : Anim.fadeInOutExtra2DelayOut.class;
+      totalTime = delayPoint ? Anim.fadeInOutExtra3DelayOut.timeout + Anim.fadeInOutExtra3DelayOut.delay : Anim.fadeInOutExtra2DelayOut.timeout;
+      items.wrapup.push(this.animate(card, item, inBool, animClass, totalTime, this.onWrapupDiEnter));
     } 
 
     return (
@@ -691,17 +726,23 @@ export default class GameBoard extends Component {
       );
   }
 
-  renderTableColPlayingView(game, user) {  
-    var playingViewShow = game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || (game.stage == GameStages.DI && game.diOpener != user.username) || game.stage == GameStages.PLAY;
-
-    if (!playingViewShow) {
-      return '';
+  onWrapupDiEnter(card) {
+    console.log("ENTERED callback");
+    var game = this.props.game;
+    var user = this.props.user;
+    if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
+      this.handleWrapUp();
     }
+  }
 
+  renderTableColPlayingView(game, user) {  
     let tableCards = game.currTableCards;
     let tablePlayers = this.renderTablePlayersStyle(game, user);
 
     var playerAreas = [];
+    var playerAreaAnim;
+    var playingViewShow = game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || (game.stage == GameStages.DI && game.diOpener != user.username) || game.stage == GameStages.PLAY;
+
     var item;
     var card;
     var active;
@@ -720,16 +761,20 @@ export default class GameBoard extends Component {
         item = <img src={"/images/" + card + ".png"} draggable="false" className={active ? "handle" : ''} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;
         //Delay point cards fading out if during collect points
         delayPoint = game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP);
-        animClass = delayPoint ? Anim.fadeInOut.class + 'Delay' : Anim.fadeInOut.class;
-        totalTime = delayPoint ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
+        animClass = delayPoint ? Anim.fadeInOutDelayOut.class: Anim.fadeInOut.class;
+        totalTime = delayPoint ? Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay : Anim.fadeInOut.timeout;
         items.push(this.animate(card, item, inBool, animClass, totalTime));
       }
-      playerAreas.push(
+
+      item = 
         <div className="playerArea" key={ player } style={tablePlayers[player]}>
           <p className="tableBanner"><b>{ player }</b></p>
           { items }
         </div>
-      );
+
+      playerAreaAnim = this.animate(player, item, playingViewShow, Anim.fadeInOutExtraDelayOut.class, Anim.fadeInOutExtraDelayOut.timeout + Anim.fadeInOutExtraDelayOut.delay);
+
+      playerAreas.push(playerAreaAnim);
     }
 
     item = <div id="tableAreaShadow"></div>
@@ -798,9 +843,8 @@ export default class GameBoard extends Component {
       card = DeckComplete[i];
       inBool = game.taiXiaPoints.indexOf(card) > -1;
       item = <img src={"/images/" + card + ".png"} draggable="false" key={card}></img>
-      ifDelay = game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP;
-      animClass = ifDelay ? Anim.fadeInOut.class+'Delay' : Anim.fadeInOut.class;
-      totalTime = ifDelay ? Anim.fadeInOut.timeout + Anim.fadeInOut.delay : Anim.fadeInOut.timeout;
+      animClass = game.diOriginal.indexOf(card) > -1 ? Anim.fadeInOutExtra3DelayIn.class : Anim.fadeInOutDelayIn.class;
+      totalTime = game.diOriginal.indexOf(card) > -1 ? Anim.fadeInOutExtra3DelayIn.timeout + Anim.fadeInOutExtra3DelayIn.delay : Anim.fadeInOutDelayIn.timeout + Anim.fadeInOutDelayIn.delay;
       items.push(this.animate(card, item, inBool, animClass, totalTime));
     }
 
@@ -814,17 +858,18 @@ export default class GameBoard extends Component {
   renderEndGameShadow(game, user) {
     var item = <div id="finishedShadow"></div>;
     var inBool = game.stage == GameStages.FINISHED;
-    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOut.class+'Delay', Anim.fadeInOut.timeout + Anim.fadeInOut.delay));
+    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOutDelayOut.class, Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay));
   }
 
-  animate(key, item, bool, className, timeout) {
+  animate(key, item, bool, className, timeout, onEnter) {
     return (
       <CSSTransition
         key={key}
         in={bool}
         timeout={timeout}
         classNames={className}
-        unmountOnExit>
+        unmountOnExit
+        onEntered={onEnter ? onEnter.bind(this, key) : () => {}}>
         {item}
       </CSSTransition>
       );
