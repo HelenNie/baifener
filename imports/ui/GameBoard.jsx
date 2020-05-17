@@ -49,26 +49,26 @@ export const Anim = {
   fadeInOutExtra2DelayOut: {
     class: 'fadeInOutExtra2DelayOut',
     timeout: 250,
-    delay: 3000
+    delay: 2500
   },
   fadeInOutExtra3DelayOut: {
     class: 'fadeInOutExtra3DelayOut',
     timeout: 250,
-    delay: 4000
+    delay: 3000
   },
   fadeInOutExtra3DelayIn: {
     class: 'fadeInOutExtra3DelayIn',
     timeout: 250,
-    delay: 4000
+    delay: 3000
   },
   fadeInOut65: {
     class: 'fadeInOut65',
     timeout: 250,
   },
-  fadeInOut65Extra3Delay: {
-    class: 'fadeInOut65Extra3Delay',
+  fadeInOut65DelayIn: {
+    class: 'fadeInOut65DelayIn',
     timeout: 250,
-    delay: 4000
+    delay: 1500
   },
 }
 
@@ -159,11 +159,11 @@ export const Langs = {
       undo: {
         undoerBanner: '是否确定要撤回这一步?',
         noticeeBanner: ' 撤回了这一步:',
-        SHOW_THREE: '亮三',
-        OPEN_DI: '揭底',
-        START_GAME: '扣底',
-        PLAY_CARDS: '出牌',
-        CLEAR_TABLE: '拿分'        
+        SHOW_THREE: ': 亮三',
+        OPEN_DI: ': 揭底',
+        START_GAME: ': 扣底',
+        PLAY_CARDS: ': 出牌',
+        CLEAR_TABLE: ': 拿分'        
       },
       handArea: {
         card: "牌"
@@ -257,11 +257,11 @@ export const Langs = {
       undo: {
         undoerBanner: 'Are you sure you want to undo this step?',
         noticeeBanner: ' undid this step:',
-        SHOW_THREE: 'Show Three',
-        OPEN_DI: 'Open Kitty',
-        START_GAME: 'Stash Kitty',
-        PLAY_CARDS: 'Play Cards',
-        CLEAR_TABLE: 'Collect Points'  
+        SHOW_THREE: ': Show Three',
+        OPEN_DI: ': Open Kitty',
+        START_GAME: ': Stash Kitty',
+        PLAY_CARDS: ': Play Cards',
+        CLEAR_TABLE: ': Collect Points'  
       },
       handArea: {
         card: "Card"
@@ -273,7 +273,7 @@ export const Langs = {
         wonRoundButton: "Click here if you won this round",
         findThreeWaiting: "Waiting for opponents to look for three in kitty...",
         openKittyWaiting: "Waiting for opponents to open kitty...",
-        startGameWaiting: "Waiting for game to stash kitty..."
+        startGameWaiting: "Waiting for opponents to stash kitty..."
       },
       msgArea: {
         role: "Role",
@@ -633,13 +633,15 @@ export default class GameBoard extends Component {
 
   renderHandAreaItems(game, user) {
     var items = [];
-    var item1;
-    var item2;
+    var inBools = [];
 
-    if (game.stage == GameStages.DRAW) {
-      item1 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)}></button>
-      item2 = <button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)} disabled></button>
-      items.push(this.renderByRole(game, user.username, game.getCurrPlayer(), item1, item2));
+    inBools.push(game.stage == GameStages.DRAW && user.username == game.getCurrPlayer());
+    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)}></button>);
+    inBools.push(game.stage == GameStages.DRAW && user.username != game.getCurrPlayer());
+    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)} disabled></button>);
+
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
 
     return items;
@@ -647,22 +649,24 @@ export default class GameBoard extends Component {
 
   renderTableAreaItems(game, user) {
     var items = [];
+    var inBools = [];
 
-    if (game.stage == GameStages.PLAY) {
-      if (user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()) {
-        items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" key="1" onClick={this.handleEndTurn.bind(this)}></button>);
-      } else {
-        items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" key="1" onClick={this.handleEndTurn.bind(this)} disabled></button>);
-      }
-    }
+    //endTurn button
+    inBools.push(game.stage == GameStages.PLAY && user.username == game.getCurrPlayer() && game.userPlayedRightNumCards());
+    items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" onClick={this.handleEndTurn.bind(this)}></button>);
+    inBools.push(game.stage == GameStages.PLAY && !(user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()));
+    items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" onClick={this.handleEndTurn.bind(this)} disabled></button>);
 
-
-    if (game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
-      items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
-    } else if (game.tableState == TableStates.CLEAR_PREV_TABLE) {
-      items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
-    } else if (game.stage == GameStages.PLAY) {
-      items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
+    //See and hide prev table button
+    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
+    inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
+    inBools.push(game.stage == GameStages.PLAY && (game.tableState == TableStates.CLEAR_TABLE || game.tableState == TableStates.NONE));
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
+    
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
 
     return items;
@@ -677,7 +681,7 @@ export default class GameBoard extends Component {
       } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
         //Open di view
         banner = CurrLang.gameBoard.banners.openDi;
-      } else if (game.stage == (game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
+      } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
         //Di during WRAPUP and FINISHED view
         banner = CurrLang.gameBoard.banners.diWrap;
       } else {
@@ -689,35 +693,43 @@ export default class GameBoard extends Component {
   }
 
   renderTableColDiAreaView(game, user) {
-    var items = {findThreeOpenDi:[], wrapup:[]};
+    var items = [];
     var item;
     var inBool;
     var animClass;
     var totalTime;
-
-    // Di to find three and Di Open views
+    var card;
 
     var openDiShow = game.stage == GameStages.DI && game.diOpener == user.username;
     var findThreeOpenDiShow = (game.stage == GameStages.FIND_THREE_IN_DI) || openDiShow;
     var delayMult;
 
     for (var i = 0; i < game.di.length; i++) {
-      item = <img src={"/images/" + game.di[i] + ".png"} draggable="false" className={ openDiShow ? "handle" : '' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, game.di[i]) : ()=> {}}></img>
+      card = game.di[i];
+      item = <img src={"/images/" + card + ".png"} draggable="false" className={ openDiShow ? "handle" : '' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>
       delayMult = (i < game.threeFromDiCount) ? i : (i - game.threeFromDiCount)
       inBool = (i < game.threeFromDiCount) ? findThreeOpenDiShow : openDiShow;
-      animClass = (game.undidStartGame) ? 
-        '' :
-        ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
-      totalTime = (game.undidStartGame) ? 
-        0 : 
-        ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
-      items.findThreeOpenDi.push(this.animate(i, item, inBool, animClass, totalTime));
+      animClass = (game.undidStartGame) ? '' : ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
+      totalTime = (game.undidStartGame) ? 0 : ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
+      items.push(this.animate(i, item, inBool, animClass, totalTime));
     }
 
-    //Di during WRAPUP and FINISHED view
+    return (
+      <div className="wrapper" id="diAreaWrapper">
+        { items }
+      </div>
+      );
+  }
 
+  renderTableColWrapUpDiView(game, user) {
+    var items = [];
+    var item;
     var inBool;
+    var animClass;
+    var totalTime;
     var card;
+
+    //Di during WRAPUP and FINISHED view
     var delayPoint;
 
     for (var i = 0; i < game.diOriginal.length; i++) {
@@ -727,18 +739,17 @@ export default class GameBoard extends Component {
       delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
       animClass = delayPoint ? Anim.fadeInOutExtra3DelayOut.class : Anim.fadeInOutExtra2DelayOut.class;
       totalTime = delayPoint ? Anim.fadeInOutExtra3DelayOut.timeout + Anim.fadeInOutExtra3DelayOut.delay : Anim.fadeInOutExtra2DelayOut.timeout;
-      items.wrapup.push(this.animate(card, item, inBool, animClass, totalTime, this.onWrapupDiEnter));
+      items.push(this.animate(card, item, inBool, animClass, totalTime, this.onWrapUpDiEnterCallback));
     } 
 
     return (
       <div className="wrapper" id="diAreaWrapper">
-        { items.findThreeOpenDi }
-        { items.wrapup }
+        { items }
       </div>
       );
   }
 
-  onWrapupDiEnter(card) {
+  onWrapUpDiEnterCallback(card) {
     var game = this.props.game;
     var user = this.props.user;
     if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
@@ -751,8 +762,7 @@ export default class GameBoard extends Component {
     let tablePlayers = this.renderTablePlayersStyle(game, user);
 
     var playerAreas = [];
-    var playerAreaAnim;
-    var playingViewShow = game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || (game.stage == GameStages.DI && game.diOpener != user.username) || game.stage == GameStages.PLAY;
+    var playingViewShow = game.showPlayingView(user);
 
     var item;
     var card;
@@ -777,28 +787,28 @@ export default class GameBoard extends Component {
         items.push(this.animate(card, item, inBool, animClass, totalTime));
       }
 
-      item = 
+      playerAreas.push(
         <div className="playerArea" key={ player } style={tablePlayers[player]}>
           <p className="tableBanner"><b>{ player }</b></p>
           { items }
         </div>
-
-      playerAreaAnim = this.animate(player, item, playingViewShow, Anim.fadeInOutExtraDelayOut.class, Anim.fadeInOutExtraDelayOut.timeout + Anim.fadeInOutExtraDelayOut.delay);
-
-      playerAreas.push(playerAreaAnim);
+      )
     }
 
-    item = <div id="tableAreaShadow"></div>
-    inBool = game.disableTableArea(user);
-    var disabledTableArea = this.animate('tableShadow', item, inBool, Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
+    var disabledTableArea = this.animate('tableShadow', <div id="tableAreaShadow"></div>, game.disableTableArea(user), Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
 
-
-    return (
+    var wrapper =       
       <div className="wrapper" id="playerAreaWrapper">
         { playerAreas }
         { disabledTableArea }
       </div>
-      );
+
+    var stallExit = game.stage == GameStages.WRAP_UP;
+    animClass = stallExit ? Anim.fadeInOutExtraDelayOut.class : Anim.fadeInOut.class;
+    totalTime = stallExit ? Anim.fadeInOutExtraDelayOut.timeout + Anim.fadeInOutExtraDelayOut.delay : Anim.fadeInOut.timeout;
+
+    //Animate wrapper so that div doesn't cover di cards when clickable
+    return this.animate('playingAreaView', wrapper, playingViewShow, animClass, totalTime);
   }
 
   renderNextArea(game, user) {
@@ -810,24 +820,24 @@ export default class GameBoard extends Component {
     //Find three in di button
     item1 = <button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDiForThree}&rarr;</button>;
     item2 = <p className="nextAreaItem waitText">{CurrLang.gameBoard.nextArea.findThreeWaiting}</p>;
-    items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
+    items.push(this.renderByRoleHelper(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
     bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN);
 
     //Open di button
     item1 = <button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{CurrLang.gameBoard.nextArea.openDi}</button>;
     item2 = <p className="nextAreaItem waitText" >{CurrLang.gameBoard.nextArea.openKittyWaiting}</p>;
-    items.push(this.renderByRole(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
+    items.push(this.renderByRoleHelper(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
     bools.push((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI));
 
     //Start playing button
     item1 = <button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{CurrLang.gameBoard.nextArea.startPlaying}</button>;
     item2 = <p className="nextAreaItem waitText" >{CurrLang.gameBoard.nextArea.startGameWaiting}</p>;
-    items.push(this.renderByRole(game, user.username, game.diOpener, item1, item2)),
+    items.push(this.renderByRoleHelper(game, user.username, game.diOpener, item1, item2)),
     bools.push(game.stage == GameStages.DI);
 
     //Won round button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleClearTable.bind(this)}>{CurrLang.gameBoard.nextArea.wonRoundButton}</button>);
-    bools.push(game.tableState == TableStates.CLEAR_TABLE);
+    bools.push(game.tableState == TableStates.CLEAR_TABLE && game.stage == GameStages.PLAY);
 
     //Default
     items.push(<img className="nextAreaItem" id="placeholder" src={"/images/nextAreaPlaceholder.png"}></img>);
@@ -840,6 +850,14 @@ export default class GameBoard extends Component {
     return items;
   }
 
+  renderByRoleHelper(game, userAttr, role, item1, item2) {
+    if (userAttr == role) {
+      return item1;
+    } else {
+      return item2;
+    }
+  }
+
   renderPointsArea(game, user) {
     let pointCards = game.taiXiaPoints;
     var items = [];
@@ -848,7 +866,6 @@ export default class GameBoard extends Component {
     var inBool;
     var animClass;
     var totalTime;
-    var ifDelay;
 
     for (var i = 0; i < DeckComplete.length; i++) {
       card = DeckComplete[i];
@@ -867,45 +884,22 @@ export default class GameBoard extends Component {
   }
 
   renderEndGameShadow(game, user) {
-    var item = <div id="finishedShadow"></div>;
-    var inBool = game.stage == GameStages.FINISHED;
-    return (this.animate('endGameShadow', item, inBool, Anim.fadeInOut65Extra3Delay.class, Anim.fadeInOut65Extra3Delay.timeout + Anim.fadeInOut65Extra3Delay.delay));
-  }
-
-  animate(key, item, bool, className, timeout, onEnter) {
-    return (
-      <CSSTransition
-        key={key}
-        in={bool}
-        timeout={timeout}
-        classNames={className}
-        unmountOnExit
-        onEntered={onEnter ? onEnter.bind(this, key) : () => {}}>
-        {item}
-      </CSSTransition>
-      );
+    return (this.animate('endGameShadow', <div id="finishedShadow"></div>, game.stage == GameStages.FINISHED, Anim.fadeInOut65DelayIn.class, Anim.fadeInOut65DelayIn.timeout + Anim.fadeInOut65DelayIn.delay));
   }
 
   renderTopRow(game, user) {
     var items = [];
 
+    //Back button
     items.push(<button className="ui button black topButton" key='1' onClick={this.handleBackToGameList.bind(this)}>{CurrLang.gameBoard.buttons.back}</button>);
-    
-    if (game.stage != GameStages.FINISHED) {
-      items.push(<button className="ui button red topButton" key='2' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)}>{CurrLang.gameBoard.buttons.endGame}</button>);
-    } else {
-      items.push(<button className="ui button red topButton" key='2' disabled>{CurrLang.gameBoard.buttons.endGame}</button>);
-    }
-
-    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)}>{CurrLang.gameBoard.buttons.restartGame}</button>)
-
-    if (game.undoByPlayer[user.username][UndoParams.BUTTON] != UndoStates.NONE) {
-      var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
-      items.push(<button className="ui button orange topButton" key = '4' onClick={this.handleUndoShow.bind(this)}>{CurrLang.gameBoard.buttons.undo}:&nbsp;{CurrLang.gameBoard.undo[undoType]}</button>);
-    } else {
-      items.push(<button className="ui button orange topButton" key = '4' disabled>{CurrLang.gameBoard.buttons.undo}</button>);
-    }
-
+    //End game button
+    items.push(<button className="ui button red topButton" key='2' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{CurrLang.gameBoard.buttons.endGame}</button>);
+    //Restart game button
+    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)} disabled={game.stage == GameStages.SET_UP}>{CurrLang.gameBoard.buttons.restartGame}</button>)
+    //Undo button
+    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
+    items.push(<button className="ui button orange topButton" id="undoButton" key = '4' onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{CurrLang.gameBoard.buttons.undo}{CurrLang.gameBoard.undo[undoType]}</button>);
+    //messageArea
     items.push(
       <div className="messageArea" key = '5'>
         {this.renderMessageArea(game, user)}
@@ -921,26 +915,34 @@ export default class GameBoard extends Component {
 
   renderMessageArea(game, user) {
     var items = [];
+    var inBools = [];
 
-    if (game.stage != GameStages.SET_UP) {
-      var role = game.playerRoles[user.username];
-      if (role != Roles.TBD) {
-        items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" key="1" title={CurrLang.gameBoard.roles[role]}></img>);
-      }
-      if (game.zhu != '') {
-        items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" key="2" title={CurrLang.gameBoard.suits[SuitsMap[game.zhu]]}></img>);
-      }
+    var role = user.username in game.playerRoles ? game.playerRoles[user.username] : '';
+
+    inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
+    items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" key="1" title={CurrLang.gameBoard.roles[role]}></img>);
+    inBools.push(game.stage != GameStages.SET_UP && game.zhu != '');
+    items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" key="2" title={CurrLang.gameBoard.suits[SuitsMap[game.zhu]]}></img>);
+
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
 
     return items;
   }
 
-  renderByRole(game, userAttr, role, item1, item2) {
-    if (userAttr == role) {
-      return item1;
-    } else {
-      return item2;
-    }
+  animate(key, item, bool, className, timeout, onEnter) {
+    return (
+      <CSSTransition
+        key={key}
+        in={bool}
+        timeout={timeout}
+        classNames={className}
+        unmountOnExit
+        onEntered={onEnter ? onEnter.bind(this, key) : () => {}}>
+        {item}
+      </CSSTransition>
+      );
   }
 
   render() {
@@ -1000,6 +1002,7 @@ export default class GameBoard extends Component {
             { this.renderTableAreaItems(game, user) }
 
             <div className="area" id="tableArea">
+              { this.renderTableColWrapUpDiView(game, user) }
               { this.renderTableColDiAreaView(game, user) }
               { this.renderTableColPlayingView(game, user) }
             </div>

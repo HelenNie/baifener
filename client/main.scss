@@ -66,6 +66,10 @@ body {
     float: left;
 }
 
+#undoButton {
+    width: 152px;
+}
+
 .messageArea {
     height: 36px;
     overflow: hidden;
@@ -184,7 +188,7 @@ body {
 #diAreaWrapper {
     position: absolute;
     padding-top: 100px;
-    padding-left: 185px;
+    padding-left: 20px;
 }
 
 /* Table area */
@@ -510,8 +514,7 @@ body {
   transform: translateX(100%);
 }
 
-.fadeSlideInOut-enter-active,
-.fadeSlideInOut-exit-active {
+.fadeSlideInOut-enter-active {
   transition: opacity 1000ms, transform 1000ms;
 }
 
@@ -606,7 +609,7 @@ body {
 .slideInQuick-3-exit-active,
 .slideInQuick-4-exit-active,
 .slideInQuick-5-exit-active {
-  transition: opacity 0ms, transform 0ms;
+  transition: opacity 250ms;
   transition-delay: 0s;
 }
 
@@ -727,15 +730,12 @@ body {
 }
 
 .fadeInOutExtra2DelayOut-exit-active {
-    transition-delay: 3s;
+    transition-delay: 2.5s;
 }
 
-.fadeInOutExtra3DelayOut-exit-active {
-    transition-delay: 4s;
-}
-
+.fadeInOutExtra3DelayOut-exit-active,
 .fadeInOutExtra3DelayIn-enter-active {
-    transition-delay: 4s;
+    transition-delay: 3s;
 }
 
 /* Modals */
@@ -756,36 +756,38 @@ body {
 
 /* Shadow */
 
-.fadeInOut65Extra3Delay-enter, 
+.fadeInOut65DelayIn-enter, 
 .fadeInOut65-enter {
   opacity: 0;
 }
 
-.fadeInOut65Extra3Delay-enter-active, 
+.fadeInOut65DelayIn-enter-active, 
 .fadeInOut65-enter-active {
   opacity: 0.65;
 }
 
-.fadeInOut65Extra3Delay-enter-done, 
+.fadeInOut65DelayIn-enter-done, 
 .fadeInOut65-enter-done {
   opacity: 0.65;
 }
 
-.fadeInOut65Extra3Delay-exit, 
+.fadeInOut65DelayIn-exit, 
 .fadeInOut65-exit {
   opacity: 0.65;
 }
 
-.fadeInOut65Extra3Delay-exit-active, 
+.fadeInOut65DelayIn-exit-active, 
 .fadeInOut65-exit-active {
   opacity: 0;
 }
 
-.fadeInOut65Extra3Delay-enter-active,
-.fadeInOut65-enter-active {
+.fadeInOut65DelayIn-enter-active,
+.fadeInOut65-enter-active 
+.fadeInOut65DelayIn-exit-active,
+.fadeInOut65-exit-active {
   transition: opacity 250ms;
 }
 
-.fadeInOut65Extra3Delay-enter-active {
-  transition-delay: 4s;
+.fadeInOut65DelayIn-enter-active {
+  transition-delay: 1.5s;
 }

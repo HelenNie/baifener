@@ -548,7 +548,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_WRAPUP;
+export const CurrTestState = TestStates.TEST_PLAYING;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -1236,6 +1236,11 @@ export class Game {
       }
     }
 
+    for (var player in this.undoByPlayer) {
+      this.undoByPlayer[player][UndoParams.BUTTON] = UndoStates.NONE;
+      this.undoByPlayer[player][UndoParams.MODAL] = UndoStates.NONE;
+    }
+    this.tableState = TableStates.NONE;
     this.stage = GameStages.FINISHED;
     this.status = GameStatuses.FINISHED;
 
@@ -1464,10 +1469,11 @@ export class Game {
   }
 
   disableTableArea(user) {
-    var bool = false;
-    bool = bool || (this.tableState == TableStates.CLEAR_PREV_TABLE);
-    bool = bool || (this.stage == GameStages.DI);
-    return bool;
+    return this.tableState == TableStates.CLEAR_PREV_TABLE;
+  }
+
+  showPlayingView(user) {
+    return (this.stage == GameStages.DRAW || this.stage == GameStages.DONE_DRAWING || (this.stage == GameStages.DI && this.diOpener != user.username) || this.stage == GameStages.PLAY);
   }
 
   userIdToIndex(userId) {
