@@ -67,7 +67,7 @@ body {
 }
 
 #undoButton {
-    width: 152px;
+    width: 170px;
 }
 
 .messageArea {
@@ -397,7 +397,8 @@ body {
 
 /* Modal */
 
-.modal {
+.modal,
+.modalDelay {
     position: absolute;
     width: 500px;
     height: 250px;
@@ -412,19 +413,27 @@ body {
     z-index: 10000;
 }
 
-.modal.error {
-    background-color: #F3B3A6;
+.modal {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
 }
 
-.modal.undo {
-    background-color: #8CBCB9;
+.modalDelay {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+    transition-delay: 3.5s;
 }
 
-.modal:focus {
-    outline: none;
+.modalAfterOpen {
+    opacity: 1;
 }
 
-.modalOverlay {
+.modalBeforeClose {
+    opacity: 0;
+}
+
+.overlay,
+.overlayDelay {
     position: fixed;
     top: 0;
     left: 0;
@@ -432,6 +441,34 @@ body {
     bottom: 0;
     background: rgba(255, 255, 255, 0.85);
     z-index: 10000;
+}
+
+.overlay {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+}
+
+.overlayDelay {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+    transition-delay: 3.5s;
+}
+
+.overlayAfterOpen {
+    opacity: 1;
+}
+
+.overlayBeforeClose {
+    opacity: 0;
+}
+
+.modal.error {
+    background-color: #F3B3A6;
+}
+
+.modalDelay:focus,
+.modal:focus {
+    outline: none;
 }
 
 .modalBannerDiv {
@@ -737,22 +774,6 @@ body {
 .fadeInOutExtra3DelayIn-enter-active {
     transition-delay: 3s;
 }
-
-/* Modals */
-
-.ReactModal__Overlay {
-  opacity: 0;
-  transition: all 500ms ease-in-out;
-}
-
-.ReactModal__Overlay--after-open {
-  opacity: 1;
-}
-
-.ReactModal__Overlay--before-close {
-  opacity: 0;
-}
-
 
 /* Shadow */
 

@@ -8,7 +8,7 @@ import MyDrag from './MyDrag.jsx';
 
 import GameHeader from './GameHeader.jsx';
 import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -123,7 +123,7 @@ export const Langs = {
         back: '回去',
         endGame: '结束游戏',
         restartGame: '新游戏',
-        undo: '撤回'
+        undo: '撤回 '
       },
       banners: {
         handArea: '我的牌',
@@ -143,7 +143,9 @@ export const Langs = {
         endGame: "是否确定要结束游戏?",
         endGameNotice: "游戏已结束",
         restartGame: "是否确定要开始新的游戏?",
-        restartGameNotice: "已开始新的游戏",
+        restartGameFull: "胜!",
+        restartGameFullText1: "赢了",
+        restartGameFullText2: "分。是否想与队友再玩一次?",
         yes: "是",
         no: "取消",
         ok: "知道了"
@@ -159,11 +161,11 @@ export const Langs = {
       undo: {
         undoerBanner: '是否确定要撤回这一步?',
         noticeeBanner: ' 撤回了这一步:',
-        SHOW_THREE: ': 亮三',
-        OPEN_DI: ': 揭底',
-        START_GAME: ': 扣底',
-        PLAY_CARDS: ': 出牌',
-        CLEAR_TABLE: ': 拿分'        
+        SHOW_THREE: '亮三',
+        OPEN_DI: '揭底',
+        START_GAME: '扣底',
+        PLAY_CARDS: '出牌',
+        CLEAR_TABLE: '拿分'        
       },
       handArea: {
         card: "牌"
@@ -221,7 +223,7 @@ export const Langs = {
         back: 'Back',
         endGame: 'End Game',
         restartGame: 'Restart Game',
-        undo: 'Undo'
+        undo: 'Undo '
       },
       banners: {
         handArea: 'My Hand',
@@ -239,7 +241,9 @@ export const Langs = {
         drawFirstButton: "I will draw first",
         drawFirstWaiting: "Waiting for opponents to draw first...",
         restartGame: "Are you sure you want to restart the game?",
-        restartGameNotice: "A new game has started",
+        restartGameFull: " team won!",
+        restartGameFullText1: " team got ",
+        restartGameFullText2: " points. Would you like to play again with the same teams?",
         endGame: "Are you sure you want to end the game?",
         endGameNotice: "The game has ended",
         yes: "Yes",
@@ -257,11 +261,11 @@ export const Langs = {
       undo: {
         undoerBanner: 'Are you sure you want to undo this step?',
         noticeeBanner: ' undid this step:',
-        SHOW_THREE: ': Show Three',
-        OPEN_DI: ': Open Kitty',
-        START_GAME: ': Stash Kitty',
-        PLAY_CARDS: ': Play Cards',
-        CLEAR_TABLE: ': Collect Points'  
+        SHOW_THREE: 'Show Three',
+        OPEN_DI: 'Open Kitty',
+        START_GAME: 'Stash Kitty',
+        PLAY_CARDS: 'Play Cards',
+        CLEAR_TABLE: 'Collect Points'  
       },
       handArea: {
         card: "Card"
@@ -294,10 +298,15 @@ export const Langs = {
   }
 }
 
-export const CurrLang = Langs.ENGLISH;
+export const CurrLang = Langs.CHINESE;
 
 
 export default class GameBoard extends Component {
+
+  constructor(props) {
+    super(props);
+    this.overlayRef = React.createRef();
+  }
 
   handleBackToGameList() {
     this.props.backToGameListHandler();
@@ -376,6 +385,11 @@ export default class GameBoard extends Component {
   handleModalAway() {
     let game = this.props.game;
     userModalAwayGame.call({gameId: game._id});
+  }
+
+  handleDelayedModalAlready() {
+    let game = this.props.game;
+    userDelayedModalAlreadyGame.call({gameId: game._id});
   }
 
   handleErrorAway() {
@@ -519,14 +533,6 @@ export default class GameBoard extends Component {
             <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.no }</button>
           </div>;
         break;
-      case ModalStates.RESTART_GAME_NOTICE:
-        banner = CurrLang.gameBoard.modals.restartGameNotice;
-        content = 
-          <div className="modalContent">
-            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.ok }</button>
-          </div>;
-        break;
-
       case ModalStates.END_GAME:
         banner = CurrLang.gameBoard.modals.endGame;
         content = 
@@ -542,14 +548,29 @@ export default class GameBoard extends Component {
             <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.ok }</button>
           </div>;
         break;
+      case ModalStates.RESTART_FULL:
+        banner = CurrLang.gameBoard.roles[game.winningTeam] + CurrLang.gameBoard.modals.restartGameFull;
+        content = 
+          <div className="modalContent">
+            <p>{ CurrLang.gameBoard.roles[game.winningTeam] + CurrLang.gameBoard.modals.restartGameFullText1 + game.taiXiaPointsTotal + CurrLang.gameBoard.modals.restartGameFullText2}</p>
+            <br></br>
+            <br></br>
+            <button className="ui red button" onClick={this.handleRestartGame.bind(this)}>{ CurrLang.gameBoard.modals.yes }</button>
+            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ CurrLang.gameBoard.modals.no }</button>
+          </div>;
+        break;
     }
+
+    var delayModal = game.modalByPlayer[user.username] == ModalStates.RESTART_FULL; 
 
     return (
       <ReactModal
           isOpen = { game.modalByPlayer[user.username] != ModalStates.NONE }
-          className = "modal"
-          overlayClassName = "modalOverlay"
-          closeTimeoutMS ={500}
+          className = { delayModal && !game.delayedModalAlready ? {base: 'modalDelay', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} : {base: 'modal', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} }
+          overlayClassName = { delayModal && !game.delayedModalAlready ? {base: 'overlayDelay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}: {base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'} }
+          closeTimeoutMS = { delayModal ? 4000 : 500 }
+          overlayRef = {node => (this.overlayRef = node)}
+          onAfterOpen = {this.modalOnAfterOpenCallback.bind(this, delayModal)}
           ariaHideApp = {false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
@@ -557,6 +578,15 @@ export default class GameBoard extends Component {
           { content }
       </ReactModal>
       );
+  }
+
+  //Register that the delay for RESTART_FULL modal has happened already to avoid delay upon refresh
+  modalOnAfterOpenCallback(delayedModal) {
+    if (delayedModal) {
+      this.overlayRef.addEventListener( 'webkitTransitionEnd', () => { 
+        this.handleDelayedModalAlready();
+      }, false );
+    } 
   }
 
   renderModalError(game, user) {
@@ -574,9 +604,9 @@ export default class GameBoard extends Component {
     return (
       <ReactModal
           isOpen = { error != ErrorStates.NONE }
-          className = "modal error"
-          overlayClassName = "modalOverlay"
-          closeTimeoutMS ={500}
+          className = {{base: 'modal error', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'}}
+          overlayClassName = {{base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}}
+          closeTimeoutMS={500}
           ariaHideApp={false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
@@ -619,9 +649,9 @@ export default class GameBoard extends Component {
     return (
       <ReactModal
           isOpen = { undoType != UndoStates.NONE }
-          className = "modal"
-          overlayClassName = "modalOverlay"
-          closeTimeoutMS ={500}
+          className = {{base: 'modal', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'}}
+          overlayClassName = {{base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}}
+          closeTimeoutMS={500}
           ariaHideApp={false}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
@@ -774,9 +804,9 @@ export default class GameBoard extends Component {
 
     for (var player in tablePlayers) {
       var items = [];
-      for (var i = 0; i < game.copy.hands[player].length; i++) {
-        card = game.copy.hands[player][i];
-        inBool = card in tableCards;
+      for (var i = 0; i < DeckComplete.length; i++) {
+        card = DeckComplete[i];
+        inBool = card in tableCards && tableCards[card] == player;
         //Make card clickable if is user's turn during PLAY or is user's three
         active = (player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY);
         item = <img src={"/images/" + card + ".png"} draggable="false" className={active ? "handle" : ''} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;

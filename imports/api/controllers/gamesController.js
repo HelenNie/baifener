@@ -163,4 +163,10 @@ export let GamesController = {
     game.userWrapUp(user);
     Games.saveGame(game);
   },
+
+  userDelayedModalAlreadyGame(gameId, user) {
+    let game = Games.findOne(gameId);
+    game.userDelayedModalAlready();
+    Games.saveGame(game);
+  }
 }

@@ -276,3 +276,13 @@ export const userWrapUpGame = new ValidatedMethod({
     GamesController.userWrapUpGame(gameId, Meteor.user());
   }
 });
+
+export const userDelayedModalAlreadyGame = new ValidatedMethod({
+  name: 'games.userDelayedModalAlreadyGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userDelayedModalAlreadyGame(gameId, Meteor.user());
+  }
+});
