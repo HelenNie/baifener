@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random'
 import React, { Component } from 'react';
 import GameHeader from './GameHeader.jsx';
-import {CurrLang} from './GameBoard.jsx';
+import {Langs} from './Languages.jsx';
 
 export const Users = ['one', 'two', 'three', 'four'];
 export const Partners = {'one':'three', 'two':'four', 'three':'one', 'four':'two'};
@@ -31,7 +31,7 @@ export default class LoginForm extends Component {
 
     let username = this.state.username.trim();
     if (username === '') {
-      this.setState({errorMsg: CurrLang.loginForm.err.noUsername});
+      this.setState({errorMsg: Langs[this.props.currLang].loginForm.err.noUsername});
       return;
     }
 
@@ -47,13 +47,16 @@ export default class LoginForm extends Component {
   }
 
   handleLoginCallback() {
-    this.setState({errorMsg: CurrLang.loginForm.err.wrongUsername});
+    this.setState({errorMsg: Langs[this.props.currLang].loginForm.err.wrongUsername});
   }
 
   render() {
     return (
       <div className="ui container">
-        <GameHeader user={this.props.user}/>
+        <GameHeader
+          user={this.props.user}
+          currLang={this.props.currLang}
+          handleLangDropdown={this.props.handleLangDropdown} />
 
         <div className="ui segment">
           <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} name="login-form" onSubmit={this.handleSubmit.bind(this)}>
@@ -64,10 +67,10 @@ export default class LoginForm extends Component {
 
             <div className="inline fields">
               <div className="field">
-                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={CurrLang.loginForm.enterYourName}/>
+                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={Langs[this.props.currLang].loginForm.enterYourName}/>
               </div>
               <div className="field">
-                <input className="ui green button" type="submit" value={CurrLang.loginForm.logIn}/>
+                <input className="ui green button" type="submit" value={Langs[this.props.currLang].loginForm.logIn}/>
               </div>
             </div>
           </form>

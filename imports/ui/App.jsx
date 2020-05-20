@@ -5,11 +5,14 @@ import GameList from './GameList.jsx';
 import GameBoard from './GameBoard.jsx';
 import LoginForm from './LoginForm.jsx';
 
+import {Langs} from './Languages.jsx';
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedGameId: null,
+      currLang: 'English'
     }
   }
 
@@ -28,11 +31,17 @@ class App extends Component {
     return selectedGame;
   }
 
+  handleLangDropdown(event, data) {
+    this.setState({currLang: data.value});
+  }
+
   render() {
     if (!this.props.user) {
       return (
         <div>
-          <LoginForm/>
+          <LoginForm
+            currLang={this.state.currLang}
+            handleLangDropdown={this.handleLangDropdown.bind(this)} />
         </div>
       )
     }
@@ -42,14 +51,18 @@ class App extends Component {
         <GameList
           games={this.props.games}
           enterGameHandler={this.handleEnterGame.bind(this)}
-          user={this.props.user}/>
+          user={this.props.user}
+          currLang={this.state.currLang}
+          handleLangDropdown={this.handleLangDropdown.bind(this)} />
       )
     } else {
       return (
         <GameBoard
           game={this.selectedGame()}
           backToGameListHandler={this.handleBackToGameList.bind(this)}
-          user={this.props.user}/>
+          user={this.props.user}
+          currLang={this.state.currLang}
+          handleLangDropdown={this.handleLangDropdown.bind(this)} />
       )
     }
   }
