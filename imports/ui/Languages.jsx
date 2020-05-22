@@ -30,14 +30,14 @@ export const Langs = {
     },
     gameBoard: {
       buttons: {
-        back: '回去',
+        back: '回到游戏单',
         endGame: '结束游戏',
         restartGame: '新游戏',
         undo: '撤回 '
       },
       banners: {
         handArea: '我的牌',
-        openDi: '揭底',
+        openDi: '底',
         findThreeInDi: '揭底找三',
         diWrap: '底',
         pointsArea: '台下分',
@@ -131,14 +131,14 @@ export const Langs = {
     },
     gameBoard: {
       buttons: {
-        back: 'Back',
+        back: 'Back to Games',
         endGame: 'End Game',
         restartGame: 'Restart Game',
         undo: 'Undo '
       },
       banners: {
         handArea: 'My Hand',
-        openDi: 'Open Kitty',
+        openDi: 'Kitty',
         findThreeInDi: 'Find Three in Kitty',
         diWrap: 'Kitty',
         pointsArea: 'Attacker Team Points',

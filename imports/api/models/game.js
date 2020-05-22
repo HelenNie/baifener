@@ -96,7 +96,7 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 export const CardSize = {x: 50, y: 70};
 export const CardSlotMargin = {x: 0, y: 30};
 export const CardSlotSize = {x: CardSize.x + CardSlotMargin.x, y: CardSize.y + CardSlotMargin.y};
-export const CardLocMax = {x: 10, y: 5}; //Based on making sufficient space for arranging cards
+export const CardLocMax = {x: 6, y: 5}; //Based on making sufficient space for arranging cards
 export const CardLandingLoc = {x: CardLocMax.x + 2, y: 0}; //Offset right from arranged cards with space in betweeen
 
 export const ZIndexBase = 2;
@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_WRAPUP;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 

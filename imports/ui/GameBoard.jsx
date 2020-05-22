@@ -256,7 +256,7 @@ export default class GameBoard extends Component {
 
   renderHandAreaLines(game, user) {
     var items = [];
-    var margin = 7;
+    var margin = 12;
     var firstTop = CardSize.y + margin;
     var top;
     for (var i = 0; i < CardLocMax.y; i++) {
@@ -460,36 +460,19 @@ export default class GameBoard extends Component {
     var items = [];
     var inBools = [];
 
+    //drawCard button
     inBools.push(game.stage == GameStages.DRAW && user.username == game.getCurrPlayer());
-    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)}></button>);
-    inBools.push(game.stage == GameStages.DRAW && user.username != game.getCurrPlayer());
-    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" key="3" onClick={this.handleDrawCard.bind(this)} disabled></button>);
-
-    for (var i = 0; i < items.length; i++) {
-      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
-    }
-
-    return items;
-  }
-
-  renderTableAreaItems(game, user) {
-    var items = [];
-    var inBools = [];
+    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" onClick={this.handleDrawCard.bind(this)}></button>);
+    inBools.push(!(game.stage == GameStages.DRAW && user.username == game.getCurrPlayer()));
+    items.push(<button className="roundCornerButton" id="roundCornerButtonDraw" onClick={this.handleDrawCard.bind(this)} disabled></button>);
 
     //endTurn button
     inBools.push(game.stage == GameStages.PLAY && user.username == game.getCurrPlayer() && game.userPlayedRightNumCards());
     items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" onClick={this.handleEndTurn.bind(this)}></button>);
-    inBools.push(game.stage == GameStages.PLAY && !(user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()));
+    inBools.push(!(game.stage == GameStages.PLAY && user.username == game.getCurrPlayer() && game.userPlayedRightNumCards()));
     items.push(<button className="roundCornerButton" id="roundCornerButtonEndTurn" onClick={this.handleEndTurn.bind(this)} disabled></button>);
 
-    //See and hide prev table button
-    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
-    inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
-    items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
-    inBools.push(game.stage == GameStages.PLAY && (game.tableState == TableStates.CLEAR_TABLE || game.tableState == TableStates.NONE));
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
-    
+
     for (var i = 0; i < items.length; i++) {
       items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
@@ -497,24 +480,30 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  renderTableColBanner(game, user) {
-    var banner;
+  renderDiBanner(game, user) {
+    var items = [];
+    var inBools = [];
+    var banners = [];
+    var bannerItem;
 
-      if (game.stage == GameStages.FIND_THREE_IN_DI) {
-        // Di to find three view
-        banner = Langs[this.props.currLang].gameBoard.banners.findThreeInDi;
-      } else if (game.stage == GameStages.DI && game.diOpener == user.username) {
-        //Open di view
-        banner = Langs[this.props.currLang].gameBoard.banners.openDi;
-      } else if ((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED)) {
-        //Di during WRAPUP and FINISHED view
-        banner = Langs[this.props.currLang].gameBoard.banners.diWrap;
-      } else {
-        //Playing view
-        banner = Langs[this.props.currLang].gameBoard.banners.tableArea;
-      }
+    // Di to find three view
+    inBools.push(game.stage == GameStages.FIND_THREE_IN_DI);
+    banners.push(Langs[this.props.currLang].gameBoard.banners.findThreeInDi);
 
-    return (<p className="banner"><b>{ banner }</b></p>);
+    //Open di view
+    inBools.push(game.stage == GameStages.DI && game.diOpener == user.username);
+    banners.push(Langs[this.props.currLang].gameBoard.banners.openDi);
+
+    //Di during WRAPUP and FINISHED view
+    inBools.push((game.stage == GameStages.WRAP_UP) || (game.stage == GameStages.FINISHED));
+    banners.push(Langs[this.props.currLang].gameBoard.banners.diWrap);
+
+    for (var i = 0; i < banners.length; i++) {
+      bannerItem = <p className="tableBanner" id="diBanner"><b>{ banners[i] }</b></p>;
+      items.push(this.animate(i, bannerItem, inBools[i], Anim.fadeInOutDelayIn.class, Anim.fadeInOutDelayIn.timeout));
+    }
+
+    return items;
   }
 
   renderTableColDiAreaView(game, user) {
@@ -703,6 +692,7 @@ export default class GameBoard extends Component {
 
     return (
       <div className="area" id="pointsArea">
+        <p id="pointsAreaBanner">{Langs[this.props.currLang].gameBoard.banners.pointsArea}</p>
           { items }
       </div>
       );
@@ -712,36 +702,10 @@ export default class GameBoard extends Component {
     return (this.animate('endGameShadow', <div id="finishedShadow"></div>, game.stage == GameStages.FINISHED, Anim.fadeInOut65DelayIn.class, Anim.fadeInOut65DelayIn.timeout + Anim.fadeInOut65DelayIn.delay));
   }
 
-  renderTopRow(game, user) {
-    var items = [];
-
-    //Back button
-    items.push(<button className="ui button black topButton" key='1' onClick={this.handleBackToGameList.bind(this)}>{Langs[this.props.currLang].gameBoard.buttons.back}</button>);
-    //End game button
-    items.push(<button className="ui button red topButton" key='2' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
-    //Restart game button
-    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)} disabled={game.stage == GameStages.SET_UP}>{Langs[this.props.currLang].gameBoard.buttons.restartGame}</button>)
-    //Undo button
-    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
-    items.push(<button className="ui button orange topButton" id="undoButton" key = '4' onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);
-    //messageArea
-    items.push(
-      <div className="messageArea" key = '5'>
-        {this.renderMessageArea(game, user)}
-      </div>
-    );    
-        
-    return (
-      <div className="row" id="topRow">
-        {items}
-      </div>
-      );
-  }
-
-  renderMessageArea(game, user) {
+  renderButtonRow1Items(game, user) {
     var items = [];
     var inBools = [];
-
+    
     var role = user.username in game.playerRoles ? game.playerRoles[user.username] : '';
 
     inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
@@ -753,6 +717,36 @@ export default class GameBoard extends Component {
       items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
 
+    //Restart game button
+    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)} disabled={game.stage == GameStages.SET_UP}>{Langs[this.props.currLang].gameBoard.buttons.restartGame}</button>)
+    //End game button
+    items.push(<button className="ui button red topButton" key='4' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
+    //Back button
+    items.push(<button className="ui button black topButton" key='5' onClick={this.handleBackToGameList.bind(this)}>{Langs[this.props.currLang].gameBoard.buttons.back}</button>);
+
+    return items;
+  }
+
+  renderButtonRow2Items(game, user) {
+    var items = [];
+    var inBools = [];
+
+    //See and hide prev table button
+    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
+    inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
+    inBools.push(inBools.every(v => v === false));
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
+    
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
+    }
+
+    //Undo button
+    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
+    items.push(<button className="ui button orange topButton" id="undoButton" key = '4' onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);  
+  
     return items;
   }
 
@@ -791,62 +785,77 @@ export default class GameBoard extends Component {
         {this.renderModalError(game, user)}
         {this.renderModalUndo(game, user)}
 
-        {/* TopRow */}
-        {this.renderTopRow(game, user)}
-
         {/* MainRow */}
         <div className="row" id="mainRow">
 
-          {/* Hand */}
-          <div className="column smart">
-            <p className="banner"><b>{Langs[this.props.currLang].gameBoard.banners.handArea}</b></p>
-            {this.renderHandAreaItems(game, user)}
-            <div className="area" id="handArea" style={handAreaStyle}>
-                {userCards.map((card, index) => (
-                  <MyDrag
-                    key={card}
-                    card={card}
-                    user={user}
-                    game={game}
-                    location={game.cardLocations[card]}
-                    zIndex={game.cardZIndexes[card]}
-                  />
-                ))}
-                <div className="quarter-circle-top-right"></div>
-                <div id="landingArea">
-                  <br></br>
-                  <p id="landingText">{Langs[this.props.currLang].gameBoard.handArea.card}</p>
+           <div className="halfColumn" id="left">
+            <div className="row" id="tableButtonsRow">
+              <div className="column smart" id="buttonsColumn">
+                <div className="row" id="buttonsRow1">
+                <p>Game</p>
+                { this.renderButtonRow1Items(game, user) }
                 </div>
-                {this.renderHandAreaLines(game, user)}
+                <div className="row" id="buttonsRow2">
+                <p>Row 2</p>
+                { this.renderButtonRow2Items(game, user) }
+                </div>
+              </div>
+
+              <div className="column dummy" id="dummyColumn1"></div>
+
+              {/* Table and di areas */}
+              <div className="column smart" id="tableColumn">
+
+                <p className="banner"><b>{ Langs[this.props.currLang].gameBoard.banners.tableArea }</b></p>
+
+                <div className="area" id="tableArea">
+                  { this.renderDiBanner(game, user) }
+                  { this.renderTableColWrapUpDiView(game, user) }
+                  { this.renderTableColDiAreaView(game, user) }
+                  { this.renderTableColPlayingView(game, user) }
+                </div>
+                
+                
+                <div id="nextArea">
+                  { this.renderNextArea(game, user) }
+                </div>
+              </div>
+            </div>
+
+            <div className="column dummy" id="dummyColumn2"></div>
+          
+            {/* Points area */}
+            <div className="column smart" id="pointsColumn">
+              { this.renderPointsArea(game, user) }
             </div>
           </div>
 
           <div className="column dummy" id="dummyColumn1"></div>
 
-          {/* Table and di areas */}
-          <div className="column smart" id="tableColumn">
-
-            { this.renderTableColBanner(game, user) }
-            { this.renderTableAreaItems(game, user) }
-
-            <div className="area" id="tableArea">
-              { this.renderTableColWrapUpDiView(game, user) }
-              { this.renderTableColDiAreaView(game, user) }
-              { this.renderTableColPlayingView(game, user) }
+          {/* Hand */}
+          <div className="halfColumn" id="right">
+            <div className="column smart" id="handAreaColumn">
+              <p className="banner"><b>{Langs[this.props.currLang].gameBoard.banners.handArea}</b></p>
+              {this.renderHandAreaItems(game, user)}
+              <div className="area" id="handArea" style={handAreaStyle}>
+                  {userCards.map((card, index) => (
+                    <MyDrag
+                      key={card}
+                      card={card}
+                      user={user}
+                      game={game}
+                      location={game.cardLocations[card]}
+                      zIndex={game.cardZIndexes[card]}
+                    />
+                  ))}
+                  <div className="quarter-circle-top-right"></div>
+                  <div id="landingArea">
+                    <br></br>
+                    <p id="landingText">{Langs[this.props.currLang].gameBoard.handArea.card}</p>
+                  </div>
+                  {this.renderHandAreaLines(game, user)}
+              </div>
             </div>
-            
-            
-            <div id="nextArea">
-              { this.renderNextArea(game, user) }
-            </div>
-          </div>
-
-          <div className="column dummy" id="dummyColumn2"></div>
-        
-          {/* Points area */}
-          <div className="column smart" id="pointsColumn">
-            <p className="banner"><b>{Langs[this.props.currLang].gameBoard.banners.pointsArea}</b></p>
-            { this.renderPointsArea(game, user) }
           </div>
 
           { this.renderEndGameShadow(game, user) }

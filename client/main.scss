@@ -1,9 +1,9 @@
 /* Master levels */
 
 body {
-    min-height: 666px;
+    min-height: 730px;
     min-width: 1440px;
-    max-height: 666px;
+    max-height: 730px;
     max-width: 1440px;
     background-image: url("/images/wood_light.jpg");
     background-size: cover;
@@ -44,7 +44,7 @@ body {
     background-color: #F3F4F5;
 }
 
-/* GameBoard levels */
+/* GameBoard */
 
 /* Rows */
 .row {
@@ -53,54 +53,50 @@ body {
 
 #mainRow {
     height: 90%;
-}
-
-#topRow {
-    height: 7%;
-}
-
-/* topRow items */
-
-.topButton {
     position: relative;
-    float: left;
+    left: 87px;
 }
 
-#undoButton {
-    width: 170px;
+#tableButtonsRow {
+    height: 71%;
+    width: 100%;
+    padding: 0%;
 }
 
-.messageArea {
-    height: 36px;
-    overflow: hidden;
-    color: #F4F1DE;
-    background-color: white;
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 5px;
+#buttonsRow1 {
+    height: 50%;
+    width: 100%;
 }
 
-#playerRoleIcon {
-    position: relative;
-    height: 25px;
+#buttonsRow2 {
+    height: 50%;
+    width: 100%;
 }
 
-#zhuIcon {
-    position: relative;
-    width: 26px;
-    height: 26px;
-    left: 5px;
+#tableButtonsRow {
+    height: 71%;
+    width: 100%;
+    padding: 0%;
 }
 
 /* Columns */
 
-.column {
+.halfColumn {
     float: left;
-    width: 49.5%;
+    width: 49%;
     height: 100%;
     position: relative;
-    padding: 1%;
+    padding: 0%;
+}
+
+.column {
+    float: left;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 20px;
     border-radius: 5px;
-    background-color: #F4F1DE;
+    background: rgba(244, 241, 222, 0.85);
 }
 
 /* Clear floats after the columns */
@@ -121,19 +117,28 @@ body {
 }
 
 #dummyColumn1 {
-    width: 1%;
+    width: 2%;
 }
 
 #dummyColumn2 {
-    height: 2%;
+    height: 4%;
+}
+
+#buttonsColumn {
+    width: 32%;
 }
 
 #tableColumn {
-    height: 71%;
+    width: 66%;
 }
 
 #pointsColumn {
-    height: 27%;
+    height: 20%;
+}
+
+#handAreaColumn {
+    width: 75%;
+    height: 95%;
 }
 
 /* Areas */
@@ -151,13 +156,11 @@ body {
 }
 
 #handArea {
-    /* 11px offset at the bottom for shelf shadow */
-    padding-top: 13px;
-    padding-bottom: 13+13px;
-    padding-left: 13px;
-    padding-right: 13px;
-    height: 512px;
-    width: 676px;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 528px;
+    width: 483px;
     background-color: #9B6A6C;
     transition: background-color 0.5s ease-in-out;
 }
@@ -183,11 +186,20 @@ body {
     text-align: center;
 }
 
+#pointsAreaBanner {
+    position: absolute;
+    width: 100%;
+    top: 20px;
+    color: #C0C0C0;
+    font-size: 30px;
+    text-align: center;
+}
+
 /* Di area */
 
 #diAreaWrapper {
     position: absolute;
-    padding-top: 100px;
+    padding-top: 65px;
     padding-left: 20px;
 }
 
@@ -202,7 +214,8 @@ body {
     width: 50%;
     height: 50%;
     position: relative;
-    padding: 2%;
+    padding: 25px;
+    padding-top: 15px;
     border-radius: 5px;
     overflow-y: scroll;
     transition: border 0.5s ease-in-out;
@@ -225,12 +238,17 @@ body {
     text-align: center;
 }
 
+#diBanner {
+    height: 40px;
+    padding-top: 25px;
+}
+
 
 /* Next area */
 
 #nextArea {
     position: relative;
-    height: 20%;
+    height: 23%;
 }
 
 .nextAreaItem {
@@ -250,14 +268,13 @@ body {
 }
 
 .myButton {
+    height: 40px;
     display: inline-block;
-    padding: 0.25em 0.5em;
-    text-decoration: none;
-    color: #FFF;
-    background: #fd9535;/*button color*/
-    border-bottom: solid 2px #d27d00;/*daker color*/
-    border-radius: 4px;
-    box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+    padding: 5px 10px;
+    color: white;
+    background: #A333C8;
+    border-radius: 5px;
+
     font-weight: bold;
 }
 
@@ -288,7 +305,7 @@ body {
     position: absolute;
     width: 56px;
     height: 76px;
-    top: 13-3px;
+    top: 20-3px;
     right: 13-3px;
     text-align: center;
     border: 3px dashed white;
@@ -302,9 +319,9 @@ body {
 
 .handAreaLine {
   position: absolute;
-  left: 15-4px;
+  left: 20-4px;
   height: 3px;
-  width: 500+8px;
+  width: 300+8px;
   border: none;
   border-top: 5px solid white;  
   border-radius: 15px;
@@ -315,16 +332,21 @@ body {
 /* round buttons */
 
 .roundCornerButton {
-    position: absolute;
-    top: 6px;
-    right: 13px;
     width: 40px;
     height: 40px;
     border: none;
 }
 
+#roundCornerButtonDraw {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
 #roundCornerButtonEndTurn {
-    right: 60px;
+    position: absolute;
+    top: 10px;
+    left: 20px;
 }
 
 #roundCornerButtonDraw {
@@ -355,6 +377,30 @@ body {
 #roundCornerButtonEndTurn:disabled {
     background: url("/images/button_end_turn_disabled.png") no-repeat;
     background-size: 100% 100%;
+}
+
+/* Button column area */
+
+.topButton {
+    position: relative;
+}
+
+#undoButton {
+    width: 170px;
+}
+
+#playerRoleIcon {
+    position: relative;
+    height: 25px;
+    display: block;
+}
+
+#zhuIcon {
+    position: relative;
+    width: 26px;
+    height: 26px;
+    left: 5px;
+    display: block;
 }
 
 #roundCornerButtonSeePrevTable {
