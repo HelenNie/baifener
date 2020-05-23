@@ -64,19 +64,17 @@ body {
 }
 
 #buttonsRow1 {
-    height: 50%;
+    height: 77%;
     width: 100%;
+    padding: 0%;
 }
 
 #buttonsRow2 {
-    height: 50%;
-    width: 100%;
-}
-
-#tableButtonsRow {
-    height: 71%;
-    width: 100%;
-    padding: 0%;
+    height: 23%;
+    width: 185px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: white;
 }
 
 /* Columns */
@@ -124,8 +122,18 @@ body {
     height: 4%;
 }
 
+.dummyColumn3 {
+    height: 5px;
+}
+
+.dummyColumn4 {
+    height: 40px;
+}
+
 #buttonsColumn {
     width: 32%;
+    background-color: #E2E1B9;
+    box-shadow: 0px 0px 0px;
 }
 
 #tableColumn {
@@ -189,9 +197,9 @@ body {
 #pointsAreaBanner {
     position: absolute;
     width: 100%;
-    top: 20px;
+    top: 30px;
     color: #C0C0C0;
-    font-size: 30px;
+    font-size: 20px;
     text-align: center;
 }
 
@@ -272,7 +280,7 @@ body {
     display: inline-block;
     padding: 5px 10px;
     color: white;
-    background: #A333C8;
+    background: #009bff;
     border-radius: 5px;
 
     font-weight: bold;
@@ -337,6 +345,13 @@ body {
     border: none;
 }
 
+#roundCornerButtonClearPrevTable,
+#roundCornerButtonSeePrevTable {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
 #roundCornerButtonDraw {
     position: absolute;
     top: 10px;
@@ -379,30 +394,6 @@ body {
     background-size: 100% 100%;
 }
 
-/* Button column area */
-
-.topButton {
-    position: relative;
-}
-
-#undoButton {
-    width: 170px;
-}
-
-#playerRoleIcon {
-    position: relative;
-    height: 25px;
-    display: block;
-}
-
-#zhuIcon {
-    position: relative;
-    width: 26px;
-    height: 26px;
-    left: 5px;
-    display: block;
-}
-
 #roundCornerButtonSeePrevTable {
     background: url("/images/button_see_prev_table.png") no-repeat;
     background-size: 100% 100%;
@@ -426,6 +417,28 @@ body {
 #roundCornerButtonClearPrevTable:hover {
     background: url("/images/button_clear_prev_table_hover.png") no-repeat;
     background-size: 100% 100%;
+}
+
+
+/* Button column area */
+
+.topButton {
+    position: relative;
+    width: 185px;
+}
+
+#playerRoleIcon {
+    position: absolute;
+    top: 350px;
+    right: 35px; 
+    width: 25px;
+}
+
+#zhuIcon {
+    position: absolute;
+    top: 386px;
+    right: 35px; 
+    width: 25px;
 }
 
 /* Shadow */

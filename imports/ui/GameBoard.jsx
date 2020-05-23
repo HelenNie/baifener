@@ -70,7 +70,7 @@ export const Anim = {
     class: 'fadeInOut65DelayIn',
     timeout: 250,
     delay: 1500
-  },
+  }
 }
 
 export const CssValues = {
@@ -92,7 +92,7 @@ export const CssValues = {
     }
   },
   handArea: {
-    backgroundColor: 'gold'
+    backgroundColor: '#ffe766'
   }
 }
 
@@ -480,6 +480,25 @@ export default class GameBoard extends Component {
     return items;
   }
 
+  renderTableAreaItems(game, user) {
+    var items = [];
+    var inBools = [];
+
+    //See and hide prev table button
+    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" onClick={this.handleSeePrevTable.bind(this)}></button>);
+    inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" onClick={this.handleClearPrevTable.bind(this)}></button>);
+    inBools.push(inBools.every(v => v === false));
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
+
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
+    }
+
+    return items;
+  }
+
   renderDiBanner(game, user) {
     var items = [];
     var inBools = [];
@@ -632,7 +651,7 @@ export default class GameBoard extends Component {
     var item2;
 
     //Find three in di button
-    item1 = <button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}&rarr;</button>;
+    item1 = <button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>;
     item2 = <p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>;
     items.push(this.renderByRoleHelper(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
     bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN);
@@ -705,24 +724,22 @@ export default class GameBoard extends Component {
   renderButtonRow1Items(game, user) {
     var items = [];
     var inBools = [];
-    
-    var role = user.username in game.playerRoles ? game.playerRoles[user.username] : '';
 
-    inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
-    items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" key="1" title={Langs[this.props.currLang].gameBoard.roles[role]}></img>);
-    inBools.push(game.stage != GameStages.SET_UP && game.zhu != '');
-    items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" key="2" title={Langs[this.props.currLang].gameBoard.suits[SuitsMap[game.zhu]]}></img>);
+    var key = 0;
 
-    for (var i = 0; i < items.length; i++) {
-      items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
-    }
-
-    //Restart game button
-    items.push(<button className="ui button red topButton" key='3' onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)} disabled={game.stage == GameStages.SET_UP}>{Langs[this.props.currLang].gameBoard.buttons.restartGame}</button>)
-    //End game button
-    items.push(<button className="ui button red topButton" key='4' onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
     //Back button
-    items.push(<button className="ui button black topButton" key='5' onClick={this.handleBackToGameList.bind(this)}>{Langs[this.props.currLang].gameBoard.buttons.back}</button>);
+    items.push(<button className="ui button black topButton" key={key++} onClick={this.handleBackToGameList.bind(this)}>{Langs[this.props.currLang].gameBoard.buttons.back}</button>);
+    items.push(<div className="dummyColumn3" key={key++}></div>);
+    //Restart game button
+    items.push(<button className="ui button red topButton" key={key++} onClick={this.handleModalShow.bind(this, ModalStates.RESTART_GAME)} disabled={game.stage == GameStages.SET_UP}>{Langs[this.props.currLang].gameBoard.buttons.restartGame}</button>)
+    items.push(<div className="dummyColumn3" key={key++}></div>);
+    //End game button
+    items.push(<button className="ui button red topButton" key={key++} onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
+    items.push(<div className="dummyColumn4" key={key++}></div>);
+
+    //Undo button
+    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
+    items.push(<button className="ui button orange topButton" key = {key++} onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);  
 
     return items;
   }
@@ -731,22 +748,22 @@ export default class GameBoard extends Component {
     var items = [];
     var inBools = [];
 
-    //See and hide prev table button
-    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)}></button>);
-    inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
-    items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" key="2" onClick={this.handleClearPrevTable.bind(this)}></button>);
-    inBools.push(inBools.every(v => v === false));
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" key="2" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
-    
+    var role = user.username in game.playerRoles ? game.playerRoles[user.username] : '';
+
+    //Role and trump icons
+    inBools.push(true);
+    items.push(<p>{ Langs[this.props.currLang].gameBoard.msgArea.role }</p>);
+    inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
+    items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" title={Langs[this.props.currLang].gameBoard.roles[role]}></img>);
+    inBools.push(true);
+    items.push(<p>{ Langs[this.props.currLang].gameBoard.msgArea.zhu }</p>);
+    inBools.push(game.stage != GameStages.SET_UP && game.zhu != '');
+    items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" title={Langs[this.props.currLang].gameBoard.suits[SuitsMap[game.zhu]]}></img>);
+
     for (var i = 0; i < items.length; i++) {
       items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
 
-    //Undo button
-    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
-    items.push(<button className="ui button orange topButton" id="undoButton" key = '4' onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);  
-  
     return items;
   }
 
@@ -792,11 +809,9 @@ export default class GameBoard extends Component {
             <div className="row" id="tableButtonsRow">
               <div className="column smart" id="buttonsColumn">
                 <div className="row" id="buttonsRow1">
-                <p>Game</p>
                 { this.renderButtonRow1Items(game, user) }
                 </div>
                 <div className="row" id="buttonsRow2">
-                <p>Row 2</p>
                 { this.renderButtonRow2Items(game, user) }
                 </div>
               </div>
@@ -808,6 +823,7 @@ export default class GameBoard extends Component {
 
                 <p className="banner"><b>{ Langs[this.props.currLang].gameBoard.banners.tableArea }</b></p>
 
+                { this.renderTableAreaItems(game, user) }
                 <div className="area" id="tableArea">
                   { this.renderDiBanner(game, user) }
                   { this.renderTableColWrapUpDiView(game, user) }
@@ -848,10 +864,10 @@ export default class GameBoard extends Component {
                       zIndex={game.cardZIndexes[card]}
                     />
                   ))}
-                  <div className="quarter-circle-top-right"></div>
+                  {/*  <div className="quarter-circle-top-right"></div> */}
                   <div id="landingArea">
-                    <br></br>
-                    <p id="landingText">{Langs[this.props.currLang].gameBoard.handArea.card}</p>
+                    {/* <br></br>
+                    <p id="landingText">{Langs[this.props.currLang].gameBoard.handArea.card}</p> */}
                   </div>
                   {this.renderHandAreaLines(game, user)}
               </div>

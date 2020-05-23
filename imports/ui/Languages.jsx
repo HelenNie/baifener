@@ -90,8 +90,8 @@ export const Langs = {
         startGameWaiting: "正在等对手扣底..."
       },
       msgArea: {
-        role: "队",
-        zhu: "主"
+        role: "你的队",
+        zhu: "主牌"
       },
       roles: {
         DEFENDER: "台上",
@@ -191,8 +191,8 @@ export const Langs = {
         startGameWaiting: "Waiting for opponents to stash kitty..."
       },
       msgArea: {
-        role: "Role",
-        zhu: "Trump"
+        role: "Your Role: ",
+        zhu: "Trump Suit: "
       },
       roles: {
         DEFENDER: "Defender",
