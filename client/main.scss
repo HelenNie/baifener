@@ -54,7 +54,7 @@ body {
 #mainRow {
     height: 90%;
     position: relative;
-    left: 87px;
+    left: 90px;
 }
 
 #tableButtonsRow {
@@ -71,7 +71,7 @@ body {
 
 #buttonsRow2 {
     height: 23%;
-    width: 185px;
+    width: 172px;
     padding: 20px;
     border-radius: 5px;
     background-color: white;
@@ -115,11 +115,11 @@ body {
 }
 
 #dummyColumn1 {
-    width: 2%;
+    width: 25px;
 }
 
 #dummyColumn2 {
-    height: 4%;
+    height: 25px;
 }
 
 .dummyColumn3 {
@@ -130,8 +130,12 @@ body {
     height: 40px;
 }
 
+#dummyColumn5 {
+    width: 25px;
+}
+
 #buttonsColumn {
-    width: 32%;
+    width: 211px;
     background-color: #E2E1B9;
     box-shadow: 0px 0px 0px;
 }
@@ -424,7 +428,7 @@ body {
 
 .topButton {
     position: relative;
-    width: 185px;
+    width: 172px;
 }
 
 #playerRoleIcon {
@@ -564,7 +568,8 @@ body {
 /* button */
 
 .ui.button:disabled {
-    opacity: 0.6 !important;
+    opacity: 1 !important;
+    background-color: #C8C8C8 !important;
 }
 
 /* Card */

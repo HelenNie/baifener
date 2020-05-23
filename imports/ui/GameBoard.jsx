@@ -752,11 +752,11 @@ export default class GameBoard extends Component {
 
     //Role and trump icons
     inBools.push(true);
-    items.push(<p>{ Langs[this.props.currLang].gameBoard.msgArea.role }</p>);
+    items.push(<p><b>{ Langs[this.props.currLang].gameBoard.msgArea.role }</b></p>);
     inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
     items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" title={Langs[this.props.currLang].gameBoard.roles[role]}></img>);
     inBools.push(true);
-    items.push(<p>{ Langs[this.props.currLang].gameBoard.msgArea.zhu }</p>);
+    items.push(<p><b>{ Langs[this.props.currLang].gameBoard.msgArea.zhu }</b></p>);
     inBools.push(game.stage != GameStages.SET_UP && game.zhu != '');
     items.push(<img src={"/images/" + SuitsMap[game.zhu] + ".png"} id="zhuIcon" title={Langs[this.props.currLang].gameBoard.suits[SuitsMap[game.zhu]]}></img>);
 
@@ -816,7 +816,7 @@ export default class GameBoard extends Component {
                 </div>
               </div>
 
-              <div className="column dummy" id="dummyColumn1"></div>
+              <div className="column dummy" id="dummyColumn5"></div>
 
               {/* Table and di areas */}
               <div className="column smart" id="tableColumn">
