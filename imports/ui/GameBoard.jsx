@@ -16,7 +16,8 @@ export const TableOrder = [0, 1, 3, 2];
 export const Anim = {
   fadeSlideInOut: {
     class: 'fadeSlideInOut',
-    timeout: 1000
+    timeout: 1000,
+    delay: 1000
   },
   slideIn: {
     class: 'slideIn',
@@ -101,6 +102,9 @@ export default class GameBoard extends Component {
   constructor(props) {
     super(props);
     this.overlayRef = React.createRef();
+    this.state = {
+      playerAreaID: ''
+    };
   }
 
   handleBackToGameList() {
@@ -153,11 +157,17 @@ export default class GameBoard extends Component {
   }
 
   handleEndTurn() {
+    this.setState({
+      playerAreaID: ''
+    });
     let game = this.props.game;
     userEndTurnGame.call({gameId: game._id});
   }
 
   handleClearTable() {
+    this.setState({
+      playerAreaID: 'delayBorderTransition'
+    });
     let game = this.props.game;
     userClearTableGame.call({gameId: game._id});
   }
@@ -203,6 +213,9 @@ export default class GameBoard extends Component {
   }
 
   handleUndo() {
+    this.setState({
+      playerAreaID: ''
+    });
     let game = this.props.game;
     userUndoGame.call({gameId: game._id});
   }
@@ -518,8 +531,8 @@ export default class GameBoard extends Component {
     banners.push(Langs[this.props.currLang].gameBoard.banners.diWrap);
 
     for (var i = 0; i < banners.length; i++) {
-      bannerItem = <p className="tableBanner" id="diBanner"><b>{ banners[i] }</b></p>;
-      items.push(this.animate(i, bannerItem, inBools[i], Anim.fadeInOutDelayIn.class, Anim.fadeInOutDelayIn.timeout));
+      bannerItem = <p className="diBanner"><b>{ banners[i] }</b></p>;
+      items.push(this.animate(i, bannerItem, inBools[i], Anim.fadeSlideInOut.class, Anim.fadeSlideInOut.timeout));
     }
 
     return items;
@@ -621,7 +634,7 @@ export default class GameBoard extends Component {
       }
 
       playerAreas.push(
-        <div className="playerArea" key={ player } style={tablePlayers[player]}>
+        <div className="playerArea" id={ this.state.playerAreaID } key={ player } style={tablePlayers[player]}>
           <p className="tableBanner"><b>{ player }</b></p>
           { items }
         </div>
@@ -651,26 +664,30 @@ export default class GameBoard extends Component {
     var item2;
 
     //Find three in di button
-    item1 = <button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>;
-    item2 = <p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>;
-    items.push(this.renderByRoleHelper(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN);
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.DEFENDER);
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.DEFENDER);
 
     //Open di button
-    item1 = <button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>;
-    item2 = <p className="nextAreaItem waitText" >{Langs[this.props.currLang].gameBoard.nextArea.openKittyWaiting}</p>;
-    items.push(this.renderByRoleHelper(game, game.playerRoles[user.username], Roles.ATTACKER, item2, item1));
-    bools.push((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI));
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] == Roles.DEFENDER);
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.openKittyWaiting}</p>);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] != Roles.DEFENDER);
 
     //Start playing button
-    item1 = <button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{Langs[this.props.currLang].gameBoard.nextArea.startPlaying}</button>;
-    item2 = <p className="nextAreaItem waitText" >{Langs[this.props.currLang].gameBoard.nextArea.startGameWaiting}</p>;
-    items.push(this.renderByRoleHelper(game, user.username, game.diOpener, item1, item2)),
-    bools.push(game.stage == GameStages.DI);
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{Langs[this.props.currLang].gameBoard.nextArea.startPlaying}</button>);
+    bools.push(game.stage == GameStages.DI && user.username == game.diOpener);
+    items.push(<p className="nextAreaItem waitText" >{Langs[this.props.currLang].gameBoard.nextArea.startGameWaiting}</p>);
+    bools.push(game.stage == GameStages.DI && user.username != game.diOpener);
 
     //Won round button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleClearTable.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.wonRoundButton}</button>);
     bools.push(game.tableState == TableStates.CLEAR_TABLE && game.stage == GameStages.PLAY);
+
+    //End game message
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.gameOver}</p>);
+    bools.push(game.stage == GameStages.FINISHED);
 
     //Default
     items.push(<img className="nextAreaItem" id="placeholder" src={"/images/nextAreaPlaceholder.png"}></img>);
@@ -681,14 +698,6 @@ export default class GameBoard extends Component {
     }
 
     return items;
-  }
-
-  renderByRoleHelper(game, userAttr, role, item1, item2) {
-    if (userAttr == role) {
-      return item1;
-    } else {
-      return item2;
-    }
   }
 
   renderPointsArea(game, user) {
@@ -715,10 +724,6 @@ export default class GameBoard extends Component {
           { items }
       </div>
       );
-  }
-
-  renderEndGameShadow(game, user) {
-    return (this.animate('endGameShadow', <div id="finishedShadow"></div>, game.stage == GameStages.FINISHED, Anim.fadeInOut65DelayIn.class, Anim.fadeInOut65DelayIn.timeout + Anim.fadeInOut65DelayIn.delay));
   }
 
   renderButtonRow1Items(game, user) {
@@ -831,7 +836,6 @@ export default class GameBoard extends Component {
                   { this.renderTableColPlayingView(game, user) }
                 </div>
                 
-                
                 <div id="nextArea">
                   { this.renderNextArea(game, user) }
                 </div>
@@ -873,9 +877,6 @@ export default class GameBoard extends Component {
               </div>
             </div>
           </div>
-
-          { this.renderEndGameShadow(game, user) }
-
         </div> 
       </div>
     )

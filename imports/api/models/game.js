@@ -96,8 +96,8 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 export const CardSize = {x: 50, y: 70};
 export const CardSlotMargin = {x: 0, y: 30};
 export const CardSlotSize = {x: CardSize.x + CardSlotMargin.x, y: CardSize.y + CardSlotMargin.y};
-export const CardLocMax = {x: 6, y: 5}; //Based on making sufficient space for arranging cards
-export const CardLandingLoc = {x: CardLocMax.x + 2, y: 0}; //Offset right from arranged cards with space in betweeen
+export const CardLocMax = {x: 7, y: 5}; //Based on making sufficient space for arranging cards
+export const CardLandingLoc = {x: CardLocMax.x + 1, y: 0}; //Offset right from arranged cards with space in betweeen
 
 export const ZIndexBase = 2;
 
@@ -991,7 +991,7 @@ export class Game {
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
     this.undoPostFollowUps(user, undoType);
 
-    console.log("undid show three");
+    console.log("undid open di");
   }
 
   userTakeCardfromDi(user, card) {
@@ -1251,8 +1251,6 @@ export class Game {
   }
 
   userEndGame() {
-    this.currTableCards = {};
-
     //Restore original di if diOpener is in the middle of switching out
     if ((this.stage ==  GameStages.DI) && (this.di.length != DiLength)) {
       this.di = this.diOriginal;
@@ -1265,6 +1263,12 @@ export class Game {
           this.hands[this.diOpener].splice(index, 1);
         }
       }
+    }
+
+    this.currTableCards = {};
+
+    for (var player in this.hands) {
+      this.hands[player] = [];
     }
 
     for (var player in this.undoByPlayer) {
