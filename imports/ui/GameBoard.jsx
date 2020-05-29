@@ -107,6 +107,11 @@ export default class GameBoard extends Component {
     };
   }
 
+  playSound(sound) {
+    var audio = new Audio("/sounds/" + sound + ".wav");
+    audio.play();
+  }
+
   handleBackToGameList() {
     this.props.backToGameListHandler();
   }
@@ -122,11 +127,13 @@ export default class GameBoard extends Component {
   }
 
   handleSetFirstDrawer() {
+    this.playSound('startGameGong');
     let game = this.props.game;
     userSetFirstDrawerGame.call({gameId: game._id});
   }
 
   handleDrawCard() {
+    this.playSound('drawCard');
     let game = this.props.game;
     userDrawCardGame.call({gameId: game._id});
   }
