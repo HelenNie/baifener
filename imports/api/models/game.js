@@ -851,7 +851,7 @@ export class Game {
     }
 
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.SHOW_THREE;
-
+    
     console.log(user.username + " liang " + card);
   }
 

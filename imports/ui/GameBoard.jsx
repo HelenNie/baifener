@@ -102,6 +102,7 @@ export default class GameBoard extends Component {
   constructor(props) {
     super(props);
     this.overlayRef = React.createRef();
+    this.showThreeAudioPlayed = false;
     this.state = {
       playerAreaID: ''
     };
@@ -219,7 +220,8 @@ export default class GameBoard extends Component {
     userUndoAwayGame.call({gameId: game._id});
   }
 
-  handleUndo() {
+  handleUndo(undoType) {
+    //Stop delay on gold player area border animation if undid collect points
     this.setState({
       playerAreaID: ''
     });
@@ -233,11 +235,13 @@ export default class GameBoard extends Component {
   }
 
   handleRestartGame() {
+    this.playSound('startGameGong');
     let game = this.props.game;
     userRestartGameGame.call({gameId: game._id});
   }
 
   handleEndGame() {
+    this.playSound('startGameGong');
     let game = this.props.game;
     userEndGameGame.call({gameId: game._id});
   }
@@ -445,7 +449,7 @@ export default class GameBoard extends Component {
             <p>{Langs[this.props.currLang].gameBoard.undo[undoType]}</p>
             <br></br>
             <br></br>
-            <button className="ui red button" onClick={this.handleUndo.bind(this)}>{Langs[this.props.currLang].gameBoard.modals.yes}</button>
+            <button className="ui red button" onClick={this.handleUndo.bind(this, undoType)}>{Langs[this.props.currLang].gameBoard.modals.yes}</button>
             <button className="ui black button" onClick={this.handleUndoAway.bind(this)}>{Langs[this.props.currLang].gameBoard.modals.no}</button>
           </div>;
         break;
@@ -622,6 +626,7 @@ export default class GameBoard extends Component {
     var active;
     var delayPoint;
     var inBool;
+    var inBools = [];
     var animClass;
     var totalTime;
 
@@ -630,6 +635,7 @@ export default class GameBoard extends Component {
       for (var i = 0; i < DeckComplete.length; i++) {
         card = DeckComplete[i];
         inBool = card in tableCards && tableCards[card] == player;
+        inBools.push(inBool);
         //Make card clickable if is user's turn during PLAY or is user's three
         active = (player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY);
         item = <img src={"/images/" + card + ".png"} draggable="false" className={active ? "handle" : ''} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;
@@ -638,6 +644,11 @@ export default class GameBoard extends Component {
         animClass = delayPoint ? Anim.fadeInOutDelayOut.class: Anim.fadeInOut.class;
         totalTime = delayPoint ? Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay : Anim.fadeInOut.timeout;
         items.push(this.animate(card, item, inBool, animClass, totalTime));
+        //Play sounds if a three was shown
+        if (game.stage == GameStages.DRAW && inBool && !this.showThreeAudioPlayed) {
+          this.playSound('showThree');
+          this.showThreeAudioPlayed = true;
+        }
       }
 
       playerAreas.push(
@@ -646,6 +657,11 @@ export default class GameBoard extends Component {
           { items }
         </div>
       )
+    }
+
+    //Queue sound effect for show three again if undid show three
+    if (inBools.every(v => v === false)) {
+      this.showThreeAudioPlayed = false;
     }
 
     var disabledTableArea = this.animate('tableShadow', <div id="tableAreaShadow"></div>, game.disableTableArea(user), Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
@@ -672,15 +688,15 @@ export default class GameBoard extends Component {
 
     //Find three in di button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>);
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.DEFENDER);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.ATTACKER);
     items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>);
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.DEFENDER);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.DEFENDER);
 
     //Open di button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>);
-    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] == Roles.DEFENDER);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] != Roles.ATTACKER);
     items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.openKittyWaiting}</p>);
-    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] != Roles.DEFENDER);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] == Roles.ATTACKER);
 
     //Start playing button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{Langs[this.props.currLang].gameBoard.nextArea.startPlaying}</button>);
