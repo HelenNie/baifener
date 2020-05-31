@@ -295,6 +295,10 @@ body {
     font-weight: bold;
 }
 
+.myButton:disabled {
+    background-color: #C8C8C8;
+}
+
 .myButton:active {
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
 }
@@ -876,4 +880,27 @@ body {
 
 .fadeInOut65DelayIn-enter-active {
   transition-delay: 1.5s;
+}
+
+/* Shadow */
+
+dummy-enter {
+    opacity: 1;
+}
+
+dummy-enter-active {
+    opacity: 1;
+}
+
+dummy-exit-active {
+    opacity: 1;
+}
+
+dummy-exit {
+    opacity: 1;
+}
+
+dummy-enter-active,
+dummy-exit-active {
+    transition: opacity 500ms;
 }

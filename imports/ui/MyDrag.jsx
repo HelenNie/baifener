@@ -17,7 +17,8 @@ export default class MyDrag extends React.Component {
       controlledPosition: {
         x: this.props.location.x * CardSlotSize.x,
         y: this.props.location.y * CardSlotSize.y
-      }
+      },
+      stopped: true
     };
   };
 
@@ -56,6 +57,9 @@ export default class MyDrag extends React.Component {
           y: this.props.location.y * CardSlotSize.y
         },
       });
+      if (this.state.stopped) {
+        this.props.playSound('dragCard');
+      }
       // if (this.props.card == "QH") {
       //   console.log("CHILD DID UPDATE: ", this.state.controlledPosition);
       // }
@@ -70,6 +74,7 @@ export default class MyDrag extends React.Component {
         y: y + ui.deltaY,
       }
     });
+    this.setState({stopped: false});
   };
 
   onStart = (e) => {
@@ -84,6 +89,7 @@ export default class MyDrag extends React.Component {
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
+    this.setState({stopped: false});
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: true});
   };
 
@@ -91,8 +97,8 @@ export default class MyDrag extends React.Component {
     this.onControlledDrag(e, position);
     this.onStop();
     const {x, y} = position;
+    this.setState({stopped: true});
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: false});
-    this.props.playSound('dragCard');
   };
 
   handleCardMigration = () => {

@@ -8,7 +8,7 @@ import MyDrag from './MyDrag.jsx';
 import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
-import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete} from '../api/models/game.js';
+import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete, CardLandingLoc} from '../api/models/game.js';
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
@@ -71,6 +71,10 @@ export const Anim = {
     class: 'fadeInOut65DelayIn',
     timeout: 250,
     delay: 1500
+  },
+  dummy: {
+    class: 'dummy',
+    timeout: 0
   }
 }
 
@@ -102,7 +106,6 @@ export default class GameBoard extends Component {
   constructor(props) {
     super(props);
     this.overlayRef = React.createRef();
-    this.showThreeAudioPlayed = false;
     this.state = {
       playerAreaID: ''
     };
@@ -295,6 +298,31 @@ export default class GameBoard extends Component {
       top = firstTop + CardSlotSize.y * i;
       items.push(<hr className='handAreaLine' key={i} style={{top: top + 'px'}}/>);
     }
+    return items;
+  }
+
+  renderhandArea(game, user) {
+    var items = [];
+    var card;
+    var loc;
+    var item;
+    var userCards = game.hands[user.username];
+
+    for (var i = 0; i < userCards.length; i++) {
+      card = userCards[i];
+      loc = game.cardLocations[card];
+      item = <MyDrag
+        key={card}
+        card={card}
+        user={user}
+        game={game}
+        location={loc}
+        zIndex={game.cardZIndexes[card]}
+        playSound={this.playSound}
+      />
+      items.push(item);
+    }
+    
     return items;
   }
 
@@ -593,6 +621,7 @@ export default class GameBoard extends Component {
   }
 
   diAreaOnEnteredCallback() {
+    console.log('hello');
     this.playSound('dragCard');
   }
 
@@ -625,6 +654,7 @@ export default class GameBoard extends Component {
   }
 
   onWrapUpDiEnterCallback(card) {
+    this.playSound('dragCard');
     var game = this.props.game;
     var user = this.props.user;
     if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
@@ -661,12 +691,7 @@ export default class GameBoard extends Component {
         delayPoint = game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP);
         animClass = delayPoint ? Anim.fadeInOutDelayOut.class: Anim.fadeInOut.class;
         totalTime = delayPoint ? Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay : Anim.fadeInOut.timeout;
-        items.push(this.animate(card, item, inBool, animClass, totalTime));
-        //Play sounds if a three was shown
-        if (game.stage == GameStages.DRAW && inBool && !this.showThreeAudioPlayed) {
-          this.playSound('showThree');
-          this.showThreeAudioPlayed = true;
-        }
+        items.push(this.animate(card, item, inBool, animClass, totalTime, this.playingViewOnEnteredCallback));
       }
 
       playerAreas.push(
@@ -675,11 +700,6 @@ export default class GameBoard extends Component {
           { items }
         </div>
       )
-    }
-
-    //Queue sound effect for show three again if undid show three
-    if (inBools.every(v => v === false)) {
-      this.showThreeAudioPlayed = false;
     }
 
     var disabledTableArea = this.animate('tableShadow', <div id="tableAreaShadow"></div>, game.disableTableArea(user), Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
@@ -696,6 +716,15 @@ export default class GameBoard extends Component {
 
     //Animate wrapper so that div doesn't cover di cards when clickable
     return this.animate('playingAreaView', wrapper, playingViewShow, animClass, totalTime);
+  }
+
+  playingViewOnEnteredCallback() {
+    var game = this.props.game;
+    if(game.stage == GameStages.PLAY) {
+      this.playSound('dragCard');
+    } else {
+      this.playSound('showThree');
+    }
   }
 
   renderNextArea(game, user) {
@@ -813,7 +842,7 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  animate(key, item, bool, className, timeout, onEntered) {
+  animate(key, item, bool, className, timeout, onEntered, onExited) {
     return (
       <CSSTransition
         key={key}
@@ -821,7 +850,8 @@ export default class GameBoard extends Component {
         timeout={timeout}
         classNames={className}
         unmountOnExit
-        onEntered={onEntered ? onEntered.bind(this, key) : () => {}}>
+        onEntered={onEntered ? onEntered.bind(this, key) : () => {}}
+        onExited={onExited ? onExited.bind(this, key) : () => {}}>
         {item}
       </CSSTransition>
       );
@@ -830,8 +860,6 @@ export default class GameBoard extends Component {
   render() {
     let game = this.props.game;
     let user = this.props.user;
-    
-    let userCards = game.hands[user.username];
 
     let handAreaStyle = this.renderHandAreaStyle(game, user);
 
@@ -899,21 +927,8 @@ export default class GameBoard extends Component {
               <p className="banner"><b>{Langs[this.props.currLang].gameBoard.banners.handArea}</b></p>
               {this.renderHandAreaItems(game, user)}
               <div className="area" id="handArea" style={handAreaStyle}>
-                  {userCards.map((card, index) => (
-                    <MyDrag
-                      key={card}
-                      card={card}
-                      user={user}
-                      game={game}
-                      location={game.cardLocations[card]}
-                      zIndex={game.cardZIndexes[card]}
-                      playSound={this.playSound}
-                    />
-                  ))}
-                  {/*  <div className="quarter-circle-top-right"></div> */}
+                  { this.renderhandArea(game, user) }
                   <div id="landingArea">
-                    {/* <br></br>
-                    <p id="landingText">{Langs[this.props.currLang].gameBoard.handArea.card}</p> */}
                   </div>
                   {this.renderHandAreaLines(game, user)}
               </div>
