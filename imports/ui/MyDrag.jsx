@@ -92,6 +92,7 @@ export default class MyDrag extends React.Component {
     this.onStop();
     const {x, y} = position;
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: false});
+    this.props.playSound('dragCard');
   };
 
   handleCardMigration = () => {

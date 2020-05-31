@@ -170,6 +170,7 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userEndTurnGame.call({gameId: game._id});
+    this.playSound('endTurn');
   }
 
   handleClearTable() {
@@ -178,16 +179,22 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userClearTableGame.call({gameId: game._id});
+    this.playSound('collectPoints');
   }
 
   handleClearPrevTable() {
     let game = this.props.game;
     userClearPrevTableGame.call({gameId: game._id});
+    this.playSound('prevTable');
   }
 
   handleSeePrevTable() {
+    this.setState({
+      playerAreaID: ''
+    });
     let game = this.props.game;
     userSeePrevTableGame.call({gameId: game._id});
+    this.playSound('prevTable');
   }
 
   handleModalShow(modal) {
@@ -227,6 +234,7 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userUndoGame.call({gameId: game._id});
+    this.playSound('undo');
   }
 
   handleWrapUp() {
@@ -426,7 +434,8 @@ export default class GameBoard extends Component {
           className = {{base: 'modal error', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'}}
           overlayClassName = {{base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}}
           closeTimeoutMS={500}
-          ariaHideApp={false}>
+          ariaHideApp={false}
+          onAfterOpen={() => {this.playSound('error')}}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
           </div>
@@ -471,7 +480,12 @@ export default class GameBoard extends Component {
           className = {{base: 'modal', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'}}
           overlayClassName = {{base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}}
           closeTimeoutMS={500}
-          ariaHideApp={false}>
+          ariaHideApp={false}
+          onAfterOpen={() => {
+            if (undoRole == UndoRoles.NOTICEE) {
+              this.playSound('undo')
+            }
+          }}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
           </div>
@@ -568,7 +582,7 @@ export default class GameBoard extends Component {
       inBool = (i < game.threeFromDiCount) ? findThreeOpenDiShow : openDiShow;
       animClass = (game.undidStartGame) ? '' : ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
       totalTime = (game.undidStartGame) ? 0 : ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
-      items.push(this.animate(i, item, inBool, animClass, totalTime));
+      items.push(this.animate(i, item, inBool, animClass, totalTime, this.diAreaOnEnteredCallback));
     }
 
     return (
@@ -576,6 +590,10 @@ export default class GameBoard extends Component {
         { items }
       </div>
       );
+  }
+
+  diAreaOnEnteredCallback() {
+    this.playSound('dragCard');
   }
 
   renderTableColWrapUpDiView(game, user) {
@@ -690,7 +708,7 @@ export default class GameBoard extends Component {
     items.push(<button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>);
     bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.ATTACKER);
     items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>);
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.DEFENDER);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.ATTACKER);
 
     //Open di button
     items.push(<button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>);
@@ -795,7 +813,7 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  animate(key, item, bool, className, timeout, onEnter) {
+  animate(key, item, bool, className, timeout, onEntered) {
     return (
       <CSSTransition
         key={key}
@@ -803,7 +821,7 @@ export default class GameBoard extends Component {
         timeout={timeout}
         classNames={className}
         unmountOnExit
-        onEntered={onEnter ? onEnter.bind(this, key) : () => {}}>
+        onEntered={onEntered ? onEntered.bind(this, key) : () => {}}>
         {item}
       </CSSTransition>
       );
@@ -889,6 +907,7 @@ export default class GameBoard extends Component {
                       game={game}
                       location={game.cardLocations[card]}
                       zIndex={game.cardZIndexes[card]}
+                      playSound={this.playSound}
                     />
                   ))}
                   {/*  <div className="quarter-circle-top-right"></div> */}

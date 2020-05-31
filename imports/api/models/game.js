@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_DRAWING;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -851,7 +851,7 @@ export class Game {
     }
 
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.SHOW_THREE;
-    
+
     console.log(user.username + " liang " + card);
   }
 

@@ -834,16 +834,22 @@ body {
 
 /* Shadow */
 
+.fadeInOut65DelayIn-appear, 
+.fadeInOut65-appear,
 .fadeInOut65DelayIn-enter, 
 .fadeInOut65-enter {
   opacity: 0;
 }
 
+.fadeInOut65DelayIn-appear-active, 
+.fadeInOut65-appear-active,
 .fadeInOut65DelayIn-enter-active, 
 .fadeInOut65-enter-active {
   opacity: 0.65;
 }
 
+.fadeInOut65DelayIn-appear-done, 
+.fadeInOut65-appear-done,
 .fadeInOut65DelayIn-enter-done, 
 .fadeInOut65-enter-done {
   opacity: 0.65;
@@ -859,8 +865,10 @@ body {
   opacity: 0;
 }
 
+.fadeInOut65DelayIn-appear-active,
+.fadeInOut65-appear-active,
 .fadeInOut65DelayIn-enter-active,
-.fadeInOut65-enter-active 
+.fadeInOut65-enter-active,
 .fadeInOut65DelayIn-exit-active,
 .fadeInOut65-exit-active {
   transition: opacity 250ms;
