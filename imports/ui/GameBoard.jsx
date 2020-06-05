@@ -555,13 +555,17 @@ export default class GameBoard extends Component {
     var items = [];
     var inBools = [];
 
+    //Undo button
+    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
+    inBools.push(true);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonUndo" onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}></button>);  
+
+
     //See and hide prev table button
-    inBools.push(game.tableState == TableStates.SEE_PREV_TABLE || game.tableState == TableStates.SEE_PREV_TABLE_FIRST);
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" onClick={this.handleSeePrevTable.bind(this)}></button>);
+    inBools.push(game.tableState != TableStates.CLEAR_PREV_TABLE);
+    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" onClick={this.handleSeePrevTable.bind(this)} disabled={game.tableState != TableStates.SEE_PREV_TABLE && game.tableState != TableStates.SEE_PREV_TABLE_FIRST}></button>);
     inBools.push(game.tableState == TableStates.CLEAR_PREV_TABLE);
     items.push(<button className="roundCornerButton" id="roundCornerButtonClearPrevTable" onClick={this.handleClearPrevTable.bind(this)}></button>);
-    inBools.push(inBools.every(v => v === false));
-    items.push(<button className="roundCornerButton" id="roundCornerButtonSeePrevTable" onClick={this.handleSeePrevTable.bind(this)} disabled></button>);
 
     for (var i = 0; i < items.length; i++) {
       items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
@@ -816,9 +820,6 @@ export default class GameBoard extends Component {
     //End game button
     items.push(<button className="ui button red topButton" key={key++} onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
     items.push(<div className="dummyColumn4" key={key++}></div>);
-    //Undo button
-    var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
-    items.push(<button className="ui button orange topButton" key = {key++} onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);  
 
     return items;
   }

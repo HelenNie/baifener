@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_PLAYING;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -811,6 +811,10 @@ export class Game {
       this.stage = GameStages.DONE_DRAWING;
     }
 
+    if(user.username == this.threeShower && this.undoByPlayer[this.threeShower][UndoParams.BUTTON] == UndoStates.SHOW_THREE) {
+      this.undoByPlayer[this.threeShower][UndoParams.BUTTON] = UndoStates.NONE;
+    }
+
     console.log(user.username, " drew: ", card);
   }
 
@@ -925,6 +929,10 @@ export class Game {
       return;
     }
     this.retrieveThreeHelper(user, three);    
+
+    if(this.undoByPlayer[this.threeShower][UndoParams.BUTTON] == UndoStates.SHOW_THREE) {
+      this.undoByPlayer[this.threeShower][UndoParams.BUTTON] = UndoStates.NONE;
+    }
   }
 
   retrieveThreeHelper(user, three) {
@@ -975,9 +983,10 @@ export class Game {
       this.retrieveThreeHelper(user, three);
     }
 
-    if(this.threeShower != '') {
+    if(this.undoByPlayer[this.threeShower][UndoParams.BUTTON] == UndoStates.SHOW_THREE) {
       this.undoByPlayer[this.threeShower][UndoParams.BUTTON] = UndoStates.NONE;
     }
+
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.OPEN_DI;
   }
 

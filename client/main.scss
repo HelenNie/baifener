@@ -403,6 +403,12 @@ body {
     right: 20px;
 }
 
+#roundCornerButtonUndo {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+}
+
 #roundCornerButtonDraw {
     position: absolute;
     top: 10px;
@@ -467,6 +473,21 @@ body {
 
 #roundCornerButtonClearPrevTable:hover {
     background: url("/images/button_clear_prev_table_hover.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonUndo {
+    background: url("/images/button_undo.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonUndo:hover {
+    background: url("/images/button_undo_hover.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+#roundCornerButtonUndo:disabled {
+    background: url("/images/button_undo_disabled.png") no-repeat;
     background-size: 100% 100%;
 }
 
