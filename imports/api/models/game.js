@@ -579,9 +579,8 @@ export class Game {
       this.tableState = CurrTestState.tableState;
       this.zhu = CurrTestState.zhu;
 
-      //Streamline to index or username
-      this.currentPlayerIndex = CurrTestState.currentPlayerIndex;
-      this.nextCardIndex = CurrTestState.nextCardIndex; //just pop cards from di?
+      this.currentPlayerIndex = CurrTestState.currentPlayerIndex; //streamline to index or username
+      this.nextCardIndex = CurrTestState.nextCardIndex; //just pop cards from di and kill this field
       this.diOpener = CurrTestState.diOpener;
       this.firstDrawer = CurrTestState.firstDrawer;
       this.threeShower = CurrTestState.threeShower;
@@ -597,7 +596,6 @@ export class Game {
       this.di = CurrTestState.di;
       this.taiXiaPoints = CurrTestState.taiXiaPoints;
       
-
       //Not in test states
       this.cardLocations = {}; //merge into card objects
       this.cardLocMngrLocs = {}; //merge into card objects
@@ -606,8 +604,8 @@ export class Game {
       this.highestZIndex = ZIndexBase;
       this.currCycleNumCards = 0; //label as counter
       this.currTurnNumCards = 0; //label as counter
-      this.diOriginal = []; //combine di things
-      this.diPreWrap = []; //combine di things
+      this.diOriginal = []; //combine di fields
+      this.diPreWrap = []; //combine di fields
       this.undoer = '';
       this.setRolesBasedOnThree = false;
       this.prevPlayerIndex = -1;
@@ -659,7 +657,7 @@ export class Game {
       username: user.username
     });
 
-    //If all four players are present
+    //If all four players are present, set up game
     if (this.players.length == NumPlayers) {
       if (CurrTestState == TestStates.REAL) {
         this.arrangeSeating();
@@ -668,7 +666,7 @@ export class Game {
         this.randomizeDeck();
         this.status = GameStatuses.STARTED;
       } else {
-        //For testing only
+        //TESTING ONLY: Don't set up any fields by player and deck/di
         this.arrangeSeating();
         this.setUpCardLocObjs();
         this.diOriginal = this.di;
@@ -695,6 +693,7 @@ export class Game {
     }
   }
 
+  //Set up card location objects to track card locations in handArea
   setUpCardLocObjs() {
     for (var i = 0; i < DeckComplete.length; i++) {
       this.cardLocations[DeckComplete[i]] = {x: CardLandingLoc.x, y: CardLandingLoc.y};
@@ -711,6 +710,7 @@ export class Game {
     }
   }
 
+  //Set up fields that are objects with player names as keys
   setUpByPlayer() {
     var player;
     for (var i = 0; i < this.players.length; i++) {
@@ -725,6 +725,7 @@ export class Game {
     }
   }
 
+  //Set up randomizd deck and di
   randomizeDeck() {
     var randDeck = DeckComplete.slice().sort(function(a, b){return 0.5 - Math.random()});
     this.di = randDeck.splice(0, DiLength);
@@ -772,9 +773,17 @@ export class Game {
     }
   }
 
+  //Set up copy of game to use if restart, copy made after roles are set and before first drawer is decided
   copyGame() {
     var tempCopy = {};
     return Object.assign(tempCopy, this);
+  }
+
+  userSetFirstDrawer(user) {
+    this.currentPlayerIndex = this.userIdToIndex(user._id);
+    this.firstDrawer = user.username;
+    this.userSetModalForAllHelper(ModalStates.NONE);
+    this.stage = GameStages.DRAW;
   }
 
   userSetDrawFirstModalHelper() {
@@ -788,13 +797,6 @@ export class Game {
           break;
       }
     }
-  }
-
-  userSetFirstDrawer(user) {
-    this.currentPlayerIndex = this.userIdToIndex(user._id);
-    this.firstDrawer = user.username;
-    this.userSetModalForAllHelper(ModalStates.NONE);
-    this.stage = GameStages.DRAW;
   }
 
   userDrawCard(user) {
@@ -1238,9 +1240,10 @@ export class Game {
       }
     }
 
+    //Re-randomize deck for restarted game
     this.randomizeDeck();
 
-    //Switch up defender/attacker if attackers won
+    //Switch up defender/attacker if game finished and attackers won
     if (this.winningTeam == Roles.ATTACKER) {
       for (var player in this.playerRoles) {
         this.playerRoles[player] = (this.playerRoles[player] == Roles.DEFENDER) ? Roles.ATTACKER : Roles.DEFENDER;
@@ -1265,6 +1268,7 @@ export class Game {
       }
     }
 
+    //Turn everything off
     this.currTableCards = {};
 
     for (var player in this.hands) {

@@ -26,7 +26,6 @@ body {
     background: rgba(255, 255, 255, 0.75);
 }
 
-
 /* GameList levels */
 
 .ui.attached.segment {
@@ -47,9 +46,16 @@ body {
 
 /* GameBoard */
 
-/* Rows */
+/* Rows and Columns */
+
 .row {
     padding: 10px;   
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 #mainRow {
@@ -59,33 +65,17 @@ body {
     padding-left: 100px;
 }
 
-#tableButtonsRow {
-    height: 71%;
-    width: 100%;
-    padding: 0%;
-}
-
-#buttonsRow1 {
-    height: 77%;
-    width: 100%;
-    padding: 0%;
-}
-
-#buttonsRow2 {
-    height: 23%;
-    width: 172px;
-    padding: 20px;
-    border-radius: 5px;
-    background-color: white;
-}
-
-/* Columns */
-
 .halfColumn {
     float: left;
     height: 100%;
     position: relative;
     padding: 0%;
+}
+
+.halfColumn:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 #leftColumn {
@@ -96,10 +86,14 @@ body {
     width: 530px;
 }
 
-.halfColumn:after {
-    content: "";
-    display: table;
-    clear: both;
+.column.dummy {
+    padding: 0%;
+    border: 0px solid black;
+    background-color: transparent;
+}
+
+#dummyColumn1 {
+    width: 25px;
 }
 
 .column {
@@ -118,40 +112,14 @@ body {
     clear: both;
 }
 
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 .column.smart {
     box-shadow: 5px 5px 5px grey;
 }
 
-.column.dummy {
+#tableButtonsRow {
+    height: 71%;
+    width: 100%;
     padding: 0%;
-    border: 0px solid black;
-    background-color: transparent;
-}
-
-#dummyColumn1 {
-    width: 25px;
-}
-
-#dummyColumn2 {
-    height: 25px;
-}
-
-.dummyColumn3 {
-    height: 5px;
-}
-
-.dummyColumn4 {
-    height: 40px;
-}
-
-#dummyColumn5 {
-    width: 25px;
 }
 
 #buttonsColumn {
@@ -168,12 +136,20 @@ body {
     height: 20%;
 }
 
+#dummyColumn2 {
+    height: 25px;
+}
+
+#dummyColumn5 {
+    width: 25px;
+}
+
 #handAreaColumn {
     width: 522px;
     height: 95%;
 }
 
-/* Areas */
+/* Areas and Wrappers */
 
 .area {
     width: 100%;
@@ -183,6 +159,7 @@ body {
 }
 
 .wrapper {
+    /* Using wrappers for di cards and playerAreas so that they can be grouped when appearing and animating */
     width: 100%;
     height: 100%;
 }
@@ -218,6 +195,57 @@ body {
     text-align: center;
 }
 
+/* Buttons Column */
+
+#buttonsRow1 {
+    height: 77%;
+    width: 100%;
+    padding: 0%;
+}
+
+#buttonsRow2 {
+    height: 23%;
+    width: 172px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.dummyColumn3 {
+    height: 5px;
+}
+
+.dummyColumn4 {
+    height: 40px;
+}
+
+.topButton {
+    position: relative;
+    width: 172px;
+}
+
+.ui.button:disabled {
+    /* Have to set disabled color on .ui.button instead of .topButton to override semantics.ui */
+    opacity: 1 !important;
+    background-color: #C8C8C8 !important;
+}
+
+#playerRoleIcon {
+    position: absolute;
+    top: 350px;
+    right: 35px; 
+    width: 25px;
+}
+
+#zhuIcon {
+    position: absolute;
+    top: 386px;
+    right: 35px; 
+    width: 25px;
+}
+
+/* Points area */
+
 #pointsAreaBanner {
     position: absolute;
     width: 100%;
@@ -233,6 +261,14 @@ body {
     position: absolute;
     padding-top: 65px;
     padding-left: 20px;
+}
+
+.diBanner {
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    padding-top: 25px;
+    text-align: center;
 }
 
 /* Table area */
@@ -260,6 +296,7 @@ body {
 }
 
 #delayBorderTransition {
+    /* Turned on when points are being collected and gold border is appearing for first player in next round, need border to appear slowly to not show up before points are collected */
     transition: border 3.5s ease-in-out;
 }
 
@@ -279,15 +316,6 @@ body {
     height: 15px;
     text-align: center;
 }
-
-.diBanner {
-    position: absolute;
-    width: 100%;
-    height: 40px;
-    padding-top: 25px;
-    text-align: center;
-}
-
 
 /* Next area */
 
@@ -337,16 +365,6 @@ body {
 
 /* Hand area items */
 
-.quarter-circle-top-right{
-     position: absolute;
-     width: 130px;
-     height: 130px;
-     top: 0px;
-     right: 0px;
-     background: orange;
-     border-radius: 0 0 0 130px;
-}
-
 #landingArea {
     /* dimentions and offsets are adjusted by border stroke width to align with card objects */
     position: absolute;
@@ -356,12 +374,6 @@ body {
     right: 13-3px;
     text-align: center;
     border: 3px dashed white;
-}
-
-#landingText {
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
 }
 
 .handAreaLine {
@@ -458,28 +470,6 @@ body {
     background-size: 100% 100%;
 }
 
-
-/* Button column area */
-
-.topButton {
-    position: relative;
-    width: 172px;
-}
-
-#playerRoleIcon {
-    position: absolute;
-    top: 350px;
-    right: 35px; 
-    width: 25px;
-}
-
-#zhuIcon {
-    position: absolute;
-    top: 386px;
-    right: 35px; 
-    width: 25px;
-}
-
 /* Modal */
 
 .modal,
@@ -498,25 +488,6 @@ body {
     z-index: 10000;
 }
 
-.modal {
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
-}
-
-.modalDelay {
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
-    transition-delay: 3.5s;
-}
-
-.modalAfterOpen {
-    opacity: 1;
-}
-
-.modalBeforeClose {
-    opacity: 0;
-}
-
 .overlay,
 .overlayDelay {
     position: fixed;
@@ -526,25 +497,6 @@ body {
     bottom: 0;
     background: rgba(255, 255, 255, 0.85);
     z-index: 10000;
-}
-
-.overlay {
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
-}
-
-.overlayDelay {
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
-    transition-delay: 3.5s;
-}
-
-.overlayAfterOpen {
-    opacity: 1;
-}
-
-.overlayBeforeClose {
-    opacity: 0;
 }
 
 .modal.error {
@@ -587,11 +539,45 @@ body {
     font-style: italic;
 }
 
-/* button */
+/* Modal Transitions */
 
-.ui.button:disabled {
-    opacity: 1 !important;
-    background-color: #C8C8C8 !important;
+.modal {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+}
+
+.modalDelay {
+    /* Add delay to modal appearing when if modal is asking user to restart after game ended, need to allow time to show wrap up animation */
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+    transition-delay: 3.5s;
+}
+
+.modalAfterOpen {
+    opacity: 1;
+}
+
+.modalBeforeClose {
+    opacity: 0;
+}
+
+.overlay {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+}
+
+.overlayDelay {
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+    transition-delay: 3.5s;
+}
+
+.overlayAfterOpen {
+    opacity: 1;
+}
+
+.overlayBeforeClose {
+    opacity: 0;
 }
 
 /* Card */
@@ -906,27 +892,4 @@ body {
 
 .fadeInOut65DelayIn-enter-active {
   transition-delay: 1.5s;
-}
-
-/* Shadow */
-
-dummy-enter {
-    opacity: 1;
-}
-
-dummy-enter-active {
-    opacity: 1;
-}
-
-dummy-exit-active {
-    opacity: 1;
-}
-
-dummy-exit {
-    opacity: 1;
-}
-
-dummy-enter-active,
-dummy-exit-active {
-    transition: opacity 500ms;
 }

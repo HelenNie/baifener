@@ -71,10 +71,6 @@ export const Anim = {
     class: 'fadeInOut65DelayIn',
     timeout: 250,
     delay: 1500
-  },
-  dummy: {
-    class: 'dummy',
-    timeout: 0
   }
 }
 
@@ -105,13 +101,14 @@ export default class GameBoard extends Component {
 
   constructor(props) {
     super(props);
-    this.overlayRef = React.createRef();
-    this.state = {
+    this.overlayRef = React.createRef(); //used for modal transition as specified by react-modal
+    this.state = { //used to specify playerArea for delaying gold border animation
       playerAreaID: ''
     };
   }
 
   playSound(sound) {
+    //AudioContext eliminates audio delay on Safari...
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCtx = new AudioContext();
     var audio = new Audio("/sounds/" + sound + ".wav");
@@ -170,6 +167,7 @@ export default class GameBoard extends Component {
   }
 
   handleEndTurn() {
+    //When first player of round is done, remove delay on gold border
     this.setState({
       playerAreaID: ''
     });
@@ -179,6 +177,7 @@ export default class GameBoard extends Component {
   }
 
   handleClearTable() {
+    //Delay gold border appearing on first player in next round to allow time for point collection animation
     this.setState({
       playerAreaID: 'delayBorderTransition'
     });
@@ -194,6 +193,7 @@ export default class GameBoard extends Component {
   }
 
   handleSeePrevTable() {
+    //If see prev table before first player of round is done, remove delay on gold border early
     this.setState({
       playerAreaID: ''
     });
@@ -233,7 +233,7 @@ export default class GameBoard extends Component {
   }
 
   handleUndo(undoType) {
-    //Stop delay on gold player area border animation if undid collect points
+    //Remove delay on gold player area border animation early if undid collect points
     this.setState({
       playerAreaID: ''
     });
@@ -304,6 +304,7 @@ export default class GameBoard extends Component {
   }
 
   renderhandArea(game, user) {
+    //Tried animations, but caused issues so abandoned...
     var items = [];
     var card;
     var loc;
@@ -418,6 +419,7 @@ export default class GameBoard extends Component {
         break;
     }
 
+    //Delay if modal asking if restart after game ended, delay to allow time for wrap up animations
     var delayModal = game.modalByPlayer[user.username] == ModalStates.RESTART_FULL; 
 
     return (
@@ -512,6 +514,7 @@ export default class GameBoard extends Component {
           closeTimeoutMS={500}
           ariaHideApp={false}
           onAfterOpen={() => {
+            //If user being alerted that another player undid, play undo sound effect with modal appearance
             if (undoRole == UndoRoles.NOTICEE) {
               this.playSound('undo')
             }
@@ -623,7 +626,6 @@ export default class GameBoard extends Component {
   }
 
   diAreaOnEnteredCallback() {
-    console.log('hello');
     this.playSound('dragCard');
   }
 
@@ -635,7 +637,6 @@ export default class GameBoard extends Component {
     var totalTime;
     var card;
 
-    //Di during WRAPUP and FINISHED view
     var delayPoint;
 
     for (var i = 0; i < game.diOriginal.length; i++) {
@@ -655,6 +656,7 @@ export default class GameBoard extends Component {
       );
   }
 
+  //Using callback to break up animations for showing di cards during wrap-up and collecting points from di
   onWrapUpDiEnterCallback(card) {
     this.playSound('dragCard');
     var game = this.props.game;
@@ -712,11 +714,12 @@ export default class GameBoard extends Component {
         { disabledTableArea }
       </div>
 
+    //Delay exit if going into wrap-up
     var stallExit = game.stage == GameStages.WRAP_UP;
     animClass = stallExit ? Anim.fadeInOutExtraDelayOut.class : Anim.fadeInOut.class;
     totalTime = stallExit ? Anim.fadeInOutExtraDelayOut.timeout + Anim.fadeInOutExtraDelayOut.delay : Anim.fadeInOut.timeout;
 
-    //Animate wrapper so that div doesn't cover di cards when clickable
+    //Animate wrapper so that div doesn't cover di cards when di cards are clickable
     return this.animate('playingAreaView', wrapper, playingViewShow, animClass, totalTime);
   }
 
@@ -813,7 +816,6 @@ export default class GameBoard extends Component {
     //End game button
     items.push(<button className="ui button red topButton" key={key++} onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
     items.push(<div className="dummyColumn4" key={key++}></div>);
-
     //Undo button
     var undoType = game.undoByPlayer[user.username][UndoParams.BUTTON];
     items.push(<button className="ui button orange topButton" key = {key++} onClick={this.handleUndoShow.bind(this)} disabled={undoType == UndoStates.NONE}>{Langs[this.props.currLang].gameBoard.buttons.undo}{Langs[this.props.currLang].gameBoard.undo[undoType]}</button>);  
