@@ -112,6 +112,8 @@ export default class GameBoard extends Component {
   }
 
   playSound(sound) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
     var audio = new Audio("/sounds/" + sound + ".wav");
     audio.play();
   }
@@ -702,7 +704,7 @@ export default class GameBoard extends Component {
       )
     }
 
-    var disabledTableArea = this.animate('tableShadow', <div id="tableAreaShadow"></div>, game.disableTableArea(user), Anim.fadeInOut65.class, Anim.fadeInOut65.timeout);
+    var disabledTableArea = this.animate('tableShadow', <div id="tableAreaShadow"></div>, game.disableTableArea(user), Anim.fadeInOut65.class, Anim.fadeInOut65.timeout, () => {}, () => {}, true);
 
     var wrapper =       
       <div className="wrapper" id="playerAreaWrapper">
@@ -842,14 +844,15 @@ export default class GameBoard extends Component {
     return items;
   }
 
-  animate(key, item, bool, className, timeout, onEntered, onExited) {
+  animate(key, item, bool, className, timeout, onEntered, onExited, appear) {
     return (
       <CSSTransition
         key={key}
         in={bool}
         timeout={timeout}
         classNames={className}
-        unmountOnExit
+        unmountOnExit = {true}
+        appear = {appear ? true : false}
         onEntered={onEntered ? onEntered.bind(this, key) : () => {}}
         onExited={onExited ? onExited.bind(this, key) : () => {}}>
         {item}
@@ -879,7 +882,7 @@ export default class GameBoard extends Component {
         {/* MainRow */}
         <div className="row" id="mainRow">
 
-           <div className="halfColumn" id="left">
+           <div className="halfColumn" id="leftColumn">
             <div className="row" id="tableButtonsRow">
               <div className="column smart" id="buttonsColumn">
                 <div className="row" id="buttonsRow1">
@@ -922,7 +925,7 @@ export default class GameBoard extends Component {
           <div className="column dummy" id="dummyColumn1"></div>
 
           {/* Hand */}
-          <div className="halfColumn" id="right">
+          <div className="halfColumn" id="rightColumn">
             <div className="column smart" id="handAreaColumn">
               <p className="banner"><b>{Langs[this.props.currLang].gameBoard.banners.handArea}</b></p>
               {this.renderHandAreaItems(game, user)}

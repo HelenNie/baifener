@@ -6,7 +6,8 @@ body {
     max-height: 730px;
     max-width: 1440px;
     background-image: url("/images/wood_light.jpg");
-    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: 1440px 730px;
 }
 
 #render-target {
@@ -16,8 +17,8 @@ body {
 
 .ui.container {
     height: 100%;
+    width: 100%;
 }
-
 
 /* LoginForm levels */
 
@@ -53,8 +54,9 @@ body {
 
 #mainRow {
     height: 90%;
+    width: 100%;
     position: relative;
-    left: 90px;
+    padding-left: 100px;
 }
 
 #tableButtonsRow {
@@ -81,10 +83,23 @@ body {
 
 .halfColumn {
     float: left;
-    width: 49%;
     height: 100%;
     position: relative;
     padding: 0%;
+}
+
+#leftColumn {
+    width: 695.8px;
+}
+
+#rightColumn {
+    width: 530px;
+}
+
+.halfColumn:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .column {
@@ -97,7 +112,12 @@ body {
     background: rgba(244, 241, 222, 0.85);
 }
 
-/* Clear floats after the columns */
+.column:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
 .row:after {
     content: "";
     display: table;
@@ -149,7 +169,7 @@ body {
 }
 
 #handAreaColumn {
-    width: 75%;
+    width: 522px;
     height: 95%;
 }
 
@@ -219,6 +239,12 @@ body {
 
 #playerAreaWrapper {
     position: absolute;
+}
+
+#playerAreaWrapper:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .playerArea {
