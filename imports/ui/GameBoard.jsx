@@ -9,7 +9,7 @@ import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
 import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete, CardLandingLoc} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame, userModalAwayAllGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -196,7 +196,6 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userClearTableGame.call({gameId: game._id});
-    this.playSound('collectPoints');
   }
 
   handleClearPrevTable() {
@@ -223,6 +222,11 @@ export default class GameBoard extends Component {
   handleModalAway() {
     let game = this.props.game;
     userModalAwayGame.call({gameId: game._id});
+  }
+
+  handleModalAwayAll() {
+    let game = this.props.game;
+    userModalAwayAllGame.call({gameId: game._id});
   }
 
   handleDelayedModalAlready() {
@@ -427,7 +431,7 @@ export default class GameBoard extends Component {
             <br></br>
             <br></br>
             <button className="ui red button" onClick={this.handleRestartGame.bind(this)}>{ Langs[this.props.currLang].gameBoard.modals.yes }</button>
-            <button className="ui black button" onClick={this.handleModalAway.bind(this)}>{ Langs[this.props.currLang].gameBoard.modals.no }</button>
+            <button className="ui black button" onClick={this.handleModalAwayAll.bind(this)}>{ Langs[this.props.currLang].gameBoard.modals.no }</button>
           </div>;
         break;
     }
@@ -663,7 +667,7 @@ export default class GameBoard extends Component {
       delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
       animClass = delayPoint ? Anim.fadeInOutExtra3DelayOut.class : Anim.fadeInOutExtra2DelayOut.class;
       totalTime = delayPoint ? Anim.fadeInOutExtra3DelayOut.timeout + Anim.fadeInOutExtra3DelayOut.delay : Anim.fadeInOutExtra2DelayOut.timeout;
-      items.push(this.animate(card, item, inBool, animClass, totalTime, this.onWrapUpDiEnterCallback));
+      items.push(this.animate(card, item, inBool, animClass, totalTime, this.onWrapUpDiEnterCallback, this.onWrapUpDiExitedCallback));
     } 
 
     return (
@@ -675,11 +679,18 @@ export default class GameBoard extends Component {
 
   //Using callback to break up animations for showing di cards during wrap-up and collecting points from di
   onWrapUpDiEnterCallback(card) {
-    this.playSound('dragCard');
     var game = this.props.game;
     var user = this.props.user;
     if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
       this.handleWrapUp();
+    }
+  }
+
+  onWrapUpDiExitedCallback(card) {
+    var game = this.props.game;
+    var user = this.props.user;
+    if (game.stage == GameStages.WRAP_UP) {
+      this.playSound("collectPoints");
     }
   }
 
@@ -756,13 +767,19 @@ export default class GameBoard extends Component {
     var game = this.props.game;
     if (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING) {
       this.playSound('retrieveCard');
-    } else if (game.stage == GameStages.PLAY) {
+    } else if (game.stage == GameStages.PLAY || game.stage == GameStages.WRAP_UP) {
       //Play sound for retrieve card if card has returned to hand of current player
       var currPlayer = game.getCurrPlayer();
-      for (var i = 0; i < game.hands[currPlayer].length; i++) {
-        if (game.hands[currPlayer][i] == card) {
-          this.playSound('retrieveCard');
+      if (currPlayer != '') {
+        for (var i = 0; i < game.hands[currPlayer].length; i++) {
+          if (game.hands[currPlayer][i] == card) {
+            this.playSound('retrieveCard');
+          }
         }
+      }
+      //Play sound for collect points if card is in taixiaPoints
+      if (game.taiXiaPoints.indexOf(card) > -1) {
+        this.playSound("collectPoints");
       }
     }
   }
@@ -951,9 +968,9 @@ export default class GameBoard extends Component {
           
             {/* Points area */}
             <div className="column smart" id="pointsColumn">
+             <p className="banner" id="pointsAreaBanner"><b>{ Langs[this.props.currLang].gameBoard.banners.pointsArea }</b></p>
               <div className="area" id="pointsArea">
-                <p id="pointsAreaBanner">{Langs[this.props.currLang].gameBoard.banners.pointsArea}</p>
-                  { this.renderPointsArea(game, user) }
+                { this.renderPointsArea(game, user) }
               </div>
             </div>
           </div>

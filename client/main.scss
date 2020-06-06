@@ -1,9 +1,9 @@
 /* Master levels */
 
 body {
-    min-height: 730px;
+    min-height: 732px;
     min-width: 1440px;
-    max-height: 730px;
+    max-height: 732px;
     max-width: 1440px;
     background-image: url("/images/wood_light.jpg");
     background-repeat: no-repeat;
@@ -117,7 +117,7 @@ body {
 }
 
 #tableButtonsRow {
-    height: 71%;
+    height: 452px;
     width: 100%;
     padding: 0%;
 }
@@ -133,7 +133,7 @@ body {
 }
 
 #pointsColumn {
-    height: 20%;
+    height: 160px;
 }
 
 #dummyColumn2 {
@@ -146,7 +146,7 @@ body {
 
 #handAreaColumn {
     width: 522px;
-    height: 95%;
+    height: 637px;
 }
 
 /* Areas and Wrappers */
@@ -168,7 +168,7 @@ body {
     padding-top: 20px;
     padding-left: 20px;
     padding-right: 20px;
-    height: 528px;
+    height: 555px;
     width: 483px;
     background-color: #9B6A6C;
     transition: background-color 0.5s ease-in-out;
@@ -184,6 +184,7 @@ body {
     height: 90px;
     background-color: floralwhite;
     border: 1px dashed gray;
+    
 }
 
 /* Banners */
@@ -309,12 +310,8 @@ body {
 /* Points area */
 
 #pointsAreaBanner {
-    position: absolute;
-    width: 100%;
-    top: 30px;
-    color: #C0C0C0;
-    font-size: 20px;
-    text-align: center;
+    top: -10px;
+    height: 10px;
 }
 
 /* Di area */

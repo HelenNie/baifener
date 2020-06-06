@@ -531,7 +531,7 @@ export const TestStates = {
     deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {'TC': 'one', '4D': 'two', '7H': 'three', 'JS': 'four'},
-    prevTableCards: {},
+    prevTableCards: {'TC': 'one', '4D': 'two', '7H': 'three', 'JS': 'four'},
     diOpener: "one",
     zhu: "H",
     nextCardIndex: 52,
@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.TEST_WRAPUP;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -1202,6 +1202,8 @@ export class Game {
       this.stage = GameStages.PLAY;
       this.undoCollectPointsDi(user);
       this.di = this.diPreWrap.slice(0, 6);
+      //Unshow RESTART_FULL modals and put delay back in
+      this.userModalAwayAll();
       this.delayedModalAlready = false;
     }
 
@@ -1308,6 +1310,12 @@ export class Game {
 
   userModalAway(user) {
     this.modalByPlayer[user.username] = ModalStates.NONE;
+  }
+
+  userModalAwayAll() {
+    for (var i = 0; i < this.players.length; i++) {
+      this.modalByPlayer[this.players[i].username] = ModalStates.NONE;
+    }
   }
 
   userErrorAway(user) {

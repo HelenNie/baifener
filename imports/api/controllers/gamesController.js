@@ -140,6 +140,12 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
+  userModalAwayAllGame(gameId) {
+    let game = Games.findOne(gameId);
+    game.userModalAwayAll();
+    Games.saveGame(game);
+  },
+
   userUndoShowGame(gameId, user) {
     let game = Games.findOne(gameId);
     game.userUndoShow(user);

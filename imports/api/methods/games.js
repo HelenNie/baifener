@@ -237,6 +237,16 @@ export const userModalAwayGame = new ValidatedMethod({
   }
 });
 
+export const userModalAwayAllGame = new ValidatedMethod({
+  name: 'games.userModalAwayAllGame',
+  validate: new SimpleSchema({
+    gameId: {type: String}
+  }).validator(),
+  run({gameId}) {
+    GamesController.userModalAwayAllGame(gameId);
+  }
+});
+
 export const userUndoShowGame = new ValidatedMethod({
   name: 'games.userUndoShowGame',
   validate: new SimpleSchema({
