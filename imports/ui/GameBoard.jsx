@@ -107,6 +107,18 @@ export default class GameBoard extends Component {
     };
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    var prevGame = prevProps.game;
+    var game = this.props.game;
+
+    //Play "dragCard" sound effect if user swapping cards between hand and di
+    if (game.stage == GameStages.DI) {
+      if (prevGame.di.length != game.di.length) {
+        this.playSound("dragCard")
+      }
+    }
+  }
+
   playSound(sound) {
     //AudioContext eliminates audio delay on Safari...
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -122,6 +134,7 @@ export default class GameBoard extends Component {
   handleStartGame() {
     let game = this.props.game;
     userStartGameGame.call({gameId: game._id});
+    this.playSound("startGameGong");
   }
 
   handleSetRole(role) {
@@ -629,7 +642,7 @@ export default class GameBoard extends Component {
       );
   }
 
-  diAreaOnEnteredCallback() {
+  diAreaOnEnteredCallback(card) {
     this.playSound('dragCard');
   }
 
@@ -727,22 +740,30 @@ export default class GameBoard extends Component {
     return this.animate('playingAreaView', wrapper, playingViewShow, animClass, totalTime);
   }
 
-  playingViewOnEnteredCallback() {
+  playingViewOnEnteredCallback(card) {
     var game = this.props.game;
     if(game.stage == GameStages.PLAY) {
-      this.playSound('dragCard');
+      //Play sound for play card if cards are not entering playing area as a result of undoing clear table or viewing prev table
+      if (game.getCurrentPlayerIndex() != -1 && game.tableState != TableStates.CLEAR_PREV_TABLE) {
+        this.playSound('dragCard');
+      }
     } else {
       this.playSound('showThree');
     }
   }
 
-  playingViewOnExitedCallback() {
+  playingViewOnExitedCallback(card) {
     var game = this.props.game;
-    console.log("HI");
     if (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING) {
-      //this.playSound('dragCard'); retrieve 3
-    } else {
-      //this.playSound('showThree'); take card back
+      this.playSound('retrieveCard');
+    } else if (game.stage == GameStages.PLAY) {
+      //Play sound for retrieve card if card has returned to hand of current player
+      var currPlayer = game.getCurrPlayer();
+      for (var i = 0; i < game.hands[currPlayer].length; i++) {
+        if (game.hands[currPlayer][i] == card) {
+          this.playSound('retrieveCard');
+        }
+      }
     }
   }
 
@@ -764,12 +785,7 @@ export default class GameBoard extends Component {
       items.push(this.animate(card, item, inBool, animClass, totalTime));
     }
 
-    return (
-      <div className="area" id="pointsArea">
-        <p id="pointsAreaBanner">{Langs[this.props.currLang].gameBoard.banners.pointsArea}</p>
-          { items }
-      </div>
-      );
+    return items;
   }
 
   renderButtonRow1Items(game, user) {
@@ -935,7 +951,10 @@ export default class GameBoard extends Component {
           
             {/* Points area */}
             <div className="column smart" id="pointsColumn">
-              { this.renderPointsArea(game, user) }
+              <div className="area" id="pointsArea">
+                <p id="pointsAreaBanner">{Langs[this.props.currLang].gameBoard.banners.pointsArea}</p>
+                  { this.renderPointsArea(game, user) }
+              </div>
             </div>
           </div>
 
