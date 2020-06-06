@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_WRAPUP;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
