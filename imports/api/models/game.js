@@ -549,7 +549,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_PLAYING;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -983,7 +983,7 @@ export class Game {
       this.retrieveThreeHelper(user, three);
     }
 
-    if(this.undoByPlayer[this.threeShower][UndoParams.BUTTON] == UndoStates.SHOW_THREE) {
+    if(this.threeShower != '' && this.undoByPlayer[this.threeShower][UndoParams.BUTTON] == UndoStates.SHOW_THREE) {
       this.undoByPlayer[this.threeShower][UndoParams.BUTTON] = UndoStates.NONE;
     }
 

@@ -699,7 +699,7 @@ export default class GameBoard extends Component {
         delayPoint = game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP);
         animClass = delayPoint ? Anim.fadeInOutDelayOut.class: Anim.fadeInOut.class;
         totalTime = delayPoint ? Anim.fadeInOutDelayOut.timeout + Anim.fadeInOutDelayOut.delay : Anim.fadeInOut.timeout;
-        items.push(this.animate(card, item, inBool, animClass, totalTime, this.playingViewOnEnteredCallback));
+        items.push(this.animate(card, item, inBool, animClass, totalTime, this.playingViewOnEnteredCallback, this.playingViewOnExitedCallback));
       }
 
       playerAreas.push(
@@ -736,47 +736,14 @@ export default class GameBoard extends Component {
     }
   }
 
-  renderNextArea(game, user) {
-    let items = [];
-    let bools = [];
-    var item1;
-    var item2;
-
-    //Find three in di button
-    items.push(<button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>);
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.ATTACKER);
-    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>);
-    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.ATTACKER);
-
-    //Open di button
-    items.push(<button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>);
-    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] != Roles.ATTACKER);
-    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.openKittyWaiting}</p>);
-    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] == Roles.ATTACKER);
-
-    //Start playing button
-    items.push(<button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{Langs[this.props.currLang].gameBoard.nextArea.startPlaying}</button>);
-    bools.push(game.stage == GameStages.DI && user.username == game.diOpener);
-    items.push(<p className="nextAreaItem waitText" >{Langs[this.props.currLang].gameBoard.nextArea.startGameWaiting}</p>);
-    bools.push(game.stage == GameStages.DI && user.username != game.diOpener);
-
-    //Won round button
-    items.push(<button className="nextAreaItem myButton" onClick={this.handleClearTable.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.wonRoundButton}</button>);
-    bools.push(game.tableState == TableStates.CLEAR_TABLE && game.stage == GameStages.PLAY);
-
-    //End game message
-    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.gameOver}</p>);
-    bools.push(game.stage == GameStages.FINISHED);
-
-    //Default
-    items.push(<img className="nextAreaItem" id="placeholder" src={"/images/nextAreaPlaceholder.png"}></img>);
-    bools.push(bools.every(v => v === false));
-
-    for (var i = 0; i < items.length; i++) {
-      items[i] = this.animate(i, items[i], bools[i], Anim.fadeSlideInOut.class, Anim.fadeSlideInOut.timeout);
+  playingViewOnExitedCallback() {
+    var game = this.props.game;
+    console.log("HI");
+    if (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING) {
+      //this.playSound('dragCard'); retrieve 3
+    } else {
+      //this.playSound('showThree'); take card back
     }
-
-    return items;
   }
 
   renderPointsArea(game, user) {
@@ -819,7 +786,6 @@ export default class GameBoard extends Component {
     items.push(<div className="dummyColumn3" key={key++}></div>);
     //End game button
     items.push(<button className="ui button red topButton" key={key++} onClick={this.handleModalShow.bind(this, ModalStates.END_GAME)} disabled={game.stage == GameStages.FINISHED}>{Langs[this.props.currLang].gameBoard.buttons.endGame}</button>);
-    items.push(<div className="dummyColumn4" key={key++}></div>);
 
     return items;
   }
@@ -843,6 +809,52 @@ export default class GameBoard extends Component {
     for (var i = 0; i < items.length; i++) {
       items[i] = this.animate(i, items[i], inBools[i], Anim.fadeInOut.class, Anim.fadeInOut.timeout)
     }
+
+    return items;
+  }
+
+  renderButtonRow3Items(game, user) {
+    let items = [];
+    let bools = [];
+    var item1;
+    var item2;
+
+    //Find three in di button
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleThreeFromDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDiForThree}</button>);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] != Roles.ATTACKER);
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.findThreeWaiting}</p>);
+    bools.push(game.stage == GameStages.DONE_DRAWING && game.threeState == ThreeStates.NOT_SHOWN && game.playerRoles[user.username] == Roles.ATTACKER);
+
+    //Open di button
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleOpenDi.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.openDi}</button>);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] != Roles.ATTACKER);
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.openKittyWaiting}</p>);
+    bools.push(((game.stage == GameStages.DONE_DRAWING && game.threeState != ThreeStates.NOT_SHOWN) || (game.stage == GameStages.FIND_THREE_IN_DI)) && game.playerRoles[user.username] == Roles.ATTACKER);
+
+    //Start playing button
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleStartGame.bind(this)} disabled={game.di.length != DiLength}>{Langs[this.props.currLang].gameBoard.nextArea.startPlaying}</button>);
+    bools.push(game.stage == GameStages.DI && user.username == game.diOpener);
+    items.push(<p className="nextAreaItem waitText" >{Langs[this.props.currLang].gameBoard.nextArea.startGameWaiting}</p>);
+    bools.push(game.stage == GameStages.DI && user.username != game.diOpener);
+
+    //Won round button
+    items.push(<button className="nextAreaItem myButton" onClick={this.handleClearTable.bind(this)}>{Langs[this.props.currLang].gameBoard.nextArea.wonRoundButton}</button>);
+    bools.push(game.tableState == TableStates.CLEAR_TABLE && game.stage == GameStages.PLAY);
+
+    //End game message
+    items.push(<p className="nextAreaItem waitText">{Langs[this.props.currLang].gameBoard.nextArea.gameOver}</p>);
+    bools.push(game.stage == GameStages.FINISHED);
+
+    //Default
+    items.push(<img className="nextAreaItem" id="placeholder" src={"/images/nextAreaPlaceholder.png"}></img>);
+    bools.push(bools.every(v => v === false));
+
+    for (var i = 0; i < items.length; i++) {
+      items[i] = this.animate(i, items[i], bools[i], Anim.fadeSlideInOut.class, Anim.fadeSlideInOut.timeout);
+    }
+
+    //Banner
+    items.unshift(<p id="nextAreaBanner" key={items.length}><b>Your Actions</b></p>);
 
     return items;
   }
@@ -891,6 +903,11 @@ export default class GameBoard extends Component {
                 <div className="row" id="buttonsRow1">
                 { this.renderButtonRow1Items(game, user) }
                 </div>
+                <div className="dummyColumn4"></div>
+                <div className="row" id="buttonsRow3">
+                { this.renderButtonRow3Items(game, user) }
+                </div>
+                <div className="dummyColumn4"></div>
                 <div className="row" id="buttonsRow2">
                 { this.renderButtonRow2Items(game, user) }
                 </div>
@@ -910,10 +927,7 @@ export default class GameBoard extends Component {
                   { this.renderTableColDiAreaView(game, user) }
                   { this.renderTableColPlayingView(game, user) }
                 </div>
-                
-                <div id="nextArea">
-                  { this.renderNextArea(game, user) }
-                </div>
+
               </div>
             </div>
 
