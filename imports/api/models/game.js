@@ -612,6 +612,7 @@ export class Game {
       this.prevPlayerIndex = -1;
       this.copy = {};
       this.undidStartGame = false;
+      this.undidOpenDi = false;
       this.wrapUpWinner = '';
       this.winningTeam = '';
       this.taiXiaPointsTotal = 0;
@@ -625,7 +626,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpendi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready'];
   }
 
   userLeave(user) {
@@ -1000,6 +1001,7 @@ export class Game {
       this.stage = GameStages.DONE_DRAWING;
     }
 
+    this.undidOpendi = true;
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
     this.undoPostFollowUps(user, undoType);
 
@@ -1151,8 +1153,8 @@ export class Game {
     for (let i = this.di.length - 1; i > -1; i--) {
       if (Object.keys(PointsMap).indexOf(this.di[i].slice(0, 1)) >= 0) {
         this.taiXiaPoints.push(this.di[i]);
-        this.di.splice(i, 1);
-        console.log("Collected: ", this.di[i]);
+        var elems = this.di.splice(i, 1);
+        console.log("Collected: ", elems[0]);
       }
     }
   }

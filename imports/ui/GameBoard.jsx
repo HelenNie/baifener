@@ -627,6 +627,7 @@ export default class GameBoard extends Component {
 
     var openDiShow = game.stage == GameStages.DI && game.diOpener == user.username;
     var findThreeOpenDiShow = (game.stage == GameStages.FIND_THREE_IN_DI) || openDiShow;
+    var noAnim = game.undidStartGame || (game.undidOpenDi && game.stage == GameStages.FIND_THREE_IN_DI);
     var delayMult;
 
     for (var i = 0; i < game.di.length; i++) {
@@ -634,8 +635,8 @@ export default class GameBoard extends Component {
       item = <img src={"/images/" + card + ".png"} draggable="false" className={ openDiShow ? "handle" : '' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>
       delayMult = (i < game.threeFromDiCount) ? i : (i - game.threeFromDiCount)
       inBool = (i < game.threeFromDiCount) ? findThreeOpenDiShow : openDiShow;
-      animClass = (game.undidStartGame) ? '' : ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
-      totalTime = (game.undidStartGame) ? 0 : ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
+      animClass = noAnim ? '' : ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
+      totalTime = noAnim ? 0 : ((i < game.threeFromDiCount) ? Anim.slideIn.timeout + Anim.slideIn.delay * delayMult : Anim.slideInQuick.timeout + Anim.slideInQuick.delay * delayMult);
       items.push(this.animate(i, item, inBool, animClass, totalTime, this.diAreaOnEnteredCallback));
     }
 
@@ -690,7 +691,7 @@ export default class GameBoard extends Component {
     var game = this.props.game;
     var user = this.props.user;
     if (game.stage == GameStages.WRAP_UP) {
-      this.playSound("collectPoints");
+      this.playSound("collectPointsDi");
     }
   }
 
@@ -769,14 +770,14 @@ export default class GameBoard extends Component {
       this.playSound('retrieveCard');
     } else if (game.stage == GameStages.PLAY || game.stage == GameStages.WRAP_UP) {
       //Play sound for collect points if card is in taixiaPoints, but not when clear prev table
-      if (game.taiXiaPoints.indexOf(card) > -1 && game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
+      if (game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP)) {
         this.playSound("collectPoints");
       }
       //Play sound for retrieve card if card has returned to hand of current player
       else if (game.getCurrPlayer() != '' && game.hands[game.getCurrPlayer()].indexOf(card) > -1) {
         this.playSound('retrieveCard');
       //Play sound for clear table but not point card
-      } else if (game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
+      } else if (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP) {
         this.playSound('clearTable');
       }
     }
