@@ -768,18 +768,16 @@ export default class GameBoard extends Component {
     if (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING) {
       this.playSound('retrieveCard');
     } else if (game.stage == GameStages.PLAY || game.stage == GameStages.WRAP_UP) {
-      //Play sound for retrieve card if card has returned to hand of current player
-      var currPlayer = game.getCurrPlayer();
-      if (currPlayer != '') {
-        for (var i = 0; i < game.hands[currPlayer].length; i++) {
-          if (game.hands[currPlayer][i] == card) {
-            this.playSound('retrieveCard');
-          }
-        }
-      }
-      //Play sound for collect points if card is in taixiaPoints
-      if (game.taiXiaPoints.indexOf(card) > -1) {
+      //Play sound for collect points if card is in taixiaPoints, but not when clear prev table
+      if (game.taiXiaPoints.indexOf(card) > -1 && game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
         this.playSound("collectPoints");
+      }
+      //Play sound for retrieve card if card has returned to hand of current player
+      else if (game.getCurrPlayer() != '' && game.hands[game.getCurrPlayer()].indexOf(card) > -1) {
+        this.playSound('retrieveCard');
+      //Play sound for clear table but not point card
+      } else if (game.tableState == TableStates.SEE_PREV_TABLE_FIRST) {
+        this.playSound('clearTable');
       }
     }
   }
