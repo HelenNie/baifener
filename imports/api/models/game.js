@@ -96,8 +96,9 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 export const CardSize = {x: 50, y: 70};
 export const CardSlotMargin = {x: 0, y: 30};
 export const CardSlotSize = {x: CardSize.x + CardSlotMargin.x, y: CardSize.y + CardSlotMargin.y};
-export const CardLocMax = {x: 7, y: 5}; //Based on making sufficient space for arranging cards
-export const CardLandingLoc = {x: CardLocMax.x + 1, y: 0}; //Offset right from arranged cards with space in betweeen
+export const CardLocMax = {x: 8, y: 5}; //Based on making sufficient space for arranging cards
+export const CardLandingLoc = {x: 0, y: 0}; //Offset right from arranged cards with space in betweeen
+export const CardFirstRowMinIdx = 2;
 
 export const ZIndexBase = 2;
 
@@ -1396,6 +1397,12 @@ export class Game {
       xOld = (xOld != -1) ? xOld : CardLandingLoc.x;
       yOld = (yOld != -1) ? yOld : CardLandingLoc.y;
       this.cardLocations[card] = {x: xOld, y: yOld};
+    } else if (y == 0 && x < CardFirstRowMinIdx) {
+      console.log(x);
+      //return card to previus location if dropoff is in landing area zone
+      xOld = (xOld != -1) ? xOld : CardLandingLoc.x;
+      yOld = (yOld != -1) ? yOld : CardLandingLoc.y;
+      this.cardLocations[card] = {x: xOld, y: yOld};
     } else if (yGroup[x] == null) {
       //add card to empty dropoff slot
       this.userSetCardLocOldHelper(user, xOld, yOld);
@@ -1466,8 +1473,9 @@ export class Game {
   userSetCardLocAddToEndHelper(user, x, y){
     var yGroup = this.cardLocMngr[user.username][y];
 
-    if (yGroup[0] == null) return 0;
-    while (yGroup[x-1] == null) x--;
+    var xMin = y == 0 ? CardFirstRowMinIdx : 0;
+
+    while (x != xMin && yGroup[x-1] == null) x--;
     return x;
   }
 

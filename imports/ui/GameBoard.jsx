@@ -310,12 +310,12 @@ export default class GameBoard extends Component {
 
   renderHandAreaLines(game, user) {
     var items = [];
-    var margin = 12;
+    var margin = 37;
     var firstTop = CardSize.y + margin;
     var top;
     for (var i = 0; i < CardLocMax.y; i++) {
       top = firstTop + CardSlotSize.y * i;
-      items.push(<hr className='handAreaLine' key={i} style={{top: top + 'px'}}/>);
+      items.push(<hr className='handAreaLine' id={i == 0 ? "firsthandAreaLine" : ""} key={i} style={{top: top + 'px'}}/>);
     }
     return items;
   }

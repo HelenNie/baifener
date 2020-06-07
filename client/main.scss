@@ -62,7 +62,7 @@ body {
     height: 90%;
     width: 100%;
     position: relative;
-    padding-left: 70px;
+    padding-left: 65px;
 }
 
 .halfColumn {
@@ -83,7 +83,7 @@ body {
 }
 
 #rightColumn {
-    width: 530px;
+    width: 531px;
 }
 
 .column.dummy {
@@ -145,7 +145,7 @@ body {
 }
 
 #handAreaColumn {
-    width: 522px;
+    width: 529px;
     height: 637px;
 }
 
@@ -165,11 +165,9 @@ body {
 }
 
 #handArea {
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 45px;
     height: 555px;
-    width: 483px;
+    width: 490px;
     background-color: #9B6A6C;
     transition: background-color 0.5s ease-in-out;
 }
@@ -382,22 +380,27 @@ body {
     position: absolute;
     width: 56px;
     height: 76px;
-    top: 20-3px;
-    right: 13-3px;
+    top: 45-3px;
+    left: 45-3px;
     text-align: center;
     border: 3px dashed white;
 }
 
 .handAreaLine {
-  position: absolute;
-  left: 20-4px;
-  height: 3px;
-  width: 350+8px;
-  border: none;
-  border-top: 5px solid white;  
-  border-radius: 15px;
-  box-shadow: 2px 2px 5px white;
-  Opacity: 0.75;
+    position: absolute;
+    left: 45-4px;
+    height: 3px;
+    width: 400+8px;
+    border: none;
+    border-top: 5px solid white;  
+    border-radius: 15px;
+    box-shadow: 2px 2px 5px white;
+    Opacity: 0.75;
+}
+
+#firsthandAreaLine {
+    left: 145-4px;
+    width: 300+8px;
 }
 
 /* round buttons */
