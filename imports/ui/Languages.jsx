@@ -81,6 +81,7 @@ export const Langs = {
         card: "牌"
       },
       nextArea: {
+        nextAreaBanner: "你的选项",
         openDiForThree: '揭底找三',
         openDi: '揭底',
         startPlaying: '扣底',
@@ -183,6 +184,7 @@ export const Langs = {
         card: "Card"
       },
       nextArea: {
+        nextAreaBanner: "Your Actions",
         openDiForThree: 'Look for Three in Kitty',
         openDi: 'Open Kitty',
         startPlaying: 'Stash Kitty',

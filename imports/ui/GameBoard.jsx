@@ -887,7 +887,7 @@ export default class GameBoard extends Component {
     }
 
     //Banner
-    items.unshift(<p id="nextAreaBanner" key={items.length}><b>Your Actions</b></p>);
+    items.unshift(<p id="nextAreaBanner" key={items.length}><b>{Langs[this.props.currLang].gameBoard.nextArea.nextAreaBanner}</b></p>);
 
     return items;
   }
@@ -990,6 +990,24 @@ export default class GameBoard extends Component {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Hidden image preload area */}
+        <div id="preloader">
+          <img src="/images/button_draw.png" width="1" height="1" />
+          <img src="/images/button_draw_hover.png" width="1" height="1" />
+          <img src="/images/button_draw_disabled.png" width="1" height="1" />
+          <img src="/images/button_end_turn.png" width="1" height="1" />
+          <img src="/images/button_end_turn_hover.png" width="1" height="1" />
+          <img src="/images/button_end_turn_disabled.png" width="1" height="1" />
+          <img src="/images/button_see_prev_table.png" width="1" height="1" />
+          <img src="/images/button_see_prev_table_hover.png" width="1" height="1" />
+          <img src="/images/button_see_prev_table_disabled.png" width="1" height="1" />
+          <img src="/images/button_clear_prev_table.png" width="1" height="1" />
+          <img src="/images/button_clear_prev_table_hover.png" width="1" height="1" />
+          <img src="/images/button_undo.png" width="1" height="1" />
+          <img src="/images/button_undo_hover.png" width="1" height="1" />
+          <img src="/images/button_undo_disabled.png" width="1" height="1" />
         </div> 
       </div>
     )

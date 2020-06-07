@@ -94,7 +94,7 @@ export const DeckComplete = ["ZC", "ZD", "ZH", "ZS", "2C", "2D", "2H", "2S", "3C
 
 //Adjust with CSS for #handArea, #landingArea, and .body
 export const CardSize = {x: 50, y: 70};
-export const CardSlotMargin = {x: 0, y: 30};
+export const CardSlotMargin = {x: 0, y: 25};
 export const CardSlotSize = {x: CardSize.x + CardSlotMargin.x, y: CardSize.y + CardSlotMargin.y};
 export const CardLocMax = {x: 8, y: 5}; //Based on making sufficient space for arranging cards
 export const CardLandingLoc = {x: 0, y: 0}; //Offset right from arranged cards with space in betweeen
