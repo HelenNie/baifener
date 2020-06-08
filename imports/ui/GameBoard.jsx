@@ -682,7 +682,7 @@ export default class GameBoard extends Component {
   onWrapUpDiEnterCallback(card) {
     var game = this.props.game;
     var user = this.props.user;
-    if (game.di.indexOf(card) == DiLength - 1 && user.username == game.wrapUpWinner) {
+    if ((game.di.indexOf(card) == DiLength - 1) && (user.username == game.wrapUpWinner)) {
       this.handleWrapUp();
     }
   }
