@@ -174,5 +174,11 @@ export let GamesController = {
     let game = Games.findOne(gameId);
     game.userDelayedModalAlready();
     Games.saveGame(game);
-  }
+  },
+
+  userSetSoundEffectGame(gameId, user, soundEffect) {
+    let game = Games.findOne(gameId);
+    game.userSetSoundEffect(soundEffect);
+    Games.saveGame(game);
+  },
 }

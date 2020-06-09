@@ -165,6 +165,17 @@ export const userEndGameGame = new ValidatedMethod({
   }
 });
 
+export const userSetSoundEffectGame = new ValidatedMethod({
+  name: 'games.userSetSoundEffectGame',
+  validate: new SimpleSchema({
+    gameId: {type: String},
+    soundEffect: {type: String}
+  }).validator(),
+  run({gameId, soundEffect}) {
+    GamesController.userSetSoundEffectGame(gameId, Meteor.user(), soundEffect);
+  }
+});
+
 export const userSetFirstDrawerGame = new ValidatedMethod({
   name: 'games.userSetFirstDrawerGame',
   validate: new SimpleSchema({

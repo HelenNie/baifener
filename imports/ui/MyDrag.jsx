@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 
-import {ZIndexBase} from '../api/models/game.js';
-import {CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
+import {ZIndexBase, CardSize, CardSlotMargin, CardSlotSize} from '../api/models/game.js';
 import {userCardMigrationGame, userSetCardLocGame, userSetZIndexGame} from '../api/methods/games.js';
+import {SoundMap} from './GameBoard.jsx';
 
 export default class MyDrag extends React.Component {
 
@@ -17,8 +17,7 @@ export default class MyDrag extends React.Component {
       controlledPosition: {
         x: this.props.location.x * CardSlotSize.x,
         y: this.props.location.y * CardSlotSize.y
-      },
-      stopped: ''
+      }
     };
   };
 
@@ -57,10 +56,6 @@ export default class MyDrag extends React.Component {
           y: this.props.location.y * CardSlotSize.y
         },
       });
-      if (this.state.stopped == this.props.card) {
-        this.props.playSound('dragCard');
-        this.setState({stopped: ''});
-      }
       // if (this.props.card == "QH") {
       //   console.log("CHILD DID UPDATE: ", this.state.controlledPosition);
       // }
@@ -76,7 +71,6 @@ export default class MyDrag extends React.Component {
         y: y + ui.deltaY,
       }
     });
-    this.setState({stopped: ''});
   };
 
   onStart = (e) => {
@@ -91,7 +85,6 @@ export default class MyDrag extends React.Component {
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
-    this.setState({stopped: ''});
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: true});
   };
 
@@ -99,7 +92,13 @@ export default class MyDrag extends React.Component {
     this.onControlledDrag(e, position);
     this.onStop();
     const {x, y} = position;
-    this.setState({stopped: this.props.card});
+
+    //Play card dragging sound effect if card changed locations
+    var game = this.props.game;
+    if(game.cardLocMngrLocs[this.props.card].x != Math.round(x / CardSlotSize.x) || game.cardLocMngrLocs[this.props.card].y != Math.round(y / CardSlotSize.y)) {
+      this.props.playSound(SoundMap.dragCardInHand.sound);
+    }
+
     userSetCardLocGame.call({gameId: this.props.game._id, card: this.props.card, x: Math.round(x / CardSlotSize.x), y: Math.round(y / CardSlotSize.y), simple: false});
   };
 

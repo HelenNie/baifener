@@ -9,7 +9,7 @@ import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
 import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete, CardLandingLoc, PointsMap} from '../api/models/game.js';
-import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame, userModalAwayAllGame} from '../api/methods/games.js';
+import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame, userModalAwayAllGame, userSetSoundEffectGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
 
@@ -133,7 +133,63 @@ export const SoundMap = {
   endGame: {
     event: 'endGame',
     sound: 'startGameGong',    
-  }
+  },
+  swapHandDi: {
+    event: 'swapHandDi',
+    sound: 'dragCard',    
+  },
+  showDiCards: {
+    event: 'showDiCards',
+    sound: 'dragCard',    
+  },
+  playCard: {
+    event: 'playCard',
+    sound: 'dragCard',    
+  },
+  dragCardInHand: {
+    event: 'dragCardInHand',
+    sound: 'dragCard',    
+  },
+  drawCard: {
+    event: 'drawCard',
+    sound: 'drawCard',    
+  },
+  undo: {
+    event: 'undo',
+    sound: 'undo',    
+  },
+  undoNotice: {
+    event: 'undoNotice',
+    sound: 'undo',    
+  },
+  error: {
+    event: 'error',
+    sound: 'error',    
+  },
+  collectPoints: {
+    event: 'collectPoints',
+    sound: 'collectPoints',    
+  },
+  collectPointsDi: {
+    event: 'collectPointsDi',
+    sound: 'collectPoints',    
+  },
+  showThree: {
+    event: 'showThree',
+    sound: 'showThree',    
+  },
+  retrieveCard: {
+    event: 'retrieveCard',
+    sound: 'retrieveCard',    
+  },
+  retrieveThree: {
+    event: 'retrieveThree',
+    sound: 'retrieveCard',    
+  },
+  clearTable: {
+    event: 'clearTable',
+    sound: 'clearTable',    
+  },
 }
 
 export default class GameBoard extends Component {
@@ -143,7 +199,6 @@ export default class GameBoard extends Component {
     this.overlayRef = React.createRef(); //used for modal transition as specified by react-modal
     this.state = { 
       playerAreaID: '', //used to specify playerArea for delaying gold border animation
-      soundEffect : ''
     };
   }
 
@@ -155,15 +210,14 @@ export default class GameBoard extends Component {
     //Play "dragCard" sound effect if user swapping cards between hand and di
     if (game.stage == GameStages.DI) {
       if (user.username == game.diOpener && prevGame.di.length != game.di.length) {
-        this.playSound("dragCard")
+        this.playSound(SoundMap.swapHandDi.sound)
       }
     }
 
     //Play sound effects for everyone
-    if (this.state.soundEffect != '') {
-      console.log("hello: ", user.username);
-      this.playSound(SoundMap[this.state.soundEffect].sound);
-      this.setState({soundEffect: ''});
+    if (game.soundEffect != '') {
+      this.playSound(SoundMap[game.soundEffect].sound);
+      this.handleSetSoundEffect('');
     }
   }
 
@@ -177,8 +231,12 @@ export default class GameBoard extends Component {
   }
 
   playSoundForAll(soundEvent) {
-    this.setState({soundEffect: soundEvent});
-    console.log(this.state.soundEffect);
+    this.handleSetSoundEffect(soundEvent);
+  }
+
+  handleSetSoundEffect(soundEffect) {
+    let game = this.props.game;
+    userSetSoundEffectGame.call({gameId: game._id, soundEffect: soundEffect});
   }
 
   handleBackToGameList() {
@@ -188,8 +246,7 @@ export default class GameBoard extends Component {
   handleStartGame() {
     let game = this.props.game;
     userStartGameGame.call({gameId: game._id});
-    this.playSound("startGameGong");
-    //FINDME
+    this.playSoundForAll(SoundMap.startGame.event);
   }
 
   handleSetRole(role) {
@@ -198,8 +255,7 @@ export default class GameBoard extends Component {
   }
 
   handleSetFirstDrawer() {
-    this.playSound('startGameGong');
-    //FINDME
+    this.playSoundForAll(SoundMap.setFirstDrawer.event);
     let game = this.props.game;
     userSetFirstDrawerGame.call({gameId: game._id});
   }
@@ -207,11 +263,10 @@ export default class GameBoard extends Component {
   handleDrawCard() {
     let game = this.props.game;
     userDrawCardGame.call({gameId: game._id});
-    var audio = this.playSound('drawCard');
+    var audio = this.playSound(SoundMap.drawCard.sound);
     //Play sound effect if drawing has ended
     if (game.nextCardIndex + 1 == DeckComplete.length - DiLength) {
-      this.playSound('showThree');
-      //FINDME
+      this.playSoundForAll(SoundMap.doneDrawing.event);
     }
   }
 
@@ -249,8 +304,7 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userEndTurnGame.call({gameId: game._id});
-    this.playSound('endTurn');
-    //FINDME
+    this.playSoundForAll(SoundMap.endTurn.event);
   }
 
   handleClearTable() {
@@ -265,8 +319,7 @@ export default class GameBoard extends Component {
   handleClearPrevTable() {
     let game = this.props.game;
     userClearPrevTableGame.call({gameId: game._id});
-    this.playSound('prevTable');
-    //FINDME
+    this.playSoundForAll(SoundMap.clearPrevTable.event);
   }
 
   handleSeePrevTable() {
@@ -276,8 +329,7 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userSeePrevTableGame.call({gameId: game._id});
-    this.playSound('prevTable');
-    //FINDME
+    this.playSoundForAll(SoundMap.showPrevTable.event);
   }
 
   handleModalShow(modal) {
@@ -322,7 +374,7 @@ export default class GameBoard extends Component {
     });
     let game = this.props.game;
     userUndoGame.call({gameId: game._id});
-    this.playSound('undo');
+    this.playSound(SoundMap.undo.sound);
   }
 
   handleWrapUp() {
@@ -331,15 +383,13 @@ export default class GameBoard extends Component {
   }
 
   handleRestartGame() {
-    this.playSound('startGameGong');
-    //FINDME
+    this.playSoundForAll(SoundMap.restartGame.event);
     let game = this.props.game;
     userRestartGameGame.call({gameId: game._id});
   }
 
   handleEndGame() {
-    this.playSound('startGameGong');
-    //FINDME
+    this.playSoundForAll(SoundMap.endGame.event);
     let game = this.props.game;
     userEndGameGame.call({gameId: game._id});
   }
@@ -552,7 +602,7 @@ export default class GameBoard extends Component {
           overlayClassName = {{base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}}
           closeTimeoutMS={500}
           ariaHideApp={false}
-          onAfterOpen={() => {this.playSound('error')}}>
+          onAfterOpen={() => {this.playSound(SoundMap.error.sound)}}>
           <div className="modalBannerDiv">
             <p className="modalBanner">{ banner }</p>
           </div>
@@ -601,7 +651,7 @@ export default class GameBoard extends Component {
           onAfterOpen={() => {
             //If user being alerted that another player undid, play undo sound effect with modal appearance
             if (undoRole == UndoRoles.NOTICEE) {
-              this.playSound('undo')
+              this.playSound(SoundMap.undoNotice.sound)
             }
           }}>
           <div className="modalBannerDiv">
@@ -717,8 +767,8 @@ export default class GameBoard extends Component {
 
   diAreaOnEnteredCallback(card) {
     var game = this.props.game;
-    if (!game.undidOpenDi && !game.undidStartGame) {
-      this.playSound('dragCard');
+    if (!game.undidStartGame && !(game.undidOpenDi && (game.stage == GameStages.FIND_THREE_IN_DI))) {
+      this.playSound(SoundMap.showDiCards.sound);
     }
   }
 
@@ -764,7 +814,7 @@ export default class GameBoard extends Component {
     if (game.stage == GameStages.WRAP_UP) {
       //Only play sound effect once for all point cards collected
       if (game.taiXiaPoints[game.taiXiaPoints.length - 1] == card) {
-        this.playSound("collectPointsDi");
+        this.playSound(SoundMap.collectPointsDi.sound);
       }
     }
   }
@@ -833,10 +883,10 @@ export default class GameBoard extends Component {
     if(game.stage == GameStages.PLAY) {
       //Play sound for play card, if cards are not entering playing area as a result of undoing clear table or viewing prev table
       if (user.username == game.getCurrPlayer() && game.tableState != TableStates.CLEAR_PREV_TABLE) {
-        this.playSound('dragCard');
+        this.playSound(SoundMap.playCard.sound);
       }
     } else {
-      this.playSound('showThree');
+      this.playSound(SoundMap.showThree.sound);
     }
   }
 
@@ -846,7 +896,7 @@ export default class GameBoard extends Component {
 
     if (user.username == game.threeShower && (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || game.stage == GameStages.DI)) {
       //Play sound for taking three back
-      this.playSound('retrieveCard');
+      this.playSound(SoundMap.retrieveThree.sound);
     } else if (game.stage == GameStages.PLAY || game.stage == GameStages.WRAP_UP) {
       //Play sound for collect points if card is in taixiaPoints, but not when clear prev table
       if (game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP)) {
@@ -855,12 +905,12 @@ export default class GameBoard extends Component {
         var lastCollected = game.stage != GameStages.WRAP_UP && game.taiXiaPoints[game.taiXiaPoints.length - 1] == card;
         var lastCollectedWrapUp = game.stage == GameStages.WRAP_UP && game.taiXiaPoints[game.taiXiaPoints.length - 1 - diOffset] == card;
         if (lastCollected || lastCollectedWrapUp) {
-          this.playSound("collectPoints");
+          this.playSound(SoundMap.collectPoints.sound);
         }
       }
       //Play sound for retrieve card if card has returned to hand of current player
       else if (user.username == game.getCurrPlayer() && game.hands[game.getCurrPlayer()].indexOf(card) > -1) {
-        this.playSound('retrieveCard');
+        this.playSound(SoundMap.retrieveCard.sound);
       //Play sound for cards cleared off of table that are not point cards
       } else if (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP) {
         //Only play sound effect once for all cards cleared off
@@ -868,7 +918,7 @@ export default class GameBoard extends Component {
         for (var prevCard in game.prevTableCards) {
           if (alwaysClear || Object.keys(PointsMap).indexOf(prevCard.slice(0, 1)) == -1) {
             if (prevCard == card) {
-              this.playSound('clearTable');
+              this.playSound(SoundMap.clearTable.sound);
             }
             break;
           }

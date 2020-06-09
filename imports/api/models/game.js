@@ -617,6 +617,7 @@ export class Game {
       this.winningTeam = '';
       this.taiXiaPointsTotal = 0;
       this.delayedModalAlready = false;
+      this.soundEffect = '';
     }
   }
 
@@ -626,7 +627,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpenDi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpenDi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready', 'soundEffect'];
   }
 
   userLeave(user) {
@@ -1304,6 +1305,10 @@ export class Game {
     this.status = GameStatuses.FINISHED;
 
     this.userSetModalForAllHelper(ModalStates.END_GAME_NOTICE);
+  }
+
+  userSetSoundEffect(soundEffect) {
+    this.soundEffect = soundEffect;
   }
 
   //Modal methods (including regular modals, error modals, and undo modals)
