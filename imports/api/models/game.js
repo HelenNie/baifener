@@ -550,7 +550,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_WRAPUP;
+export const CurrTestState = TestStates.TEST_THREE;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -626,7 +626,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpendi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpenDi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready'];
   }
 
   userLeave(user) {
@@ -672,8 +672,8 @@ export class Game {
         this.arrangeSeating();
         this.setUpCardLocObjs();
         this.diOriginal = this.di;
-        this.copy = this.copyGame();
         this.status = GameStatuses.STARTED;
+        this.copy = this.copyGame();
       }
     }
   }
@@ -1002,7 +1002,7 @@ export class Game {
       this.stage = GameStages.DONE_DRAWING;
     }
 
-    this.undidOpendi = true;
+    this.undidOpenDi = true;
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
     this.undoPostFollowUps(user, undoType);
 
@@ -1206,6 +1206,7 @@ export class Game {
       this.stage = GameStages.PLAY;
       this.undoCollectPointsDi(user);
       this.di = this.diPreWrap.slice(0, 6);
+      this.wrapUpWinner = '';
       this.taiXiaPointsTotal = 0;
       this.winningTeam = '';
       //Unshow RESTART_FULL modals and put delay back in
@@ -1251,7 +1252,6 @@ export class Game {
 
   userRestartGame() {
     var winningTeamCopy = (' ' + this.winningTeam).slice(1);
-    console.log(winningTeamCopy);
 
     var fields = this.persistentFields();
     for (var i = 0; i < fields.length; i++) {
@@ -1263,14 +1263,12 @@ export class Game {
     //Re-randomize deck for restarted game
     this.randomizeDeck();
     
-    console.log("PRE: ", this.playerRoles);
     //Switch up defender/attacker if game finished and attackers won
     if (winningTeamCopy == Roles.ATTACKER) {
       for (var player in this.playerRoles) {
         this.playerRoles[player] = (this.playerRoles[player] == Roles.DEFENDER) ? Roles.ATTACKER : Roles.DEFENDER;
       }
     }
-    console.log("POST: ", this.playerRoles);
 
     console.log("restarted game");
   }

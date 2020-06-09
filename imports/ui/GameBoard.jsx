@@ -8,7 +8,7 @@ import MyDrag from './MyDrag.jsx';
 import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
-import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete, CardLandingLoc} from '../api/models/game.js';
+import {Game, GameStatuses, GameStages, ModalStates, ErrorStates, UndoParams, UndoStates, UndoRoles, ThreeStates, TableStates, Roles, DiLength, SuitsMap, RanksMap, NumPlayers, CardLocMax, CardSize, CardSlotMargin, CardSlotSize, DeckComplete, CardLandingLoc, PointsMap} from '../api/models/game.js';
 import {userDrawCardGame, userOpenDiGame, userCardMigrationGame, userStartGameGame, userClearTableGame, userThreeFromDiGame, userEndTurnGame, userSeePrevTableGame, userEndGameGame, userSetFirstDrawerGame, userConfirmOpenDiGame, userCancelOpenDiGame, userSetRoleGame, userClearPrevTableGame, userErrorAwayGame, userModalAwayGame, userModalShowGame, userUndoShowGame, userUndoAwayGame, userUndoGame, userRestartGameGame, userWrapUpGame, userDelayedModalAlreadyGame, userModalAwayAllGame} from '../api/methods/games.js';
 
 export const TableOrder = [0, 1, 3, 2];
@@ -97,25 +97,73 @@ export const CssValues = {
   }
 }
 
+export const SoundMap = {
+  setFirstDrawer: {
+    event: 'setFirstDrawer',
+    sound: 'startGameGong',
+  },
+  doneDrawing: {
+    event: 'doneDrawing',
+    sound: 'showThree',
+  },
+  diOpen: {
+    event: 'diOpen',
+    sound: 'showThree',
+  },
+  startGame: {
+    event: 'startGame',
+    sound: 'startGameGong',
+  },
+  endTurn: {
+    event: 'endTurn',
+    sound: 'endTurn',
+  },
+  showPrevTable: {
+    event: 'showPrevTable',
+    sound: 'prevTable',
+  },
+  clearPrevTable: {
+    event: 'clearPrevTable',
+    sound: 'prevTable',
+  },
+  restartGame: {
+    event: 'restartGame',
+    sound: 'startGameGong',
+  },
+  endGame: {
+    event: 'endGame',
+    sound: 'startGameGong',    
+  }
+}
+
 export default class GameBoard extends Component {
 
   constructor(props) {
     super(props);
     this.overlayRef = React.createRef(); //used for modal transition as specified by react-modal
-    this.state = { //used to specify playerArea for delaying gold border animation
-      playerAreaID: ''
+    this.state = { 
+      playerAreaID: '', //used to specify playerArea for delaying gold border animation
+      soundEffect : ''
     };
   }
 
   componentDidUpdate(prevProps, prevState) {
     var prevGame = prevProps.game;
     var game = this.props.game;
+    var user = this.props.user;
 
     //Play "dragCard" sound effect if user swapping cards between hand and di
     if (game.stage == GameStages.DI) {
-      if (prevGame.di.length != game.di.length) {
+      if (user.username == game.diOpener && prevGame.di.length != game.di.length) {
         this.playSound("dragCard")
       }
+    }
+
+    //Play sound effects for everyone
+    if (this.state.soundEffect != '') {
+      console.log("hello: ", user.username);
+      this.playSound(SoundMap[this.state.soundEffect].sound);
+      this.setState({soundEffect: ''});
     }
   }
 
@@ -125,6 +173,12 @@ export default class GameBoard extends Component {
     const audioCtx = new AudioContext();
     var audio = new Audio("/sounds/" + sound + ".wav");
     audio.play();
+    return audio;
+  }
+
+  playSoundForAll(soundEvent) {
+    this.setState({soundEffect: soundEvent});
+    console.log(this.state.soundEffect);
   }
 
   handleBackToGameList() {
@@ -135,6 +189,7 @@ export default class GameBoard extends Component {
     let game = this.props.game;
     userStartGameGame.call({gameId: game._id});
     this.playSound("startGameGong");
+    //FINDME
   }
 
   handleSetRole(role) {
@@ -144,17 +199,25 @@ export default class GameBoard extends Component {
 
   handleSetFirstDrawer() {
     this.playSound('startGameGong');
+    //FINDME
     let game = this.props.game;
     userSetFirstDrawerGame.call({gameId: game._id});
   }
 
   handleDrawCard() {
-    this.playSound('drawCard');
     let game = this.props.game;
     userDrawCardGame.call({gameId: game._id});
+    var audio = this.playSound('drawCard');
+    //Play sound effect if drawing has ended
+    if (game.nextCardIndex + 1 == DeckComplete.length - DiLength) {
+      this.playSound('showThree');
+      //FINDME
+    }
   }
 
   handleOpenDi() {
+    //Play sound effect if di opened
+    this.playSoundForAll(SoundMap.diOpen.event);
     let game = this.props.game;
     userOpenDiGame.call({gameId: game._id});
   }
@@ -187,6 +250,7 @@ export default class GameBoard extends Component {
     let game = this.props.game;
     userEndTurnGame.call({gameId: game._id});
     this.playSound('endTurn');
+    //FINDME
   }
 
   handleClearTable() {
@@ -202,6 +266,7 @@ export default class GameBoard extends Component {
     let game = this.props.game;
     userClearPrevTableGame.call({gameId: game._id});
     this.playSound('prevTable');
+    //FINDME
   }
 
   handleSeePrevTable() {
@@ -212,6 +277,7 @@ export default class GameBoard extends Component {
     let game = this.props.game;
     userSeePrevTableGame.call({gameId: game._id});
     this.playSound('prevTable');
+    //FINDME
   }
 
   handleModalShow(modal) {
@@ -266,12 +332,14 @@ export default class GameBoard extends Component {
 
   handleRestartGame() {
     this.playSound('startGameGong');
+    //FINDME
     let game = this.props.game;
     userRestartGameGame.call({gameId: game._id});
   }
 
   handleEndGame() {
     this.playSound('startGameGong');
+    //FINDME
     let game = this.props.game;
     userEndGameGame.call({gameId: game._id});
   }
@@ -627,7 +695,7 @@ export default class GameBoard extends Component {
 
     var openDiShow = game.stage == GameStages.DI && game.diOpener == user.username;
     var findThreeOpenDiShow = (game.stage == GameStages.FIND_THREE_IN_DI) || openDiShow;
-    var noAnim = game.undidStartGame || (game.undidOpenDi && game.stage == GameStages.FIND_THREE_IN_DI);
+    var noAnim = game.undidStartGame || (game.undidOpenDi && (game.stage == GameStages.FIND_THREE_IN_DI));
     var delayMult;
 
     for (var i = 0; i < game.di.length; i++) {
@@ -648,7 +716,10 @@ export default class GameBoard extends Component {
   }
 
   diAreaOnEnteredCallback(card) {
-    this.playSound('dragCard');
+    var game = this.props.game;
+    if (!game.undidOpenDi && !game.undidStartGame) {
+      this.playSound('dragCard');
+    }
   }
 
   renderTableColWrapUpDiView(game, user) {
@@ -691,7 +762,10 @@ export default class GameBoard extends Component {
     var game = this.props.game;
     var user = this.props.user;
     if (game.stage == GameStages.WRAP_UP) {
-      this.playSound("collectPointsDi");
+      //Only play sound effect once for all point cards collected
+      if (game.taiXiaPoints[game.taiXiaPoints.length - 1] == card) {
+        this.playSound("collectPointsDi");
+      }
     }
   }
 
@@ -754,9 +828,11 @@ export default class GameBoard extends Component {
 
   playingViewOnEnteredCallback(card) {
     var game = this.props.game;
+    var user = this.props.user;
+
     if(game.stage == GameStages.PLAY) {
-      //Play sound for play card if cards are not entering playing area as a result of undoing clear table or viewing prev table
-      if (game.getCurrentPlayerIndex() != -1 && game.tableState != TableStates.CLEAR_PREV_TABLE) {
+      //Play sound for play card, if cards are not entering playing area as a result of undoing clear table or viewing prev table
+      if (user.username == game.getCurrPlayer() && game.tableState != TableStates.CLEAR_PREV_TABLE) {
         this.playSound('dragCard');
       }
     } else {
@@ -766,19 +842,37 @@ export default class GameBoard extends Component {
 
   playingViewOnExitedCallback(card) {
     var game = this.props.game;
-    if (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING) {
+    var user = this.props.user;
+
+    if (user.username == game.threeShower && (game.stage == GameStages.DRAW || game.stage == GameStages.DONE_DRAWING || game.stage == GameStages.DI)) {
+      //Play sound for taking three back
       this.playSound('retrieveCard');
     } else if (game.stage == GameStages.PLAY || game.stage == GameStages.WRAP_UP) {
       //Play sound for collect points if card is in taixiaPoints, but not when clear prev table
       if (game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP)) {
-        this.playSound("collectPoints");
+        //Only play sound effect once for all point cards collected
+        var diOffset = DiLength - game.di.length;
+        var lastCollected = game.stage != GameStages.WRAP_UP && game.taiXiaPoints[game.taiXiaPoints.length - 1] == card;
+        var lastCollectedWrapUp = game.stage == GameStages.WRAP_UP && game.taiXiaPoints[game.taiXiaPoints.length - 1 - diOffset] == card;
+        if (lastCollected || lastCollectedWrapUp) {
+          this.playSound("collectPoints");
+        }
       }
       //Play sound for retrieve card if card has returned to hand of current player
-      else if (game.getCurrPlayer() != '' && game.hands[game.getCurrPlayer()].indexOf(card) > -1) {
+      else if (user.username == game.getCurrPlayer() && game.hands[game.getCurrPlayer()].indexOf(card) > -1) {
         this.playSound('retrieveCard');
-      //Play sound for clear table but not point card
+      //Play sound for cards cleared off of table that are not point cards
       } else if (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP) {
-        this.playSound('clearTable');
+        //Only play sound effect once for all cards cleared off
+        var alwaysClear = game.playerRoles[game.wrapUpWinner != '' ? game.wrapUpWinner : game.getCurrPlayer()] == Roles.DEFENDER;
+        for (var prevCard in game.prevTableCards) {
+          if (alwaysClear || Object.keys(PointsMap).indexOf(prevCard.slice(0, 1)) == -1) {
+            if (prevCard == card) {
+              this.playSound('clearTable');
+            }
+            break;
+          }
+        }
       }
     }
   }
