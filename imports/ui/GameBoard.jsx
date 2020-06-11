@@ -545,7 +545,7 @@ export default class GameBoard extends Component {
         banner = Langs[this.props.currLang].gameBoard.roles[game.winningTeam] + Langs[this.props.currLang].gameBoard.modals.restartGameFull;
         content = 
           <div className="modalContent">
-            <p>{ Langs[this.props.currLang].gameBoard.roles[game.winningTeam] + Langs[this.props.currLang].gameBoard.modals.restartGameFullText1 + game.taiXiaPointsTotal + Langs[this.props.currLang].gameBoard.modals.restartGameFullText2}</p>
+            <p>{ Langs[this.props.currLang].gameBoard.roles[Roles.ATTACKER] + Langs[this.props.currLang].gameBoard.modals.restartGameFullText1 + game.taiXiaPointsTotal + Langs[this.props.currLang].gameBoard.modals.restartGameFullText2}</p>
             <br></br>
             <br></br>
             <button className="ui red button" onClick={this.handleRestartGame.bind(this)}>{ Langs[this.props.currLang].gameBoard.modals.yes }</button>
@@ -782,8 +782,8 @@ export default class GameBoard extends Component {
 
     var delayPoint;
 
-    for (var i = 0; i < game.diOriginal.length; i++) {
-      card = game.diOriginal[i];
+    for (var i = 0; i < game.diPreWrap.length; i++) {
+      card = game.diPreWrap[i];
       item = <img src={"/images/" + card + ".png"} draggable="false"></img>
       inBool = (game.stage == GameStages.WRAP_UP || game.stage == GameStages.FINISHED) && game.di.indexOf(card) > -1;
       delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
@@ -803,6 +803,7 @@ export default class GameBoard extends Component {
   onWrapUpDiEnterCallback(card) {
     var game = this.props.game;
     var user = this.props.user;
+    console.log("HI");
     if ((game.di.indexOf(card) == DiLength - 1) && (user.username == game.wrapUpWinner)) {
       this.handleWrapUp();
     }
@@ -886,7 +887,7 @@ export default class GameBoard extends Component {
         this.playSound(SoundMap.playCard.sound);
       }
     } else {
-      this.playSound(SoundMap.showThree.sound);
+      this.playSoundForAll(SoundMap.showThree.event);
     }
   }
 
@@ -935,13 +936,15 @@ export default class GameBoard extends Component {
     var inBool;
     var animClass;
     var totalTime;
+    var delayBool;
 
     for (var i = 0; i < DeckComplete.length; i++) {
       card = DeckComplete[i];
       inBool = game.taiXiaPoints.indexOf(card) > -1;
       item = <img src={"/images/" + card + ".png"} draggable="false" key={card}></img>
-      animClass = game.diOriginal.indexOf(card) > -1 ? Anim.fadeInOutExtra3DelayIn.class : Anim.fadeInOutDelayIn.class;
-      totalTime = game.diOriginal.indexOf(card) > -1 ? Anim.fadeInOutExtra3DelayIn.timeout + Anim.fadeInOutExtra3DelayIn.delay : Anim.fadeInOutDelayIn.timeout + Anim.fadeInOutDelayIn.delay;
+      delayBool = game.diPreWrap.indexOf(card) > -1 && game.di.indexOf(card) == -1;
+      animClass = delayBool ? Anim.fadeInOutExtra3DelayIn.class : Anim.fadeInOutDelayIn.class;
+      totalTime = delayBool ? Anim.fadeInOutExtra3DelayIn.timeout + Anim.fadeInOutExtra3DelayIn.delay : Anim.fadeInOutDelayIn.timeout + Anim.fadeInOutDelayIn.delay;
       items.push(this.animate(card, item, inBool, animClass, totalTime));
     }
 

@@ -95,7 +95,9 @@ export default class MyDrag extends React.Component {
 
     //Play card dragging sound effect if card changed locations
     var game = this.props.game;
-    if(game.cardLocMngrLocs[this.props.card].x != Math.round(x / CardSlotSize.x) || game.cardLocMngrLocs[this.props.card].y != Math.round(y / CardSlotSize.y)) {
+    var cardMoved = game.cardLocMngrLocs[this.props.card].x != Math.round(x / CardSlotSize.x) || game.cardLocMngrLocs[this.props.card].y != Math.round(y / CardSlotSize.y);
+    var cardNotInLandingLoc = game.cardLocMngrLocs[this.props.card].x != -1 && game.cardLocMngrLocs[this.props.card].y != -1;
+    if (cardMoved && cardNotInLandingLoc) {
       this.props.playSound(SoundMap.dragCardInHand.sound);
     }
 

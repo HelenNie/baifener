@@ -115,6 +115,7 @@ export const TestStates = {
     firstDrawer: '',
     deck: [],
     di: [],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -171,6 +172,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: ["ZC", "ZD", "ZH", "ZS", "3C", "6C", "6D", "6H", "6S", "7C", "2C", "2D", "2H", "2S", "3D", "7D", "7H", "7S", "8C", "8D", "4C", "4D", "4H", "4S", "3H", "8H", "8S", "9C", "9D", "9H", "5C", "5D", "5H", "5S", "3S", "9S", "TC", "TD", "TH", "TS", "JC", "JD", "JH", "JS", "QC", "QD", "QH", "QS"],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -231,6 +233,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "3H", "OA"],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -291,6 +294,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "6S"],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -351,6 +355,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "6S", "OB"],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -411,6 +416,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
+    diPreWrap: [],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "",
@@ -471,6 +477,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
+    diPreWrap: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {},
     prevTableCards: {},
     diOpener: "one",
@@ -531,6 +538,7 @@ export const TestStates = {
     firstDrawer: 'two',
     deck: [],
     di: ["KC", "KD", "KH", "KS", "OA", "OB"],
+    diPreWrap: ["KC", "KD", "KH", "KS", "OA", "OB"],
     currTableCards: {'TC': 'one', '4D': 'two', '7H': 'three', 'JS': 'four'},
     prevTableCards: {'TC': 'one', '4D': 'two', '7H': 'three', 'JS': 'four'},
     diOpener: "one",
@@ -550,7 +558,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_THREE;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -595,6 +603,7 @@ export class Game {
       this.prevTableCards = CurrTestState.prevTableCards;
       this.deck = CurrTestState.deck;
       this.di = CurrTestState.di;
+      this.diPreWrap = CurrTestState.diPreWrap; //combine di fields
       this.taiXiaPoints = CurrTestState.taiXiaPoints;
       
       //Not in test states
@@ -606,7 +615,6 @@ export class Game {
       this.currCycleNumCards = 0; //label as counter
       this.currTurnNumCards = 0; //label as counter
       this.diOriginal = []; //combine di fields
-      this.diPreWrap = []; //combine di fields
       this.undoer = '';
       this.setRolesBasedOnThree = false;
       this.prevPlayerIndex = -1;
@@ -1031,6 +1039,7 @@ export class Game {
   }
 
   userStartGame(user) {
+    this.diPreWrap = this.di.slice(0, 6);
     this.stage = GameStages.PLAY;
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.START_GAME;
     console.log("Game started");
@@ -1187,8 +1196,8 @@ export class Game {
     if (this.hands[user.username].length == 0) {
       this.currentPlayerIndex = -1;
       this.tableState = TableStates.NONE;
-      this.stage = GameStages.WRAP_UP;
       this.wrapUpWinner = user.username;
+      this.stage = GameStages.WRAP_UP;
     }
 
     for (var player in this.undoByPlayer) {
@@ -1232,7 +1241,6 @@ export class Game {
   }
 
   userWrapUp() {
-    this.diPreWrap = this.di.slice(0, 6);
     this.userCollectPointsDi();
     this.userCalcResults();
     this.userSetModalForAllHelper(ModalStates.RESTART_FULL);
@@ -1253,7 +1261,10 @@ export class Game {
 
   userRestartGame() {
     var winningTeamCopy = (' ' + this.winningTeam).slice(1);
+    var playerRolesCopy = {};
+    playerRolesCopy = Object.assign(playerRolesCopy, this.playerRoles);
 
+    //Replace game with copy from start of game
     var fields = this.persistentFields();
     for (var i = 0; i < fields.length; i++) {
       if (fields[i] != 'copy') {
@@ -1267,9 +1278,15 @@ export class Game {
     //Switch up defender/attacker if game finished and attackers won
     if (winningTeamCopy == Roles.ATTACKER) {
       for (var player in this.playerRoles) {
-        this.playerRoles[player] = (this.playerRoles[player] == Roles.DEFENDER) ? Roles.ATTACKER : Roles.DEFENDER;
+        this.playerRoles[player] = (playerRolesCopy[player] == Roles.DEFENDER) ? Roles.ATTACKER : Roles.DEFENDER;
       }
     }
+
+    //Reset first draw modal behavior based on new roles
+    this.userSetDrawFirstModalHelper();
+    
+    //Make a copy of current game
+    this.copy = this.copyGame();
 
     console.log("restarted game");
   }
