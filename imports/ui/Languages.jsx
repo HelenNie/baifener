@@ -88,7 +88,7 @@ export const Langs = {
         wonRoundButton: "我的牌最大",
         findThreeWaiting: "正在等对手揭底找三...",
         openKittyWaiting: "正在等对手揭底...",
-        startGameWaiting: "正在等对手扣底...",
+        startGameWaiting: "正在等玩家扣底并开始游戏...",
         gameOver: "游戏结束"
       },
       msgArea: {
@@ -191,7 +191,7 @@ export const Langs = {
         wonRoundButton: "Click here if you won this round",
         findThreeWaiting: "Waiting for opponents to look for three in kitty...",
         openKittyWaiting: "Waiting for opponents to open kitty...",
-        startGameWaiting: "Waiting for opponents to stash kitty...",
+        startGameWaiting: "Waiting for player to stash kitty and start game...",
         gameOver: "The game has ended"
       },
       msgArea: {

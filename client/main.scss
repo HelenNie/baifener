@@ -348,8 +348,12 @@ body {
     position: relative;
     padding: 15px;
     border-radius: 5px;
-    overflow-y: scroll;
+    overflow-y: hidden;
     transition: border 0.5s ease-in-out;
+}
+
+.playerArea:hover {
+    overflow-y: scroll;
 }
 
 #delayBorderTransition {
