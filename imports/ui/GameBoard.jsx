@@ -98,38 +98,67 @@ export const CssValues = {
 }
 
 export const SoundMap = {
+  //all players
   setFirstDrawer: {
     event: 'setFirstDrawer',
     sound: 'startGameGong',
   },
+  //all players
+  showThree: {
+    event: 'showThree',
+    sound: 'showThree',    
+  },
+  //all players
   doneDrawing: {
     event: 'doneDrawing',
     sound: 'showThree',
   },
+  //all players
   diOpen: {
     event: 'diOpen',
     sound: 'showThree',
   },
+  //all players -
   startGame: {
     event: 'startGame',
     sound: 'startGameGong',
   },
+  //all players -
   endTurn: {
     event: 'endTurn',
     sound: 'endTurn',
   },
+  //all players -
   showPrevTable: {
     event: 'showPrevTable',
     sound: 'prevTable',
   },
+  //all players -
   clearPrevTable: {
     event: 'clearPrevTable',
     sound: 'prevTable',
   },
+  //all players
+  collectPoints: {
+    event: 'collectPoints',
+    sound: 'collectPoints',    
+  },
+  //all players
+  collectPointsDi: {
+    event: 'collectPointsDi',
+    sound: 'collectPoints',    
+  },
+  //all players
+  clearTable: {
+    event: 'clearTable',
+    sound: 'clearTable',    
+  },
+  //all players
   restartGame: {
     event: 'restartGame',
     sound: 'startGameGong',
   },
+  //all players
   endGame: {
     event: 'endGame',
     sound: 'startGameGong',    
@@ -166,18 +195,6 @@ export const SoundMap = {
     event: 'error',
     sound: 'error',    
   },
-  collectPoints: {
-    event: 'collectPoints',
-    sound: 'collectPoints',    
-  },
-  collectPointsDi: {
-    event: 'collectPointsDi',
-    sound: 'collectPoints',    
-  },
-  showThree: {
-    event: 'showThree',
-    sound: 'showThree',    
-  },
   retrieveCard: {
     event: 'retrieveCard',
     sound: 'retrieveCard',    
@@ -185,11 +202,7 @@ export const SoundMap = {
   retrieveThree: {
     event: 'retrieveThree',
     sound: 'retrieveCard',    
-  },
-  clearTable: {
-    event: 'clearTable',
-    sound: 'clearTable',    
-  },
+  }
 }
 
 export default class GameBoard extends Component {
@@ -216,6 +229,7 @@ export default class GameBoard extends Component {
 
     //Play sound effects for everyone
     if (game.soundEffect != '') {
+      console.log(game.soundEffect, ": ", user.username);
       this.playSound(SoundMap[game.soundEffect].sound);
       this.handleSetSoundEffect('');
     }
@@ -244,9 +258,9 @@ export default class GameBoard extends Component {
   }
 
   handleStartGame() {
+    this.playSoundForAll(SoundMap.startGame.event);
     let game = this.props.game;
     userStartGameGame.call({gameId: game._id});
-    this.playSoundForAll(SoundMap.startGame.event);
   }
 
   handleSetRole(role) {
@@ -302,9 +316,9 @@ export default class GameBoard extends Component {
     this.setState({
       playerAreaID: ''
     });
-    let game = this.props.game;
-    userEndTurnGame.call({gameId: game._id});
     this.playSoundForAll(SoundMap.endTurn.event);
+    let game = this.props.game;
+    userEndTurnGame.call({gameId: game._id}); 
   }
 
   handleClearTable() {
@@ -317,9 +331,9 @@ export default class GameBoard extends Component {
   }
 
   handleClearPrevTable() {
+    this.playSoundForAll(SoundMap.clearPrevTable.event);
     let game = this.props.game;
     userClearPrevTableGame.call({gameId: game._id});
-    this.playSoundForAll(SoundMap.clearPrevTable.event);
   }
 
   handleSeePrevTable() {
@@ -327,9 +341,10 @@ export default class GameBoard extends Component {
     this.setState({
       playerAreaID: ''
     });
+    this.playSoundForAll(SoundMap.showPrevTable.event);
     let game = this.props.game;
     userSeePrevTableGame.call({gameId: game._id});
-    this.playSoundForAll(SoundMap.showPrevTable.event);
+    
   }
 
   handleModalShow(modal) {
@@ -803,7 +818,6 @@ export default class GameBoard extends Component {
   onWrapUpDiEnterCallback(card) {
     var game = this.props.game;
     var user = this.props.user;
-    console.log("HI");
     if ((game.di.indexOf(card) == DiLength - 1) && (user.username == game.wrapUpWinner)) {
       this.handleWrapUp();
     }

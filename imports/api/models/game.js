@@ -558,7 +558,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.REAL;
+export const CurrTestState = TestStates.TEST_PLAYING;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -681,6 +681,7 @@ export class Game {
         this.arrangeSeating();
         this.setUpCardLocObjs();
         this.diOriginal = this.di;
+        this.diPreWrap = this.di;
         this.status = GameStatuses.STARTED;
         this.copy = this.copyGame();
       }
@@ -743,6 +744,7 @@ export class Game {
     this.di = randDeck.splice(0, DiLength);
     this.deck = randDeck;
     this.diOriginal = this.di;
+    this.diPreWrap = this.di;
   }
 
   userSetRole(user, role) {
@@ -1280,6 +1282,8 @@ export class Game {
       for (var player in this.playerRoles) {
         this.playerRoles[player] = (playerRolesCopy[player] == Roles.DEFENDER) ? Roles.ATTACKER : Roles.DEFENDER;
       }
+    } else {
+      this.playerRoles = playerRolesCopy;
     }
 
     //Reset first draw modal behavior based on new roles
