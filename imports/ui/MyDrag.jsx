@@ -132,7 +132,7 @@ export default class MyDrag extends React.Component {
         position={this.state.controlledPosition}
         grid={[CardSlotSize.x, CardSlotSize.y]}
         bounds='parent'>
-        <img src={"/images/" + this.props.card + ".png"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute', zIndex: this.props.zIndex}}></img>
+        <img src={"/images/" + this.props.card + ".svg"} className="handle" draggable="false" onDoubleClick={this.handleCardMigration} style={{position: 'absolute', zIndex: this.props.zIndex}}></img>
       </Draggable>
     );
   }

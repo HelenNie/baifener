@@ -443,7 +443,7 @@ export default class GameBoard extends Component {
 
   renderHandAreaLines(game, user) {
     var items = [];
-    var margin = 37;
+    var margin = 17;
     var firstTop = CardSize.y + margin;
     var top;
     for (var i = 0; i < CardLocMax.y; i++) {
@@ -765,7 +765,7 @@ export default class GameBoard extends Component {
 
     for (var i = 0; i < game.di.length; i++) {
       card = game.di[i];
-      item = <img src={"/images/" + card + ".png"} draggable="false" className={ openDiShow ? "handle" : '' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>
+      item = <img src={"/images/" + card + ".svg"} draggable="false" className={ openDiShow ? "handle" : 'staticCard' } onDoubleClick={ openDiShow ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>
       delayMult = (i < game.threeFromDiCount) ? i : (i - game.threeFromDiCount)
       inBool = (i < game.threeFromDiCount) ? findThreeOpenDiShow : openDiShow;
       animClass = noAnim ? '' : ((i < game.threeFromDiCount) ? Anim.slideIn.class+'-'+delayMult : Anim.slideInQuick.class+'-'+delayMult);
@@ -799,7 +799,7 @@ export default class GameBoard extends Component {
 
     for (var i = 0; i < game.diPreWrap.length; i++) {
       card = game.diPreWrap[i];
-      item = <img src={"/images/" + card + ".png"} draggable="false"></img>
+      item = <img src={"/images/" + card + ".svg"} draggable="false" className="staticCard"></img>
       inBool = (game.stage == GameStages.WRAP_UP || game.stage == GameStages.FINISHED) && game.di.indexOf(card) > -1;
       delayPoint = game.taiXiaPoints.indexOf(card) > -1 && game.stage == GameStages.WRAP_UP;
       animClass = delayPoint ? Anim.fadeInOutExtra3DelayOut.class : Anim.fadeInOutExtra2DelayOut.class;
@@ -858,7 +858,7 @@ export default class GameBoard extends Component {
         inBools.push(inBool);
         //Make card clickable if is user's turn during PLAY or is user's three
         active = (player == user.username) && (player == game.getCurrPlayer() || game.stage != GameStages.PLAY);
-        item = <img src={"/images/" + card + ".png"} draggable="false" className={active ? "handle" : ''} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;
+        item = <img src={"/images/" + card + ".svg"} draggable="false" className={active ? "handle" : 'staticCard'} onDoubleClick={ active ? this.handleCardMigration.bind(this, card) : ()=> {}}></img>;
         //Delay point cards fading out if during collect points
         delayPoint = game.taiXiaPoints.indexOf(card) > -1 && (game.tableState == TableStates.SEE_PREV_TABLE_FIRST || game.stage == GameStages.WRAP_UP);
         animClass = delayPoint ? Anim.fadeInOutDelayOut.class: Anim.fadeInOut.class;
@@ -955,7 +955,7 @@ export default class GameBoard extends Component {
     for (var i = 0; i < DeckComplete.length; i++) {
       card = DeckComplete[i];
       inBool = game.taiXiaPoints.indexOf(card) > -1;
-      item = <img src={"/images/" + card + ".png"} draggable="false" key={card}></img>
+      item = <img src={"/images/" + card + ".svg"} draggable="false" key={card} className="staticCard"></img>
       delayBool = game.diPreWrap.indexOf(card) > -1 && game.di.indexOf(card) == -1;
       animClass = delayBool ? Anim.fadeInOutExtra3DelayIn.class : Anim.fadeInOutDelayIn.class;
       totalTime = delayBool ? Anim.fadeInOutExtra3DelayIn.timeout + Anim.fadeInOutExtra3DelayIn.delay : Anim.fadeInOutDelayIn.timeout + Anim.fadeInOutDelayIn.delay;

@@ -1,7 +1,7 @@
 /* Master levels */
 
 body {
-    min-height: 732px;
+    min-height: 750px;
     min-width: 1440px;
     max-height: 732px;
     max-width: 1440px;
@@ -62,7 +62,7 @@ body {
     height: 90%;
     width: 100%;
     position: relative;
-    padding-left: 65px;
+    padding-left: 45px;
 }
 
 .halfColumn {
@@ -79,7 +79,7 @@ body {
 }
 
 #leftColumn {
-    width: 754px;
+    width: 800px;
 }
 
 #rightColumn {
@@ -129,7 +129,7 @@ body {
 }
 
 #tableColumn {
-    width: 518px;
+    width: 563px;
 }
 
 #pointsColumn {
@@ -165,7 +165,7 @@ body {
 }
 
 #handArea {
-    padding: 45px;
+    padding: 25px;
     height: 555px;
     width: 490px;
     background-color: #9B6A6C;
@@ -383,19 +383,19 @@ body {
 #landingArea {
     /* dimentions and offsets are adjusted by border stroke width to align with card objects */
     position: absolute;
-    width: 56px;
-    height: 76px;
-    top: 45-3px;
-    left: 45-3px;
+    width: 61px;
+    height: 82.984px;
+    top: 25-3px;
+    left: 25-3px;
     text-align: center;
     border: 3px dashed white;
 }
 
 .handAreaLine {
     position: absolute;
-    left: 45-4px;
+    left: 25-4px;
     height: 3px;
-    width: 400+8px;
+    width: 440+8px;
     border: none;
     border-top: 5px solid white;  
     border-radius: 15px;
@@ -404,8 +404,8 @@ body {
 }
 
 #firsthandAreaLine {
-    left: 145-4px;
-    width: 300+8px;
+    left: 135-4px;
+    width: 330+8px;
 }
 
 /* round buttons */
@@ -625,7 +625,14 @@ body {
 /* Card */
 
 .handle {
+    width: 55px;
     cursor: pointer;
+    background-color: white;
+}
+
+.staticCard {
+    width: 55px;
+    background-color: white;
 }
 
 .handle:hover {
