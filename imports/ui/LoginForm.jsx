@@ -3,8 +3,6 @@ import React, { Component } from 'react';
 import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
-export const Users = ['one', 'two', 'three', 'four'];
-export const Partners = {'one':'three', 'two':'four', 'three':'one', 'four':'two'};
 export const Password = "password";
 
 export default class LoginForm extends Component {
@@ -14,12 +12,6 @@ export default class LoginForm extends Component {
       username: '',
       errorMsg: '',
     };
-    for (var i = 0; i < Users.length; i++) {
-      Accounts.createUser({
-        username: Users[i],
-        password: Password
-      });
-    }
   }
 
   handleUsernameChange(e) {
@@ -39,6 +31,11 @@ export default class LoginForm extends Component {
   }
 
   handleLogin(username, password, callback) {
+    //Check if existing username
+    Accounts.createUser({
+        username: username,
+        password: password
+    });
     Meteor.loginWithPassword(username, password, function(err) {
       if (err) {
         callback();

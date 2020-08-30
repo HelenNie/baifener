@@ -1,4 +1,3 @@
-import { Partners } from '../../ui/LoginForm.jsx';
 import Games from "../collections/games.js";
 
 export const GameStatuses = {
@@ -558,7 +557,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_PLAYING;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
@@ -579,6 +578,7 @@ export class Game {
       _.extend(this, gameDoc);
     } else {
       this.players = [];
+      this.partners = {};
       this.modalByPlayer = CurrTestState.modalByPlayer; //merge into player objects
       this.errorByPlayer = CurrTestState.errorByPlayer; //merge into player objects
       this.undoByPlayer = CurrTestState.undoByPlayer; //merge into player objects
@@ -635,7 +635,7 @@ export class Game {
    * @return {[]String] List of fields required persistent storage
    */
   persistentFields() {
-    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpenDi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready', 'soundEffect'];
+    return ['status', 'stage', 'modalByPlayer', 'errorByPlayer', 'undoByPlayer', 'undoer', 'threeState', 'tableState', 'players', 'deck', 'di', 'currTableCards', 'prevTableCards', 'nextCardIndex', 'hands', 'currentPlayerIndex', 'diOpener', 'zhu', 'taiXiaPoints', 'threeFromDiCount', 'turnCycleCount', 'cardLocations', 'cardLocMngr', 'currTurnNumCards', 'currCycleNumCards', 'highestZIndex', 'cardZIndexes', 'threeShower', 'diOriginal', 'playerRoles', 'firstDrawer', 'cardLocMngrLocs', 'setRolesBasedOnThree', 'diPreWrap', 'prevPlayerIndex', 'copy', 'undidStartGame', 'undidOpenDi', 'wrapUpWinner', 'winningTeam', 'taiXiaPointsTotal', 'delayedModalAlready', 'soundEffect', 'partners'];
   }
 
   userLeave(user) {
@@ -671,14 +671,12 @@ export class Game {
     //If all four players are present, set up game
     if (this.players.length == NumPlayers) {
       if (CurrTestState == TestStates.REAL) {
-        this.arrangeSeating();
         this.setUpCardLocObjs();
         this.setUpByPlayer();
         this.randomizeDeck();
         this.status = GameStatuses.STARTED;
       } else {
         //TESTING ONLY: Don't set up any fields by player and deck/di
-        this.arrangeSeating();
         this.setUpCardLocObjs();
         this.diOriginal = this.di;
         this.diPreWrap = this.di;
@@ -691,7 +689,7 @@ export class Game {
   arrangeSeating() {
     //place partners across from each other
     var player1Name = this.players[0].username;
-    var partnerName = Partners[player1Name];
+    var partnerName = this.partners[player1Name];
 
     var player3 = this.players[2];
     var player3Name = player3.username;
@@ -775,10 +773,11 @@ export class Game {
         }
       }
 
-      var partnersAgree = (this.playerRoles[user.username] == this.playerRoles[Partners[user.username]]);
-
-      if ((attackers.length == 2 && defenders.length == 2 && partnersAgree) || tbd.length == 4) {
+      if ((attackers.length == 2 && defenders.length == 2) || tbd.length == 4) {
         this.userSetDrawFirstModalHelper();
+        //temporary - replace with TBD1 and TBD2
+        this.partners = {'helen':'pierre', 'dolores':'maeve', 'pierre':'helen', 'maeve':'dolores'};
+        this.arrangeSeating();
         this.copy = this.copyGame();
       } else {
         this.playerRoles = {};
@@ -919,7 +918,7 @@ export class Game {
     var player;
     for (var i = 0; i < this.players.length; i++) {
       player = this.players[i];
-      if (player.username == this.threeShower || player.username == Partners[this.threeShower]) {
+      if (player.username == this.threeShower || player.username == this.partners[this.threeShower]) {
         this.playerRoles[player.username] = Roles.DEFENDER;
       } else {
         this.playerRoles[player.username] = Roles.ATTACKER;
@@ -1550,7 +1549,7 @@ export class Game {
   }
 
   arePartners(user1, user2) {
-    return Partners[user1] == user2;
+    return this.partners[user1] == user2;
   }
 
   userPlayedRightNumCards() {

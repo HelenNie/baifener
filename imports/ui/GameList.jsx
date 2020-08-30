@@ -5,6 +5,15 @@ import {Game, GameStatuses} from '../api/models/game.js';
 import {newGame, userJoinGame, userLeaveGame} from '../api/methods/games.js';
 
 export default class GameList extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      findGameId: '',
+      errorMsg: '',
+    };
+  }
+
   handleNewGame() {
     newGame.call({});
   }
@@ -21,9 +30,28 @@ export default class GameList extends Component {
     this.props.enterGameHandler(gameId);
   }
 
+  handleGameIDChange(e) {
+    this.setState({findGameId: e.target.value});
+  }
+
+  handleSubmit(e) {
+    console.log("Find game");
+    e.preventDefault();
+    this.handleJoinGame(this.state.findGameId);
+  }
+
   activeGames() {
+    // return _.filter(this.props.games, (game) => {
+    //   return game.status === GameStatuses.WAITING || game.status === GameStatuses.STARTED;
+    // });
     return _.filter(this.props.games, (game) => {
-      return game.status === GameStatuses.WAITING || game.status === GameStatuses.STARTED;
+      var playerInGame = false;
+      for (var i = 0; i < game.players.length; i++) {
+        if (game.players[i].userId == this.props.user._id) {
+          playerInGame = true;
+        }
+      }
+      return (game.status === GameStatuses.WAITING || game.status === GameStatuses.STARTED) && playerInGame;
     });
   }
 
@@ -78,7 +106,7 @@ export default class GameList extends Component {
                         <i className="idea icon"/>
                       </span>
                     ): null}
-                    {Langs[this.props.currLang].gameList.gameNumber} {index+1}
+                    {Langs[this.props.currLang].gameList.gameNumber} {index+1} (id = {game._id})
                   </div>
                 </div>
                 <div className="content">
@@ -112,15 +140,26 @@ export default class GameList extends Component {
         {/* Only show new game button if player is not in any room */}
       </div>
       <div className="ui attached segment">
-        {this.myCurrentGameId() === null? (
-          <div>
-            <button className="ui button green" onClick={this.handleNewGame.bind(this)}>{Langs[this.props.currLang].gameList.newGame}</button>
+        <div>
+          <button className="ui button green" onClick={this.handleNewGame.bind(this)} disabled={this.myCurrentGameId() !== null}>{Langs[this.props.currLang].gameList.newGame}</button>
+        </div>
+      </div>
+      <div className="ui attached segment">
+        <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} name="find-game-form" onSubmit={this.handleSubmit.bind(this)}>
+
+          <div className="ui error message">
+            <div className="header">{this.state.errorMsg}</div>
           </div>
-        ): (
-          <div>
-            <button className="ui button green" onClick={this.handleNewGame.bind(this)} disabled>{Langs[this.props.currLang].gameList.newGame}</button>
+
+          <div className="inline fields">
+            <div className="field">
+              <input type="text" onChange={this.handleGameIDChange.bind(this)} placeholder={"Enter game ID"}/>
+            </div>
+            <div className="field">
+              <input className="ui green button" type="submit" value="Find Game"/>
+            </div>
           </div>
-        )}
+        </form>
       </div>
     </div>
     )
