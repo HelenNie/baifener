@@ -12,8 +12,8 @@ export const Langs = {
       selectLanguage: '选择语言'
     },
     loginForm: {
-      logIn: '登录',
-      enterYourName: '用户名',
+      logIn: '进入',
+      enterYourName: '选择游戏名称!',
       err: {
         noUsername: '请输入用户名!',
         wrongUsername: '用户名不存在!'
@@ -26,7 +26,15 @@ export const Langs = {
       leaveGame: '退出游戏',
       newGame: '新游戏',
       gameNumber: '游戏',
-      waiting: '等待中'
+      waiting: '等待中',
+      noGames: "你没有游戏在进行",
+      orJoinGame: "或加入朋友的游戏",
+      gameId: "游戏编码",
+      joinGameButton: "加入游戏",
+      err: {
+        noGameId: "请输入游戏编码!",
+        invalidGameId: "请输入准确游戏编码!"
+      }
     },
     gameBoard: {
       buttons: {
@@ -98,7 +106,8 @@ export const Langs = {
       roles: {
         DEFENDER: "台上",
         ATTACKER: "台下",
-        TBD: "未知"
+        TBD1: "一队",
+        TBD2: "二队",
       },
       suits: {
         heart: "红桃",
@@ -115,8 +124,8 @@ export const Langs = {
       selectLanguage: 'Select Language'
     },
     loginForm: {
-      logIn: 'Log In',
-      enterYourName: 'Enter your username',
+      logIn: 'Next',
+      enterYourName: 'Choose a name!',
       err: {
         noUsername: 'Username is required!',
         wrongUsername: 'Username does not exist!'
@@ -129,7 +138,15 @@ export const Langs = {
       leaveGame: 'Leave',
       newGame: 'New Game',
       gameNumber: 'Game',
-      waiting: 'Waiting'
+      waiting: 'Waiting',
+      noGames: "You don't have any games right now",
+      orJoinGame: "Or join a friend's game",
+      gameId: "Game ID",
+      joinGameButton: "Join Game",
+      err: {
+        noGameId: "Please enter a game ID!",
+        invalidGameId: "Please enter a valid game ID!"
+      }
     },
     gameBoard: {
       buttons: {
@@ -201,7 +218,8 @@ export const Langs = {
       roles: {
         DEFENDER: "Defender",
         ATTACKER: "Attacker",
-        TBD: "TBD"
+        TBD1: "Team 1",
+        TBD2: "Team 2",
       },
       suits: {
         heart: "Heart",

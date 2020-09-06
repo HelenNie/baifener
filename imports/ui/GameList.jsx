@@ -22,8 +22,8 @@ export default class GameList extends Component {
     userLeaveGame.call({gameId: gameId});
   }
 
-  handleJoinGame(gameId) {
-    userJoinGame.call({gameId: gameId});
+  handleJoinGame(gameId, callback) {
+    userJoinGame.call({gameId: gameId}, callback);
   }
 
   handleEnterGame(gameId) {
@@ -35,9 +35,24 @@ export default class GameList extends Component {
   }
 
   handleSubmit(e) {
-    console.log("Find game");
     e.preventDefault();
-    this.handleJoinGame(this.state.findGameId);
+    this.setState({errorMsg: ''})
+
+    let gameId = this.state.findGameId.trim();
+    if (gameId === '') {
+      this.setState({errorMsg: Langs[this.props.currLang].gameList.err.noGameId});
+    } else {
+      this.handleJoinGame(this.state.findGameId, this.handleJoinGameCallback.bind(this));
+    }
+    
+    document.getElementById("find-game-form").reset();
+    this.setState({findGameId: ''})
+  }
+
+  handleJoinGameCallback() {
+    if (this.myCurrentGameId() == null) {
+      this.setState({errorMsg: Langs[this.props.currLang].gameList.err.invalidGameId});
+    }
   }
 
   activeGames() {
@@ -96,6 +111,13 @@ export default class GameList extends Component {
       <h1 className="ui top attached header">{Langs[this.props.currLang].gameList.listOfGames}</h1>
       <div className="ui attached segment">
         <div className="ui three cards">
+          {this.activeGames().length == 0 
+            ?  
+              <div id="noGamesMsg">
+                <p> {Langs[this.props.currLang].gameList.noGames} </p>
+              </div>
+            : null
+          }
           {this.activeGames().map((game, index) => {
             return (
               <div key={game._id} className="ui card gray">
@@ -106,7 +128,8 @@ export default class GameList extends Component {
                         <i className="idea icon"/>
                       </span>
                     ): null}
-                    {Langs[this.props.currLang].gameList.gameNumber} {index+1} (id = {game._id})
+                    {Langs[this.props.currLang].gameList.gameNumber} {index+1}
+                    <p id="inviteText">Invite friends to join with game id <span id="inviteTextID">{game._id}</span>!</p>
                   </div>
                 </div>
                 <div className="content">
@@ -121,7 +144,7 @@ export default class GameList extends Component {
 
                   {/* can join only if user is not in any game, and the game is not started */}
                   {this.myCurrentGameId() === null && game.status === GameStatuses.WAITING? (
-                    <button className="ui yellow button" onClick={this.handleJoinGame.bind(this, game._id)}>{Langs[this.props.currLang].gameList.joinGame}</button>
+                    <button className="ui yellow button" onClick={this.handleJoinGame.bind(this, game._id, this.handleJoinGameCallback.bind(this))}>{Langs[this.props.currLang].gameList.joinGame}</button>
                   ): null}
 
                   {/* can enter only if the game is started */}
@@ -139,13 +162,15 @@ export default class GameList extends Component {
 
         {/* Only show new game button if player is not in any room */}
       </div>
+
       <div className="ui attached segment">
         <div>
           <button className="ui button green" onClick={this.handleNewGame.bind(this)} disabled={this.myCurrentGameId() !== null}>{Langs[this.props.currLang].gameList.newGame}</button>
+          <p></p>
+          <p id="orJoinGame"> --- {Langs[this.props.currLang].gameList.orJoinGame} --- </p>
+          <p></p>
         </div>
-      </div>
-      <div className="ui attached segment">
-        <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} name="find-game-form" onSubmit={this.handleSubmit.bind(this)}>
+        <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} id="find-game-form" onSubmit={this.handleSubmit.bind(this)}>
 
           <div className="ui error message">
             <div className="header">{this.state.errorMsg}</div>
@@ -153,10 +178,10 @@ export default class GameList extends Component {
 
           <div className="inline fields">
             <div className="field">
-              <input type="text" onChange={this.handleGameIDChange.bind(this)} placeholder={"Enter game ID"}/>
+              <input type="text" onChange={this.handleGameIDChange.bind(this)} placeholder={Langs[this.props.currLang].gameList.gameId} disabled={this.myCurrentGameId() !== null}/>
             </div>
             <div className="field">
-              <input className="ui green button" type="submit" value="Find Game"/>
+              <input className="ui green button" id="joinGame" type="submit" value={Langs[this.props.currLang].gameList.joinGameButton} disabled={this.myCurrentGameId() !== null}/>
             </div>
           </div>
         </form>

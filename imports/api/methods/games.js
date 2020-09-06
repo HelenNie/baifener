@@ -10,11 +10,11 @@ export const newGame = new ValidatedMethod({
 
 export const userJoinGame = new ValidatedMethod({
   name: 'games.userJoinGame',
-  validate: new SimpleSchema({
+  validate:  new SimpleSchema({
     gameId: {type: String}
   }).validator(),
-  run({gameId}) {
-    GamesController.userJoinGame(gameId, Meteor.user());
+  run({gameId, callback}) {
+    GamesController.userJoinGame(gameId, Meteor.user(), callback);
   }
 });
 

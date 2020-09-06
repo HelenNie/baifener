@@ -78,7 +78,8 @@ export const TableStates = {
 export const Roles = {
   DEFENDER: 'DEFENDER', 
   ATTACKER: 'ATTACKER',
-  TBD: 'TBD',
+  TBD1: 'TBD1',
+  TBD2: 'TBD2',
 };
 
 export const NumPlayers = 4;
@@ -187,7 +188,7 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'TBD', 'two': 'TBD', 'three': 'TBD', 'four': 'TBD'}
+    playerRoles: {'one': 'TBD1', 'two': 'TBD2', 'three': 'TBD2', 'four': 'TBD2'}
   },
   TEST_THREE: {
     status: GameStatuses.WAITING,
@@ -757,7 +758,8 @@ export class Game {
     if (Object.keys(this.playerRoles).length == NumPlayers) { 
       var attackers = [];
       var defenders = [];
-      var tbd = [];
+      var tbd1 = [];
+      var tbd2 = [];
 
       for (var player in this.playerRoles) {
         switch (this.playerRoles[player]) {
@@ -767,16 +769,28 @@ export class Game {
           case Roles.DEFENDER:
             defenders.push(player);
             break;
+          case Roles.TBD1:
+            tbd1.push(player);
+            break;
           default:
-            tbd.push(player);
+            tbd2.push(player);
             break;
         }
       }
 
-      if ((attackers.length == 2 && defenders.length == 2) || tbd.length == 4) {
+      if ((attackers.length == 2 && defenders.length == 2) || (tbd1.length == 2 && tbd2.length == 2)) {
+        if (attackers.length == 2 && defenders.length == 2) {
+          this.partners[attackers[0]] = attackers[1];
+          this.partners[attackers[1]] = attackers[0];
+          this.partners[defenders[0]] = defenders[1];
+          this.partners[defenders[1]] = defenders[0];
+        } else {
+          this.partners[tbd1[0]] = tbd1[1];
+          this.partners[tbd1[1]] = tbd1[0];
+          this.partners[tbd2[0]] = tbd2[1];
+          this.partners[tbd2[1]] = tbd2[0];
+        }
         this.userSetDrawFirstModalHelper();
-        //temporary - replace with TBD1 and TBD2
-        this.partners = {'helen':'pierre', 'dolores':'maeve', 'pierre':'helen', 'maeve':'dolores'};
         this.arrangeSeating();
         this.copy = this.copyGame();
       } else {
@@ -865,7 +879,7 @@ export class Game {
     this.threeState = ThreeStates.SHOWN;
 
     //Set attacker and defender roles if still TBD
-    if (this.playerRoles[user.username] == Roles.TBD) {
+    if (this.playerRoles[user.username] == Roles.TBD1 || this.playerRoles[user.username] == Roles.TBD2) {
       this.setPlayerRoles();
     }
 

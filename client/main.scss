@@ -26,7 +26,7 @@ body {
     background: rgba(255, 255, 255, 0.75);
 }
 
-/* GameList levels */
+/* GameList */
 
 .ui.attached.segment {
     background: rgba(255, 255, 255, 0.75);
@@ -42,6 +42,34 @@ body {
 
 #gameCardFooter {
     background-color: #F3F4F5;
+}
+
+#noGamesMsg {
+    padding: 20px;
+    color: gray;
+    font-style: italic;
+    font-size: 16px;   
+}
+
+#orJoinGame {
+    color: black;
+    font-size: 16px;   
+}
+
+#inviteText {
+    color: gray;
+    font-weight: normal;
+    font-size: 14px;   
+}
+
+#inviteTextID {
+    color: #FBBD08;
+    font-style: italic;
+    font-size: 14px;   
+}
+
+#joinGame {
+    font-size: 14px;
 }
 
 /* GameBoard */

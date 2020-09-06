@@ -490,7 +490,8 @@ export default class GameBoard extends Component {
           <div className="modalContent">
             <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>{Langs[this.props.currLang].gameBoard.roles[Roles.DEFENDER]}</button>
             <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>{Langs[this.props.currLang].gameBoard.roles[Roles.ATTACKER]}</button>
-            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD]}</button>
+            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD1)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD1]}</button>
+            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD2)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD2]}</button>
           </div>;
         break;
       case ModalStates.SET_ROLE_WAITING:
@@ -509,7 +510,8 @@ export default class GameBoard extends Component {
             <br></br>
             <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.DEFENDER)}>{Langs[this.props.currLang].gameBoard.roles[Roles.DEFENDER]}</button>
             <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.ATTACKER)}>{Langs[this.props.currLang].gameBoard.roles[Roles.ATTACKER]}</button>
-            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD]}</button>
+            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD1)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD1]}</button>
+            <button className="ui red button" onClick={this.handleSetRole.bind(this, Roles.TBD2)}>{Langs[this.props.currLang].gameBoard.roles[Roles.TBD2]}</button>
           </div>;
         break;
       case ModalStates.SET_ROLE_AGAIN_WAITING:
@@ -988,11 +990,12 @@ export default class GameBoard extends Component {
     var inBools = [];
 
     var role = user.username in game.playerRoles ? game.playerRoles[user.username] : '';
+    var roleTBD = (role == Roles.TBD1 || role == Roles.TBD2);
 
     //Role and trump icons
     inBools.push(true);
     items.push(<p><b>{ Langs[this.props.currLang].gameBoard.msgArea.role }</b></p>);
-    inBools.push(game.stage != GameStages.SET_UP && role != Roles.TBD);
+    inBools.push(game.stage != GameStages.SET_UP && !roleTBD);
     items.push(<img src={"/images/" + role.toLowerCase() + ".png"} id="playerRoleIcon" title={Langs[this.props.currLang].gameBoard.roles[role]}></img>);
     inBools.push(true);
     items.push(<p><b>{ Langs[this.props.currLang].gameBoard.msgArea.zhu }</b></p>);

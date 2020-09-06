@@ -8,10 +8,12 @@ export let GamesController = {
     Games.saveGame(game);
   },
 
-  userJoinGame(gameId, user) {
+  userJoinGame(gameId, user, callback) {
     let game = Games.findOne(gameId);
-    game.userJoin(user);
-    Games.saveGame(game);
+    if (game) {
+      game.userJoin(user);
+      Games.saveGame(game);
+    }
   },
 
   userLeaveGame(gameId, user) {
