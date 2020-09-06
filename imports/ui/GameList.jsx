@@ -46,7 +46,6 @@ export default class GameList extends Component {
     }
     
     document.getElementById("find-game-form").reset();
-    this.setState({findGameId: ''})
   }
 
   handleJoinGameCallback() {
@@ -178,7 +177,7 @@ export default class GameList extends Component {
 
           <div className="inline fields">
             <div className="field">
-              <input type="text" onChange={this.handleGameIDChange.bind(this)} placeholder={Langs[this.props.currLang].gameList.gameId} disabled={this.myCurrentGameId() !== null}/>
+              <input type="text" value={this.state.findGameId} onChange={this.handleGameIDChange.bind(this)} placeholder={Langs[this.props.currLang].gameList.gameId} disabled={this.myCurrentGameId() !== null}/>
             </div>
             <div className="field">
               <input className="ui green button" id="joinGame" type="submit" value={Langs[this.props.currLang].gameList.joinGameButton} disabled={this.myCurrentGameId() !== null}/>
