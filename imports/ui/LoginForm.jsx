@@ -7,7 +7,7 @@ export const Password = "password";
 
 export default class LoginForm extends Component {
   constructor(props) {
-    super(props);
+    super(props); 
     this.state = {
       username: '',
       errorMsg: '',
@@ -18,25 +18,53 @@ export default class LoginForm extends Component {
     this.setState({username: e.target.value});
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-
+  usernameHelper() {
     let username = this.state.username.trim();
     if (username === '') {
       this.setState({errorMsg: Langs[this.props.currLang].loginForm.err.noUsername});
-      return;
+      return false;
     }
-
-    this.handleLogin(username, Password, this.handleLoginCallback.bind(this));
+    return username;
   }
 
-  handleLogin(username, password, callback) {
-    //Check if existing username
-    Accounts.createUser({
+  handleCreateAccount(e) {
+    e.preventDefault();
+    let username = this.usernameHelper();
+
+    if(username) {
+      this.handleCreateAccountHelper(username, this.handleCreateAccountCallback.bind(this));
+    }
+  }
+
+  handleCreateAccountHelper(username, callback) {
+    Accounts.createUser(
+      {
         username: username,
-        password: password
-    });
-    Meteor.loginWithPassword(username, password, function(err) {
+        password: Password
+      },
+      function(err) {
+        if (err) {
+          callback();
+        }
+      }
+    );
+  }
+
+  handleCreateAccountCallback(err) {
+    this.setState({errorMsg: Langs[this.props.currLang].loginForm.err.usernameTaken});
+  }
+
+  handleLogin(e) {
+    e.preventDefault();
+    let username = this.usernameHelper();
+
+    if(username) {
+      this.handleLoginHelper(username, this.handleLoginCallback.bind(this));
+    }
+  }
+
+  handleLoginHelper(username, callback) {
+    Meteor.loginWithPassword(username, Password, function(err) {
       if (err) {
         callback();
       }
@@ -56,7 +84,7 @@ export default class LoginForm extends Component {
           handleLangDropdown={this.props.handleLangDropdown} />
 
         <div className="ui segment">
-          <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} name="login-form" onSubmit={this.handleSubmit.bind(this)}>
+          <form className={(this.state.errorMsg !== ''? 'error ': '') + "ui form"} name="login-form" onSubmit={this.handleLogin.bind(this)}>
 
             <div className="ui error message">
               <div className="header">{this.state.errorMsg}</div>
@@ -68,6 +96,7 @@ export default class LoginForm extends Component {
               </div>
               <div className="field">
                 <input className="ui green button" type="submit" value={Langs[this.props.currLang].loginForm.logIn}/>
+                <input className="ui blue button" type="submit" onClick={this.handleCreateAccount.bind(this)} value={Langs[this.props.currLang].loginForm.createAccount}/>
               </div>
             </div>
           </form>

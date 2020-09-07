@@ -12,11 +12,13 @@ export const Langs = {
       selectLanguage: '选择语言'
     },
     loginForm: {
-      logIn: '进入',
+      logIn: '登录',
+      createAccount: '注册',
       enterYourName: '选择游戏名称!',
       err: {
         noUsername: '请输入用户名!',
-        wrongUsername: '用户名不存在!'
+        wrongUsername: '用户名不存在!',
+        usernameTaken: '用户名已存在!'
       }
     },
     gameList: {
@@ -124,11 +126,13 @@ export const Langs = {
       selectLanguage: 'Select Language'
     },
     loginForm: {
-      logIn: 'Next',
+      logIn: 'Log In',
+      createAccount: 'Create Account',
       enterYourName: 'Choose a name!',
       err: {
         noUsername: 'Username is required!',
-        wrongUsername: 'Username does not exist!'
+        wrongUsername: 'Username does not exist!',
+        usernameTaken: 'Username is already taken!'
       }
     },
     gameList: {
