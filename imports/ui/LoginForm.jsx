@@ -3,19 +3,22 @@ import React, { Component } from 'react';
 import GameHeader from './GameHeader.jsx';
 import {Langs} from './Languages.jsx';
 
-export const Password = "password";
-
 export default class LoginForm extends Component {
   constructor(props) {
     super(props); 
     this.state = {
       username: '',
+      password: '',
       errorMsg: '',
     };
   }
 
   handleUsernameChange(e) {
     this.setState({username: e.target.value});
+  }
+
+  handlePasswordChange(e) {
+    this.setState({password: e.target.value});
   }
 
   usernameHelper() {
@@ -27,20 +30,34 @@ export default class LoginForm extends Component {
     return username;
   }
 
+  passwordHelper() {
+    let password = this.state.password.trim();
+    if (password === '') {
+      this.setState({errorMsg: Langs[this.props.currLang].loginForm.err.noPassword});
+      return false;
+    }
+    return password;
+  }
+
   handleCreateAccount(e) {
     e.preventDefault();
     let username = this.usernameHelper();
+    let password = this.passwordHelper();
 
-    if(username) {
-      this.handleCreateAccountHelper(username, this.handleCreateAccountCallback.bind(this));
+    //Use in GameList and ap to gameID
+    var randomWords = require('random-words');
+    console.log(randomWords({exactly:1, wordsPerString:3, separator:'-'}))
+
+    if(username && password) {
+      this.handleCreateAccountHelper(username, password, this.handleCreateAccountCallback.bind(this));
     }
   }
 
-  handleCreateAccountHelper(username, callback) {
+  handleCreateAccountHelper(username, password, callback) {
     Accounts.createUser(
       {
         username: username,
-        password: Password
+        password: password
       },
       function(err) {
         if (err) {
@@ -57,14 +74,15 @@ export default class LoginForm extends Component {
   handleLogin(e) {
     e.preventDefault();
     let username = this.usernameHelper();
+    let password = this.passwordHelper();
 
-    if(username) {
-      this.handleLoginHelper(username, this.handleLoginCallback.bind(this));
+    if(username && password) {
+      this.handleLoginHelper(username, password, this.handleLoginCallback.bind(this));
     }
   }
 
-  handleLoginHelper(username, callback) {
-    Meteor.loginWithPassword(username, Password, function(err) {
+  handleLoginHelper(username, password, callback) {
+    Meteor.loginWithPassword(username, password, function(err) {
       if (err) {
         callback();
       }
@@ -92,13 +110,19 @@ export default class LoginForm extends Component {
 
             <div className="inline fields">
               <div className="field">
-                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={Langs[this.props.currLang].loginForm.enterYourName}/>
+                <input type="text" onChange={this.handleUsernameChange.bind(this)} placeholder={Langs[this.props.currLang].loginForm.username}/>
               </div>
+            </div>
+            <div className="inline fields">
+              <div className="field">
+                <input type="password" onChange={this.handlePasswordChange.bind(this)} placeholder={Langs[this.props.currLang].loginForm.password}/>
+              </div>
+            </div>
               <div className="field">
                 <input className="ui green button" type="submit" value={Langs[this.props.currLang].loginForm.logIn}/>
                 <input className="ui blue button" type="submit" onClick={this.handleCreateAccount.bind(this)} value={Langs[this.props.currLang].loginForm.createAccount}/>
               </div>
-            </div>
+
           </form>
         </div>
       </div>

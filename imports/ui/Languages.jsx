@@ -14,10 +14,12 @@ export const Langs = {
     loginForm: {
       logIn: '登录',
       createAccount: '注册',
-      enterYourName: '选择游戏名称!',
+      username: '用户名',
+      password: '密码',
       err: {
         noUsername: '请输入用户名!',
-        wrongUsername: '用户名不存在!',
+        noPassword: '请输入密码!',
+        wrongUsername: '用户名或密码错误!',
         usernameTaken: '用户名已存在!'
       }
     },
@@ -127,11 +129,13 @@ export const Langs = {
     },
     loginForm: {
       logIn: 'Log In',
-      createAccount: 'Create Account',
-      enterYourName: 'Choose a name!',
+      createAccount: 'Register',
+      username: 'Username',
+      password: 'Password',
       err: {
         noUsername: 'Username is required!',
-        wrongUsername: 'Username does not exist!',
+        noPassword: 'Password is required!',
+        wrongUsername: 'Wrong username or password!',
         usernameTaken: 'Username is already taken!'
       }
     },

@@ -13,6 +13,7 @@
     "bcrypt": "^4.0.1",
     "jquery": "^3.4.1",
     "meteor-node-stubs": "^1.0.0",
+    "random-words": "^1.1.1",
     "react": "^16.13.1",
     "react-addons-pure-render-mixin": "^15.6.2",
     "react-dom": "^16.13.1",
