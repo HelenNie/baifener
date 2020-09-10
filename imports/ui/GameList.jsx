@@ -9,7 +9,7 @@ export default class GameList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      findGameId: '',
+      gameCode: '',
       errorMsg: '',
     };
   }
@@ -31,21 +31,28 @@ export default class GameList extends Component {
   }
 
   handleGameIDChange(e) {
-    this.setState({findGameId: e.target.value});
+    this.setState({gameCode: e.target.value});
   }
 
   handleSubmit(e) {
     e.preventDefault();
     this.setState({errorMsg: ''})
 
-    let gameId = this.state.findGameId.trim();
-    if (gameId === '') {
+    let gameCode = this.state.gameCode.trim();
+    if (gameCode === '') {
       this.setState({errorMsg: Langs[this.props.currLang].gameList.err.noGameId});
     } else {
-      this.handleJoinGame(this.state.findGameId, this.handleJoinGameCallback.bind(this));
+      let gameId = this.gameIdToGameCodeHelper(gameCode)[0]._id;
+      this.handleJoinGame(gameId, this.handleJoinGameCallback.bind(this));
     }
     
     document.getElementById("find-game-form").reset();
+  }
+
+  gameIdToGameCodeHelper(gameCode) {
+    return _.filter(this.props.games, (game) => {
+      return game.gameCode == gameCode;
+    });
   }
 
   handleJoinGameCallback() {
@@ -128,7 +135,7 @@ export default class GameList extends Component {
                       </span>
                     ): null}
                     {Langs[this.props.currLang].gameList.gameNumber} {index+1}
-                    <p id="inviteText">Invite friends to join with game id <span id="inviteTextID">{game._id}</span>!</p>
+                    <p id="inviteText">Invite friends to join with game id <span id="inviteTextID">{game.gameCode}</span>!</p>
                   </div>
                 </div>
                 <div className="content">
@@ -177,7 +184,7 @@ export default class GameList extends Component {
 
           <div className="inline fields">
             <div className="field">
-              <input type="text" value={this.state.findGameId} onChange={this.handleGameIDChange.bind(this)} placeholder={Langs[this.props.currLang].gameList.gameId} disabled={this.myCurrentGameId() !== null}/>
+              <input type="text" value={this.state.gameCode} onChange={this.handleGameIDChange.bind(this)} placeholder={Langs[this.props.currLang].gameList.gameId} disabled={this.myCurrentGameId() !== null}/>
             </div>
             <div className="field">
               <input className="ui green button" id="joinGame" type="submit" value={Langs[this.props.currLang].gameList.joinGameButton} disabled={this.myCurrentGameId() !== null}/>

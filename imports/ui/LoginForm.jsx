@@ -44,10 +44,6 @@ export default class LoginForm extends Component {
     let username = this.usernameHelper();
     let password = this.passwordHelper();
 
-    //Use in GameList and ap to gameID
-    var randomWords = require('random-words');
-    console.log(randomWords({exactly:1, wordsPerString:3, separator:'-'}))
-
     if(username && password) {
       this.handleCreateAccountHelper(username, password, this.handleCreateAccountCallback.bind(this));
     }
