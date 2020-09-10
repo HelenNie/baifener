@@ -14,30 +14,32 @@ export default class GameBoard extends Component {
         <div className="header item">
           {Langs[this.props.currLang].gameHeader.baifener}
         </div>
-
-        {this.props.user? (
-          <div className="right menu">
-            <div className="item">
-              <Dropdown
-                button
-                className='icon'
-                onChange={this.props.handleLangDropdown}
-                floating
-                labeled
-                icon='world'
-                options={LanguageOptions}
-                text={Langs[this.props.currLang].gameHeader.selectLanguage}
-              />
-            </div>
-            <div className="item">
-              <i className="meh icon"/>
-              {this.props.user.username}
-            </div>
-            <a className="item" onClick={this.handleLogout.bind(this)}>
-              {Langs[this.props.currLang].gameHeader.logOut}
-            </a>
+        <div className="right menu">
+          <div className="item">
+            <Dropdown
+              button
+              className='icon'
+              onChange={this.props.handleLangDropdown}
+              floating
+              labeled
+              icon='world'
+              options={LanguageOptions}
+              text={Langs[this.props.currLang].gameHeader.selectLanguage}
+            />
           </div>
-        ): null}
+
+          {this.props.user? (
+            <span>
+              <div className="item">
+                <i className="meh icon"/>
+                {this.props.user.username}
+              </div>
+              <a className="item" onClick={this.handleLogout.bind(this)}>
+                {Langs[this.props.currLang].gameHeader.logOut}
+              </a>
+            </span>
+          ): null}
+        </div>
       </div>
     )
   }
