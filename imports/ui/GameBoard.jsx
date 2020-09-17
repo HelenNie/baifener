@@ -577,8 +577,8 @@ export default class GameBoard extends Component {
     return (
       <ReactModal
           isOpen = { game.modalByPlayer[user.username] != ModalStates.NONE }
-          className = { delayModal && !game.delayedModalAlready ? {base: 'modalDelay', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} : {base: 'modal', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} }
-          overlayClassName = { delayModal && !game.delayedModalAlready ? {base: 'overlayDelay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}: {base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'} }
+          className = { delayModal && !game.delayedModalAlready[user.username] ? {base: 'modalDelay', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} : {base: 'modal', afterOpen: 'modalAfterOpen', beforeClose: 'modalBeforeClose'} }
+          overlayClassName = { delayModal && !game.delayedModalAlready[user.username] ? {base: 'overlayDelay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'}: {base: 'overlay', afterOpen: 'overlayAfterOpen', beforeClose: 'overlayBeforeClose'} }
           closeTimeoutMS = { delayModal ? 4000 : 500 }
           overlayRef = {node => (this.overlayRef = node)}
           onAfterOpen = {this.modalOnAfterOpenCallback.bind(this, delayModal)}

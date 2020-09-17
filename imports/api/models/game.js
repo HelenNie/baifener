@@ -634,7 +634,7 @@ export class Game {
       this.wrapUpWinner = '';
       this.winningTeam = '';
       this.taiXiaPointsTotal = 0;
-      this.delayedModalAlready = false;
+      this.delayedModalAlready = {};
       this.soundEffect = '';
     }
   }
@@ -748,6 +748,7 @@ export class Game {
       this.undoByPlayer[player][UndoParams.BUTTON] = UndoStates.NONE;
       this.undoByPlayer[player][UndoParams.MODAL] = UndoStates.NONE;
       this.undoByPlayer[player][UndoParams.ROLE] = UndoRoles.NONE;
+      this.delayedModalAlready[player] = false;
     }
   }
 
@@ -1250,7 +1251,7 @@ export class Game {
       this.winningTeam = '';
       //Unshow RESTART_FULL modals and put delay back in
       this.userModalAwayAll();
-      this.delayedModalAlready = false;
+      this.delayedModalAlready[user.username] = false;
     }
 
     this.undoByPlayer[user.username][UndoParams.BUTTON] = UndoStates.NONE;
@@ -1384,8 +1385,8 @@ export class Game {
     this.errorByPlayer[user.username] = ErrorStates.NONE;
   }
 
-  userDelayedModalAlready() {
-    this.delayedModalAlready = true;
+  userDelayedModalAlready(user) {
+    this.delayedModalAlready[user.username] = true;
   }
 
   userUndo(user) {

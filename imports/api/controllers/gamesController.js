@@ -174,7 +174,7 @@ export let GamesController = {
 
   userDelayedModalAlreadyGame(gameId, user) {
     let game = Games.findOne(gameId);
-    game.userDelayedModalAlready();
+    game.userDelayedModalAlready(user);
     Games.saveGame(game);
   },
 
