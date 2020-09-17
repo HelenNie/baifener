@@ -854,7 +854,7 @@ export default class GameBoard extends Component {
 
     for (var player in tablePlayers) {
       var items = [];
-      for (var i = 0; i < DeckComplete.length; i++) {
+      for (var i = DeckComplete.length - 1; i >= 0; i--) {
         card = DeckComplete[i];
         inBool = card in tableCards && tableCards[card] == player;
         inBools.push(inBool);
