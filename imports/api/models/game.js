@@ -126,7 +126,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {}
+    playerRoles: {},
+    partners: {}
   }
   ,
   TEST_DRAWING: {
@@ -188,7 +189,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'TBD1', 'two': 'TBD2', 'three': 'TBD2', 'four': 'TBD2'}
+    playerRoles: {'one': 'TBD1', 'two': 'TBD2', 'three': 'TBD2', 'four': 'TBD2'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_THREE: {
     status: GameStatuses.WAITING,
@@ -249,7 +251,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_SUIT_FROM_DI: {
     status: GameStatuses.WAITING,
@@ -310,7 +313,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_SUIT_FROM_DI_JOKER_1: {
     status: GameStatuses.WAITING,
@@ -371,7 +375,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_SUIT_FROM_DI_JOKER_2: {
     status: GameStatuses.WAITING,
@@ -432,7 +437,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_PLAYING: { //Login in one,two,three,four order for roles to work properly
     status: GameStatuses.WAITING,
@@ -493,7 +499,8 @@ export const TestStates = {
     taiXiaPoints: [],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   },
   TEST_WRAPUP: { //Login in one,two,three,four order for roles to work properly
     status: GameStatuses.WAITING,
@@ -554,7 +561,8 @@ export const TestStates = {
     taiXiaPoints: ["5C", "5D", "5H", "5S"],
     threeFromDiCount: 0,
     turnCycleCount: 0,
-    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'}
+    playerRoles: {'one': 'DEFENDER', 'two': 'ATTACKER', 'three': 'DEFENDER', 'four': 'ATTACKER'},
+    partners: {'one': 'three', 'two': 'four', 'three': 'one', 'four': 'two'}
   }
 };
 
@@ -580,7 +588,7 @@ export class Game {
     } else {
       this.gameCode = this.generateGameCode();
       this.players = [];
-      this.partners = {};
+      this.partners = CurrTestState.partners;
       this.modalByPlayer = CurrTestState.modalByPlayer; //merge into player objects
       this.errorByPlayer = CurrTestState.errorByPlayer; //merge into player objects
       this.undoByPlayer = CurrTestState.undoByPlayer; //merge into player objects
@@ -1442,7 +1450,12 @@ export class Game {
 
     //console.log("yGroup: ", yGroup);
 
-    if (card == yGroup[x] || (x == CardLandingLoc.x && y == CardLandingLoc.y && xOld == -1)) {
+    if (!yGroup) {
+      //return card to previus location if below hand area
+      xOld = (xOld != -1) ? xOld : CardLandingLoc.x;
+      yOld = (yOld != -1) ? yOld : CardLandingLoc.y;
+      this.cardLocations[card] = {x: xOld, y: yOld};
+    } else if (card == yGroup[x] || (x == CardLandingLoc.x && y == CardLandingLoc.y && xOld == -1)) {
       //no location change
       return;
     } else if (yGroup[CardLocMax.x-1] != null && y != yOld) {

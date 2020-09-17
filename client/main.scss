@@ -664,11 +664,13 @@ body {
 }
 
 .handle:hover {
+    width: 55px;
     cursor: pointer;
     filter: brightness(90%);
 }
 
 .handle:active {
+    width: 60px;
     cursor: pointer;
     margin: -3px;
     border: 3px solid orange;
