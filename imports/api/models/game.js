@@ -566,7 +566,7 @@ export const TestStates = {
   }
 };
 
-export const CurrTestState = TestStates.TEST_PLAYING;
+export const CurrTestState = TestStates.REAL;
 
 /**
  * Game model, encapsulating game-related logics 
