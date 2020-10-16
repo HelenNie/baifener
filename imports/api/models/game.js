@@ -742,7 +742,9 @@ export class Game {
     for (var i = 0; i < this.players.length; i++) {
       player = this.players[i].username;
       this.hands[this.players[i].username] = [];
-      this.modalByPlayer[player] = ModalStates.SET_ROLE;
+      if (CurrTestState == TestStates.REAL) {
+        this.modalByPlayer[player] = ModalStates.SET_ROLE;
+      }
       this.errorByPlayer[player] = ErrorStates.NONE;
       this.undoByPlayer[player] = {};
       this.undoByPlayer[player][UndoParams.BUTTON] = UndoStates.NONE;
